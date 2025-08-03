@@ -112,10 +112,16 @@ function loadCategories() {
     data: { action: "get_categories" },
     dataType: "json",
     success: (response) => {
-      displayCategories(response.categories, response.total_servers)
+      if (response.success) {
+        displayCategories(response.categories, response.total_servers)
+      } else {
+        console.error("Failed to load categories:", response.message)
+        showToast("Failed to load categories", "error")
+      }
     },
-    error: () => {
-      console.error("Failed to load categories")
+    error: (xhr, status, error) => {
+      console.error("Failed to load categories:", error)
+      showToast("Failed to load categories", "error")
     },
   })
 }
@@ -148,12 +154,12 @@ function getCategoryIcon(category) {
     Gaming: "🎮",
     Music: "🎵",
     Education: "📚",
+    Technology: "💻",
     "Science & Tech": "🔬",
     Entertainment: "🎬",
     Community: "👥",
     Art: "🎨",
     Sports: "⚽",
-    Technology: "💻",
     Anime: "🌸",
   }
   return icons[category] || "📁"
@@ -192,6 +198,7 @@ function resetAndLoadServers() {
   currentPage = 1
   hasMoreServers = true
   $("#serversGrid").empty()
+  $("#noMoreServers").hide()
   loadServers(true)
 }
 
@@ -217,19 +224,25 @@ function loadServers(showLoading = false) {
     },
     dataType: "json",
     success: (response) => {
-      displayServers(response.servers)
+      if (response.success) {
+        displayServers(response.servers)
 
-      if (response.servers.length < 12) {
-        hasMoreServers = false
-        $("#noMoreServers").show()
+        if (response.servers.length < 12) {
+          hasMoreServers = false
+          $("#noMoreServers").show()
+        }
+
+        currentPage++
+        updateServerCount()
+      } else {
+        console.error("Failed to load servers:", response.message)
+        showToast(response.message || "Failed to load servers", "error")
       }
-
-      currentPage++
-      updateServerCount()
     },
-    error: () => {
-      console.error("Failed to load servers2")
-      showToast("Failed to load servers2", "error")
+    error: (xhr, status, error) => {
+      console.error("Failed to load servers:", error)
+      console.error("Response:", xhr.responseText)
+      showToast("Failed to load servers. Please check your connection.", "error")
     },
     complete: () => {
       isLoading = false
@@ -315,7 +328,8 @@ function showServerDetails(serverId) {
         showToast(response.message, "error")
       }
     },
-    error: () => {
+    error: (xhr, status, error) => {
+      console.error("Failed to load server details:", error)
       showToast("Failed to load server details", "error")
     },
   })
@@ -327,14 +341,14 @@ function displayServerDetails(server) {
   if (server.BannerServer) {
     $("#serverBanner").html(`<img src="${server.BannerServer}" alt="Server Banner">`)
   } else {
-    $("#serverBanner").html('<img src="/placeholder.svg?height=120&width=600" alt="Server Banner">')
+    $("#serverBanner").html('<img src="https://via.placeholder.com/600x120/36393F/FFFFFF?text=Server+Banner" alt="Server Banner">')
   }
 
   // Set avatar
   if (server.IconServer) {
     $("#serverAvatar").html(`<img src="${server.IconServer}" alt="Server Icon">`)
   } else {
-    $("#serverAvatar").html('<img src="/placeholder.svg?height=80&width=80" alt="Server Avatar">')
+    $("#serverAvatar").html(`<div style="font-size: 24px; font-weight: 600;">${server.Name.charAt(0).toUpperCase()}</div>`)
   }
 
   // Set details
@@ -380,7 +394,8 @@ function joinServer(serverId) {
         showToast(response.message, "error")
       }
     },
-    error: () => {
+    error: (xhr, status, error) => {
+      console.error("Failed to join server:", error)
       showToast("Failed to join server", "error")
     },
   })
@@ -415,7 +430,8 @@ function joinByInvite() {
         showToast(response.message, "error")
       }
     },
-    error: () => {
+    error: (xhr, status, error) => {
+      console.error("Failed to join server:", error)
       showToast("Failed to join server", "error")
     },
   })
