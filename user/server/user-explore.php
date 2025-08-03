@@ -2,6 +2,10 @@
 session_start();
 require_once 'database.php';
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Get current user ID (assuming user is logged in)
 $currentUserId = $_SESSION['user_id'] ?? 1; // Default to user 1 for demo
 
@@ -9,235 +13,222 @@ $currentUserId = $_SESSION['user_id'] ?? 1; // Default to user 1 for demo
 if (isset($_POST['action'])) {
     header('Content-Type: application/json');
     
-    $database = new Database();
-    $conn = $database->getConnection();
-    
-    if ($_POST['action'] === 'get_servers') {
-        $page = (int)($_POST['page'] ?? 1);
-        $limit = 12;
-        $offset = ($page - 1) * $limit;
-        $category = $_POST['category'] ?? 'all';
-        $search = $_POST['search'] ?? '';
-        $sort = $_POST['sort'] ?? 'newest';
+    try {
+        $database = new Database();
+        $conn = $database->getConnection();
         
-        // Build WHERE clause
-        $whereClause = "WHERE s.IsPrivate = 0";
-        $params = [];
-        $types = "";
-        
-        if ($category !== 'all') {
-            $whereClause .= " AND si.Category = ?";
-            $params[] = $category;
-            $types .= "s";
-        }
-        
-        if (!empty($search)) {
-            $whereClause .= " AND (s.Name LIKE ? OR s.Description LIKE ?)";
-            $searchParam = "%$search%";
-            $params[] = $searchParam;
-            $params[] = $searchParam;
-            $types .= "ss";
-        }
-        
-        // Build ORDER BY clause
-        $orderClause = "";
-        switch ($sort) {
-            case 'newest':
-                $orderClause = "ORDER BY s.ID DESC";
-                break;
-            case 'oldest':
-                $orderClause = "ORDER BY s.ID ASC";
-                break;
-            case 'most_members':
-                $orderClause = "ORDER BY member_count DESC";
-                break;
-            case 'least_members':
-                $orderClause = "ORDER BY member_count ASC";
-                break;
-            case 'a_to_z':
-                $orderClause = "ORDER BY s.Name ASC";
-                break;
-            case 'z_to_a':
-                $orderClause = "ORDER BY s.Name DESC";
-                break;
-            default:
-                $orderClause = "ORDER BY s.ID DESC";
-        }
-        
-        // Get servers with member count
-        $query = "SELECT 
-                    s.ID,
-                    s.Name,
-                    s.IconServer,
-                    s.Description,
-                    s.BannerServer,
-                    s.InviteLink,
-                    si.Category,
-                    si.ExpiresAt,
-                    COUNT(usm.UserID) as member_count,
-                    CASE WHEN usm_current.UserID IS NOT NULL THEN 1 ELSE 0 END as is_joined
-                  FROM Server s
-                  LEFT JOIN ServerInfo si ON s.ID = si.ServerID
-                  LEFT JOIN UserServerMemberships usm ON s.ID = usm.ServerID
-                  LEFT JOIN UserServerMemberships usm_current ON s.ID = usm_current.ServerID AND usm_current.UserID = ?
-                  $whereClause
-                  GROUP BY s.ID, s.Name, s.IconServer, s.Description, s.BannerServer, s.InviteLink, si.Category, si.ExpiresAt, usm_current.UserID
-                  $orderClause
-                  LIMIT $limit OFFSET $offset";
-        
-        // Add current user ID to params
-        array_unshift($params, $currentUserId);
-        $types = "i" . $types;
-        
-        $stmt = $conn->prepare($query);
-        if (!empty($params)) {
-            $stmt->bind_param($types, ...$params);
-        }
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $servers = [];
-        while ($row = $result->fetch_assoc()) {
-            $servers[] = $row;
-        }
-        
-        echo json_encode(['servers' => $servers]);
-        exit();
-    }
-    
-    if ($_POST['action'] === 'get_categories') {
-        // Get categories with server counts
-        $query = "SELECT 
-                    si.Category,
-                    COUNT(s.ID) as server_count
-                  FROM ServerInfo si
-                  LEFT JOIN Server s ON si.ServerID = s.ID
-                  WHERE s.IsPrivate = 0
-                  GROUP BY si.Category
-                  ORDER BY server_count DESC";
-        
-        $result = $conn->query($query);
-        $categories = [];
-        $totalServers = 0;
-        
-        while ($row = $result->fetch_assoc()) {
-            $categories[] = $row;
-            $totalServers += $row['server_count'];
-        }
-        
-        echo json_encode([
-            'categories' => $categories,
-            'total_servers' => $totalServers
-        ]);
-        exit();
-    }
-    
-    if ($_POST['action'] === 'get_server_details') {
-        $serverId = (int)$_POST['server_id'];
-        
-        $query = "SELECT 
-                    s.ID,
-                    s.Name,
-                    s.IconServer,
-                    s.Description,
-                    s.BannerServer,
-                    s.InviteLink,
-                    si.Category,
-                    COUNT(usm.UserID) as member_count,
-                    CASE WHEN usm_current.UserID IS NOT NULL THEN 1 ELSE 0 END as is_joined
-                  FROM Server s
-                  LEFT JOIN ServerInfo si ON s.ID = si.ServerID
-                  LEFT JOIN UserServerMemberships usm ON s.ID = usm.ServerID
-                  LEFT JOIN UserServerMemberships usm_current ON s.ID = usm_current.ServerID AND usm_current.UserID = ?
-                  WHERE s.ID = ? AND s.IsPrivate = 0
-                  GROUP BY s.ID, s.Name, s.IconServer, s.Description, s.BannerServer, s.InviteLink, si.Category, usm_current.UserID";
-        
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("ii", $currentUserId, $serverId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($server = $result->fetch_assoc()) {
-            echo json_encode(['success' => true, 'server' => $server]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Server not found']);
-        }
-        exit();
-    }
-    
-    if ($_POST['action'] === 'join_server') {
-        $serverId = (int)$_POST['server_id'];
-        
-        // Check if already joined
-        $checkQuery = "SELECT ID FROM UserServerMemberships WHERE UserID = ? AND ServerID = ?";
-        $checkStmt = $conn->prepare($checkQuery);
-        $checkStmt->bind_param("ii", $currentUserId, $serverId);
-        $checkStmt->execute();
-        
-        if ($checkStmt->get_result()->num_rows > 0) {
-            echo json_encode(['success' => false, 'message' => 'You are already a member of this server']);
+        if ($_POST['action'] === 'get_servers') {
+            $page = (int)($_POST['page'] ?? 1);
+            $limit = 12;
+            $offset = ($page - 1) * $limit;
+            $category = $_POST['category'] ?? 'all';
+            $search = $_POST['search'] ?? '';
+            $sort = $_POST['sort'] ?? 'newest';
+            
+            // Build WHERE clause
+            $whereClause = "WHERE s.IsPrivate = 0";
+            $params = [$currentUserId];
+            
+            if ($category !== 'all') {
+                $whereClause .= " AND si.Category = ?";
+                $params[] = $category;
+            }
+            
+            if (!empty($search)) {
+                $whereClause .= " AND (s.Name LIKE ? OR s.Description LIKE ?)";
+                $searchParam = "%$search%";
+                $params[] = $searchParam;
+                $params[] = $searchParam;
+            }
+            
+            // Build ORDER BY clause
+            $orderClause = "";
+            switch ($sort) {
+                case 'newest':
+                    $orderClause = "ORDER BY s.ID DESC";
+                    break;
+                case 'oldest':
+                    $orderClause = "ORDER BY s.ID ASC";
+                    break;
+                case 'most_members':
+                    $orderClause = "ORDER BY member_count DESC";
+                    break;
+                case 'least_members':
+                    $orderClause = "ORDER BY member_count ASC";
+                    break;
+                case 'a_to_z':
+                    $orderClause = "ORDER BY s.Name ASC";
+                    break;
+                case 'z_to_a':
+                    $orderClause = "ORDER BY s.Name DESC";
+                    break;
+                default:
+                    $orderClause = "ORDER BY s.ID DESC";
+            }
+            
+            // Get servers with member count
+            $query = "SELECT 
+                        s.ID,
+                        s.Name,
+                        s.IconServer,
+                        s.Description,
+                        s.BannerServer,
+                        s.InviteLink,
+                        si.Category,
+                        si.ExpiresAt,
+                        COUNT(usm.UserID) as member_count,
+                        CASE WHEN usm_current.UserID IS NOT NULL THEN 1 ELSE 0 END as is_joined
+                      FROM Server s
+                      LEFT JOIN ServerInfo si ON s.ID = si.ServerID
+                      LEFT JOIN UserServerMemberships usm ON s.ID = usm.ServerID
+                      LEFT JOIN UserServerMemberships usm_current ON s.ID = usm_current.ServerID AND usm_current.UserID = ?
+                      $whereClause
+                      GROUP BY s.ID, s.Name, s.IconServer, s.Description, s.BannerServer, s.InviteLink, si.Category, si.ExpiresAt, usm_current.UserID
+                      $orderClause
+                      LIMIT $limit OFFSET $offset";
+            
+            $stmt = $conn->prepare($query);
+            $stmt->execute($params);
+            $servers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode(['servers' => $servers, 'success' => true]);
             exit();
         }
         
-        // Join server
-        $joinQuery = "INSERT INTO UserServerMemberships (UserID, ServerID, Role) VALUES (?, ?, 'Member')";
-        $joinStmt = $conn->prepare($joinQuery);
-        $joinStmt->bind_param("ii", $currentUserId, $serverId);
-        
-        if ($joinStmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Successfully joined the server!']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to join server']);
+        if ($_POST['action'] === 'get_categories') {
+            // Get categories with server counts
+            $query = "SELECT 
+                        si.Category,
+                        COUNT(s.ID) as server_count
+                      FROM ServerInfo si
+                      LEFT JOIN Server s ON si.ServerID = s.ID
+                      WHERE s.IsPrivate = 0
+                      GROUP BY si.Category
+                      ORDER BY server_count DESC";
+            
+            $stmt = $conn->prepare($query);
+            $stmt->execute();
+            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            $totalServers = 0;
+            foreach ($categories as $category) {
+                $totalServers += $category['server_count'];
+            }
+            
+            echo json_encode([
+                'categories' => $categories,
+                'total_servers' => $totalServers,
+                'success' => true
+            ]);
+            exit();
         }
-        exit();
+        
+        if ($_POST['action'] === 'get_server_details') {
+            $serverId = (int)$_POST['server_id'];
+            
+            $query = "SELECT 
+                        s.ID,
+                        s.Name,
+                        s.IconServer,
+                        s.Description,
+                        s.BannerServer,
+                        s.InviteLink,
+                        si.Category,
+                        COUNT(usm.UserID) as member_count,
+                        CASE WHEN usm_current.UserID IS NOT NULL THEN 1 ELSE 0 END as is_joined
+                      FROM Server s
+                      LEFT JOIN ServerInfo si ON s.ID = si.ServerID
+                      LEFT JOIN UserServerMemberships usm ON s.ID = usm.ServerID
+                      LEFT JOIN UserServerMemberships usm_current ON s.ID = usm_current.ServerID AND usm_current.UserID = ?
+                      WHERE s.ID = ? AND s.IsPrivate = 0
+                      GROUP BY s.ID, s.Name, s.IconServer, s.Description, s.BannerServer, s.InviteLink, si.Category, usm_current.UserID";
+            
+            $stmt = $conn->prepare($query);
+            $stmt->execute([$currentUserId, $serverId]);
+            $server = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($server) {
+                echo json_encode(['success' => true, 'server' => $server]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Server not found']);
+            }
+            exit();
+        }
+        
+        if ($_POST['action'] === 'join_server') {
+            $serverId = (int)$_POST['server_id'];
+            
+            // Check if already joined
+            $checkQuery = "SELECT ID FROM UserServerMemberships WHERE UserID = ? AND ServerID = ?";
+            $checkStmt = $conn->prepare($checkQuery);
+            $checkStmt->execute([$currentUserId, $serverId]);
+            
+            if ($checkStmt->rowCount() > 0) {
+                echo json_encode(['success' => false, 'message' => 'You are already a member of this server']);
+                exit();
+            }
+            
+            // Join server
+            $joinQuery = "INSERT INTO UserServerMemberships (UserID, ServerID, Role) VALUES (?, ?, 'Member')";
+            $joinStmt = $conn->prepare($joinQuery);
+            
+            if ($joinStmt->execute([$currentUserId, $serverId])) {
+                echo json_encode(['success' => true, 'message' => 'Successfully joined the server!']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to join server']);
+            }
+            exit();
+        }
+        
+        if ($_POST['action'] === 'join_by_invite') {
+            $inviteCode = trim($_POST['invite_code']);
+            
+            if (empty($inviteCode)) {
+                echo json_encode(['success' => false, 'message' => 'Please enter an invite code']);
+                exit();
+            }
+            
+            // Find server by invite link
+            $serverQuery = "SELECT s.ID, s.Name FROM Server s WHERE s.InviteLink = ? AND s.IsPrivate = 0";
+            $serverStmt = $conn->prepare($serverQuery);
+            $serverStmt->execute([$inviteCode]);
+            $server = $serverStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$server) {
+                echo json_encode(['success' => false, 'message' => 'Invalid invite code']);
+                exit();
+            }
+            
+            $serverId = $server['ID'];
+            
+            // Check if already joined
+            $checkQuery = "SELECT ID FROM UserServerMemberships WHERE UserID = ? AND ServerID = ?";
+            $checkStmt = $conn->prepare($checkQuery);
+            $checkStmt->execute([$currentUserId, $serverId]);
+            
+            if ($checkStmt->rowCount() > 0) {
+                echo json_encode(['success' => false, 'message' => 'You are already a member of this server']);
+                exit();
+            }
+            
+            // Join server
+            $joinQuery = "INSERT INTO UserServerMemberships (UserID, ServerID, Role) VALUES (?, ?, 'Member')";
+            $joinStmt = $conn->prepare($joinQuery);
+            
+            if ($joinStmt->execute([$currentUserId, $serverId])) {
+                echo json_encode(['success' => true, 'message' => "Successfully joined {$server['Name']}!"]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to join server']);
+            }
+            exit();
+        }
+        
+        echo json_encode(['success' => false, 'message' => 'Invalid action']);
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
     }
-    
-    if ($_POST['action'] === 'join_by_invite') {
-        $inviteCode = trim($_POST['invite_code']);
-        
-        if (empty($inviteCode)) {
-            echo json_encode(['success' => false, 'message' => 'Please enter an invite code']);
-            exit();
-        }
-        
-        // Find server by invite link
-        $serverQuery = "SELECT s.ID, s.Name FROM Server s WHERE s.InviteLink = ? AND s.IsPrivate = 0";
-        $serverStmt = $conn->prepare($serverQuery);
-        $serverStmt->bind_param("s", $inviteCode);
-        $serverStmt->execute();
-        $serverResult = $serverStmt->get_result();
-        
-        if ($serverResult->num_rows === 0) {
-            echo json_encode(['success' => false, 'message' => 'Invalid invite code']);
-            exit();
-        }
-        
-        $server = $serverResult->fetch_assoc();
-        $serverId = $server['ID'];
-        
-        // Check if already joined
-        $checkQuery = "SELECT ID FROM UserServerMemberships WHERE UserID = ? AND ServerID = ?";
-        $checkStmt = $conn->prepare($checkQuery);
-        $checkStmt->bind_param("ii", $currentUserId, $serverId);
-        $checkStmt->execute();
-        
-        if ($checkStmt->get_result()->num_rows > 0) {
-            echo json_encode(['success' => false, 'message' => 'You are already a member of this server']);
-            exit();
-        }
-        
-        // Join server
-        $joinQuery = "INSERT INTO UserServerMemberships (UserID, ServerID, Role) VALUES (?, ?, 'Member')";
-        $joinStmt = $conn->prepare($joinQuery);
-        $joinStmt->bind_param("ii", $currentUserId, $serverId);
-        
-        if ($joinStmt->execute()) {
-            echo json_encode(['success' => true, 'message' => "Successfully joined {$server['Name']}!"]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to join server']);
-        }
-        exit();
-    }
+    exit();
 }
 ?>
 
@@ -257,7 +248,7 @@ if (isset($_POST['action'])) {
             <!-- User Avatar -->
             <div class="user-avatar-container">
                 <div class="user-avatar">
-                    <img src="/placeholder.svg?height=32&width=32" alt="User Avatar">
+                    <img src="https://via.placeholder.com/32x32/5865F2/FFFFFF?text=DC" alt="User Avatar">
                 </div>
             </div>
             
@@ -387,24 +378,24 @@ if (isset($_POST['action'])) {
         <div class="modal-content server-detail-modal">
             <button class="modal-close">&times;</button>
             <div class="server-banner" id="serverBanner">
-                <img src="/placeholder.svg?height=120&width=600" alt="Server Banner">
+                <img src="https://via.placeholder.com/600x120/36393F/FFFFFF?text=Server+Banner" alt="Server Banner">
             </div>
             <div class="server-info">
                 <div class="server-avatar" id="serverAvatar">
-                    <img src="/placeholder.svg?height=80&width=80" alt="Server Avatar">
+                    <img src="https://via.placeholder.com/80x80/5865F2/FFFFFF?text=S" alt="Server Avatar">
                 </div>
                 <div class="server-details">
-                    <h3 class="server-name" id="serverName">kittens</h3>
+                    <h3 class="server-name" id="serverName">Server Name</h3>
                     <div class="server-members">
                         <span class="members-icon">👥</span>
-                        <span id="serverMemberCount">2 members</span>
+                        <span id="serverMemberCount">0 members</span>
                     </div>
                 </div>
             </div>
             
             <div class="server-description-section">
                 <h4>ℹ️ About this server</h4>
-                <p id="serverDescription">ww</p>
+                <p id="serverDescription">Server description will appear here.</p>
             </div>
             
             <button class="join-server-btn" id="joinServerBtn">
