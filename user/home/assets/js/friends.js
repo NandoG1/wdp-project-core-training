@@ -412,7 +412,8 @@ class FriendsManager {
             const data = await response.json();
 
             if (data.room_id) {
-                // Switch to chat view
+                // Refresh conversations first, then switch to chat view
+                await window.chatManager?.loadConversations();
                 window.chatManager?.openChat(data.room_id);
             } else {
                 this.showError(data.error || 'Failed to create direct message');

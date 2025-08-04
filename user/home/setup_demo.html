@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup Demo Data</title>
+</head>
+<body>
+    <h1>MisVord Demo Setup</h1>
+    <button onclick="setupDemo()">Setup Demo Data</button>
+    <div id="output"></div>
+
+    <script>
+    async function setupDemo() {
+        const output = document.getElementById('output');
+        output.innerHTML = 'Setting up demo data...';
+        
+        try {
+            const response = await fetch('api/demo_data.php');
+            const text = await response.text();
+            output.innerHTML = '<pre>' + text + '</pre>';
+        } catch (error) {
+            output.innerHTML = 'Error: ' + error.message;
+        }
+    }
+    </script>
+</body>
+</html>

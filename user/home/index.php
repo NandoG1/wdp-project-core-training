@@ -262,7 +262,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="cancelDM">Cancel</button>
-                <button class="btn-primary" id="createDMBtn">Create Message</button>
+                <button class="btn-primary" id="createDMSubmit">Create Message</button>
             </div>
         </div>
     </div>

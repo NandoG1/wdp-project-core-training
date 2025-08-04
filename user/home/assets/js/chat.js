@@ -86,7 +86,7 @@ class ChatManager {
         });
 
         // Create DM/Group
-        document.getElementById('createDMBtn')?.addEventListener('click', () => {
+        document.getElementById('createDMSubmit')?.addEventListener('click', () => {
             this.createDirectMessage();
         });
 
@@ -108,6 +108,9 @@ class ChatManager {
             if (data.conversations) {
                 this.conversations = data.conversations;
                 this.renderConversationsList(data.conversations);
+                console.log('Loaded conversations:', data.conversations); // Debug log
+            } else {
+                console.error('No conversations in response:', data);
             }
         } catch (error) {
             console.error('Error loading conversations:', error);
@@ -125,8 +128,7 @@ class ChatManager {
 
         container.innerHTML = conversations.map(conv => `
             <div class="dm-item ${conv.id === this.currentRoomId ? 'active' : ''}" 
-                 data-room-id="${conv.id}" 
-                 onclick="window.chatManager.openChat(${conv.id})">
+                 data-room-id="${conv.id}">
                 <div class="dm-avatar">
                     <img src="${conv.avatar || '/assets/images/default-avatar.png'}" alt="${conv.name}">
                     ${conv.type === 'group' ? '<div class="group-indicator"></div>' : ''}
@@ -138,6 +140,14 @@ class ChatManager {
                 </div>
             </div>
         `).join('');
+
+        // Add click event listeners to conversation items
+        container.querySelectorAll('.dm-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const roomId = parseInt(item.dataset.roomId);
+                this.openChat(roomId);
+            });
+        });
     }
 
     async openChat(roomId) {
@@ -434,7 +444,12 @@ class ChatManager {
                     this.cancelReply();
                     this.clearSelectedFiles();
                     
-                    // Add message via socket for real-time update
+                    // Add message to UI immediately
+                    if (data.message) {
+                        this.addMessage(data.message);
+                    }
+                    
+                    // Also send via socket for real-time update to other users
                     window.socketClient?.sendMessage(this.currentRoomId, content, this.replyingTo);
                 } else {
                     console.error('Failed to send message:', data.error);
@@ -661,6 +676,9 @@ class ChatManager {
         // Re-render messages to maintain grouping
         this.renderMessages(this.messages);
         this.scrollToBottom();
+        
+        // Update conversation list to show latest message
+        this.updateConversationList();
     }
 
     updateMessage(message) {
@@ -923,12 +941,17 @@ class ChatManager {
             });
 
             const data = await response.json();
+            console.log('Create DM response:', data); // Debug log
 
             if (data.room_id) {
                 this.hideCreateDMModal();
-                this.loadConversations(); // Refresh conversation list
-                this.openChat(data.room_id); // Open the new chat
+                // Wait a moment then refresh conversation list and open chat
+                setTimeout(async () => {
+                    await this.loadConversations(); // Refresh conversation list
+                    this.openChat(data.room_id); // Open the new chat
+                }, 100);
             } else {
+                console.error('Failed to create conversation:', data);
                 alert(data.error || 'Failed to create conversation');
             }
         } catch (error) {
