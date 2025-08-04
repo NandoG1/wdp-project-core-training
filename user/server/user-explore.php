@@ -240,44 +240,32 @@ if (isset($_POST['action'])) {
     <div class="app-container">
         <!-- Left Sidebar -->
         <div class="left-sidebar">
-            <!-- User Avatar -->
-            <div class="user-avatar-container">
-                <div class="user-avatar">
-                    <img src="/placeholder.svg?height=32&width=32" alt="User Avatar">
-                </div>
-            </div>
-            
             <!-- Server List Icons -->
             <div class="server-list">
-                <div class="server-icon home-icon">
-                    <span>🏠</span>
+                <div class="server-icon home-icon" title="Home">
+                    <span>⚔️</span>
                 </div>
                 <div class="server-separator"></div>
+                <div class="server-icon" title="My Server">
+                    <span>MS</span>
+                </div>
                 <div class="server-icon add-server" onclick="showJoinServerModal()">
                     <span>+</span>
                 </div>
-                <div class="server-icon explore-icon active">
+                <div class="server-icon explore-icon active" title="Explore Servers">
                     <span>🧭</span>
-                </div>
-                <div class="server-separator"></div>
-                <div class="server-icon">
-                    <span>🎮</span>
-                </div>
-                <div class="server-icon">
-                    <span>🎵</span>
                 </div>
             </div>
             
-            <!-- Bottom Icons -->
-            <div class="bottom-icons">
-                <div class="bottom-icon">
-                    <span>🎧</span>
+            <!-- User Info Section -->
+            <div class="user-info-section">
+                <div class="user-avatar">
+                    <img src="/placeholder.svg?height=32&width=32" alt="User Avatar">
                 </div>
-                <div class="bottom-icon">
-                    <span>🔇</span>
-                </div>
-                <div class="bottom-icon">
-                    <span>⚙️</span>
+                <div class="user-controls">
+                    <button class="bottom-icon" title="Mute">🎤</button>
+                    <button class="bottom-icon" title="Deafen">🎧</button>
+                    <button class="bottom-icon" title="Settings">⚙️</button>
                 </div>
             </div>
         </div>
