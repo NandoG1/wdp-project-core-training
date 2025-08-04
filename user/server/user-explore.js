@@ -89,7 +89,8 @@ function initializeEventListeners() {
 
   // Infinite scroll
   $(window).on("scroll", () => {
-    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 1000) {
+    // Trigger when user reaches the bottom of the page (within 10px)
+    if ($(window).scrollTop() + $(window).height() >= $(document).height() - 10) {
       if (!isLoading && hasMoreServers) {
         loadServers(false)
       }
@@ -203,39 +204,56 @@ function loadServers(showLoading = false) {
 
   if (showLoading) {
     $("#loadingIndicator").show()
+  } else {
+    // Show skeleton loading for infinite scroll
+    showSkeletonLoading(6)
   }
 
-  $.ajax({
-    url: "user-explore.php",
-    method: "POST",
-    data: {
-      action: "get_servers",
-      page: currentPage,
-      category: currentCategory,
-      search: currentSearch,
-      sort: currentSort,
-    },
-    dataType: "json",
-    success: (response) => {
-      displayServers(response.servers)
+  // Add delay for skeleton loading (1-2 seconds)
+  const loadDelay = showLoading ? 0 : Math.random() * 1000 + 1000 // 1-2 seconds for infinite scroll
 
-      if (response.servers.length < 12) {
-        hasMoreServers = false
-        $("#noMoreServers").show()
-      }
+  setTimeout(() => {
+    $.ajax({
+      url: "user-explore.php",
+      method: "POST",
+      data: {
+        action: "get_servers",
+        page: currentPage,
+        category: currentCategory,
+        search: currentSearch,
+        sort: currentSort,
+      },
+      dataType: "json",
+      success: (response) => {
+        // Remove skeleton loading before displaying real servers
+        if (!showLoading) {
+          removeSkeletonLoading()
+        }
+        
+        displayServers(response.servers)
 
-      currentPage++
-      updateServerCount()
-    },
-    error: () => {
-      console.error("Failed to load servers2")
-      showToast("Failed to load servers2", "error")
-    },
-    complete: () => {
-      isLoading = false
-      $("#loadingIndicator").hide()
-    },
-  })
+        if (response.servers.length < 12) {
+          hasMoreServers = false
+          $("#noMoreServers").show()
+        }
+
+        currentPage++
+        updateServerCount()
+      },
+      error: () => {
+        // Remove skeleton loading on error
+        if (!showLoading) {
+          removeSkeletonLoading()
+        }
+        console.error("Failed to load servers2")
+        showToast("Failed to load servers2", "error")
+      },
+      complete: () => {
+        isLoading = false
+        $("#loadingIndicator").hide()
+      },
+    })
+  }, loadDelay)
 }
 
 // Display servers
@@ -298,6 +316,47 @@ function createServerCard(server) {
             </div>
         </div>
     `)
+}
+
+// Create skeleton server card for loading
+function createSkeletonCard() {
+  return $(`
+        <div class="server-card skeleton-card">
+            <div class="server-card-banner skeleton-banner"></div>
+            <div class="server-card-content">
+                <div class="server-header">
+                    <div class="server-icon skeleton-icon"></div>
+                    <div class="server-basic-info">
+                        <div class="skeleton-name"></div>
+                        <div class="skeleton-description"></div>
+                        <div class="skeleton-category"></div>
+                    </div>
+                </div>
+                
+                <div class="server-meta">
+                    <div class="skeleton-meta-item"></div>
+                    <div class="skeleton-meta-item"></div>
+                </div>
+                
+                <div class="skeleton-button"></div>
+            </div>
+        </div>
+    `)
+}
+
+// Show skeleton loading cards
+function showSkeletonLoading(count = 6) {
+  const serversGrid = $("#serversGrid")
+  
+  for (let i = 0; i < count; i++) {
+    const skeletonCard = createSkeletonCard()
+    serversGrid.append(skeletonCard)
+  }
+}
+
+// Remove skeleton loading cards
+function removeSkeletonLoading() {
+  $(".skeleton-card").remove()
 }
 
 // Show server details
@@ -519,7 +578,7 @@ function debounce(func, wait) {
   }
 }
 
-// Add slide out animation
+// Add slide out animation and skeleton loading styles
 const style = document.createElement("style")
 style.textContent = `
     @keyframes toastSlideOut {
@@ -531,6 +590,75 @@ style.textContent = `
             opacity: 0;
             transform: translateX(100%);
         }
+    }
+    
+    @keyframes skeletonLoading {
+        0% {
+            background-position: -200px 0;
+        }
+        100% {
+            background-position: calc(200px + 100%) 0;
+        }
+    }
+    
+    .skeleton-card {
+        pointer-events: none;
+        user-select: none;
+    }
+    
+    .skeleton-card .skeleton-banner,
+    .skeleton-card .skeleton-icon,
+    .skeleton-card .skeleton-name,
+    .skeleton-card .skeleton-description,
+    .skeleton-card .skeleton-category,
+    .skeleton-card .skeleton-meta-item,
+    .skeleton-card .skeleton-button {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200px 100%;
+        animation: skeletonLoading 1.5s infinite;
+        border-radius: 4px;
+    }
+    
+    .skeleton-card .skeleton-banner {
+        height: 80px;
+        width: 100%;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .skeleton-card .skeleton-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    
+    .skeleton-card .skeleton-name {
+        height: 20px;
+        width: 70%;
+        margin-bottom: 8px;
+    }
+    
+    .skeleton-card .skeleton-description {
+        height: 16px;
+        width: 90%;
+        margin-bottom: 8px;
+    }
+    
+    .skeleton-card .skeleton-category {
+        height: 14px;
+        width: 50%;
+    }
+    
+    .skeleton-card .skeleton-meta-item {
+        height: 14px;
+        width: 60%;
+        margin-bottom: 4px;
+    }
+    
+    .skeleton-card .skeleton-button {
+        height: 36px;
+        width: 100%;
+        margin-top: 12px;
+        border-radius: 6px;
     }
 `
 document.head.appendChild(style)
