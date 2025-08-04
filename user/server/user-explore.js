@@ -19,11 +19,21 @@ $(document).ready(() => {
   // Add a test button for duplication (temporary for debugging)
   $('body').append('<button id="testDuplication" style="position:fixed;top:10px;right:10px;z-index:9999;background:red;color:white;padding:10px;">TEST DUPLICATION</button>')
   $('#testDuplication').on('click', () => {
+    if (isLoading) return
+    
     console.log("=== MANUAL DUPLICATION TEST ===")
     console.log("allServersFromDB:", allServersFromDB.length)
     console.log("displayedServersCount:", displayedServersCount)
     console.log("currentPage:", currentPage)
-    duplicateServers()
+    
+    isLoading = true
+    showSkeletonLoading()
+    
+    setTimeout(() => {
+      hideSkeletonLoading()
+      duplicateServers()
+      isLoading = false
+    }, 1500)
   })
 })
 
@@ -112,32 +122,27 @@ function initializeEventListeners() {
     const documentHeight = $(document).height()
     const distanceFromBottom = documentHeight - (scrollTop + windowHeight)
     
-    // Debug scroll position when getting close to bottom
-    if (distanceFromBottom < 50) {
-      console.log(`Scroll position - Distance from bottom: ${distanceFromBottom}px`)
-      console.log(`ScrollTop: ${scrollTop}, WindowHeight: ${windowHeight}, DocumentHeight: ${documentHeight}`)
-    }
-    
-    // Trigger when user is at the very bottom (within 5px for better reliability)
-    if (distanceFromBottom <= 5 && !isLoading && hasMoreServers && allServersFromDB.length > 0) {
+    // Only trigger when user is at the very bottom (within 10px for better reliability)
+    // and we have servers to duplicate
+    if (distanceFromBottom <= 10 && !isLoading && hasMoreServers && allServersFromDB.length > 0) {
       console.log("🎯 User reached bottom - Auto-triggering duplication...")
-      console.log("Current page:", currentPage)
-      console.log("Servers from DB:", allServersFromDB.length)
-      console.log("Displayed count:", displayedServersCount)
+      console.log("Distance from bottom:", distanceFromBottom)
+      console.log("Servers available:", allServersFromDB.length)
       
-      // Always trigger duplication when user reaches bottom
-      console.log("🔄 Triggering server duplication from scroll...")
       isLoading = true
-      $("#loadingIndicator").show()
       
-      // Use setTimeout to simulate loading and prevent rapid fire
+      // Show skeleton loading cards
+      showSkeletonLoading()
+      
+      // Simulate loading time (1-2 seconds as requested)
+      const loadingTime = Math.random() * 1000 + 1000 // 1-2 seconds
       setTimeout(() => {
+        hideSkeletonLoading()
         duplicateServers()
         isLoading = false
-        $("#loadingIndicator").hide()
-      }, 300)
+      }, loadingTime)
     }
-  }, 100)) // Throttle scroll events
+  }, 150)) // Throttle scroll events
 
   // Keyboard shortcuts
   $(document).on("keydown", (e) => {
@@ -352,11 +357,76 @@ function loadServers(showLoading = false) {
         // If page is too short to allow scrolling, trigger duplication immediately
         if (distanceFromBottom <= 50 && allServersFromDB.length > 0 && !isLoading) {
           console.log("Page too short for scrolling, auto-triggering duplication...")
-          duplicateServers()
+          isLoading = true
+          showSkeletonLoading()
+          
+          // Simulate loading time for initial duplication
+          setTimeout(() => {
+            hideSkeletonLoading()
+            duplicateServers()
+            isLoading = false
+          }, 1500)
         }
       }, 800) // Longer delay to ensure DOM is fully updated
     },
   })
+}
+
+// Show skeleton loading cards
+function showSkeletonLoading() {
+  const serversGrid = $("#serversGrid")
+  const skeletonCards = []
+  
+  // Create 12 skeleton cards (typical server load)
+  for (let i = 0; i < 12; i++) {
+    const skeletonCard = $(`
+      <div class="server-card skeleton-card">
+        <div class="server-card-banner skeleton-banner">
+          <div class="skeleton-shimmer"></div>
+        </div>
+        <div class="server-card-content">
+          <div class="server-header">
+            <div class="server-icon skeleton-icon">
+              <div class="skeleton-shimmer"></div>
+            </div>
+            <div class="server-basic-info">
+              <div class="skeleton-title">
+                <div class="skeleton-shimmer"></div>
+              </div>
+              <div class="skeleton-description">
+                <div class="skeleton-shimmer"></div>
+              </div>
+              <div class="skeleton-category">
+                <div class="skeleton-shimmer"></div>
+              </div>
+            </div>
+          </div>
+          <div class="server-meta">
+            <div class="skeleton-meta-item">
+              <div class="skeleton-shimmer"></div>
+            </div>
+            <div class="skeleton-meta-item">
+              <div class="skeleton-shimmer"></div>
+            </div>
+          </div>
+          <div class="skeleton-button">
+            <div class="skeleton-shimmer"></div>
+          </div>
+        </div>
+      </div>
+    `)
+    skeletonCards.push(skeletonCard)
+  }
+  
+  // Add skeleton cards to grid
+  skeletonCards.forEach(card => serversGrid.append(card))
+  console.log("✨ Showing skeleton loading cards...")
+}
+
+// Hide skeleton loading cards
+function hideSkeletonLoading() {
+  $(".skeleton-card").remove()
+  console.log("🗑️ Removed skeleton loading cards")
 }
 
 // New function to duplicate servers for infinite scrolling
