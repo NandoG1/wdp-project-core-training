@@ -1,4 +1,4 @@
-// Chat management functionality
+
 class ChatManager {
     constructor() {
         this.currentRoomId = null;
@@ -31,7 +31,6 @@ class ChatManager {
     }
 
     setupEventListeners() {
-        // Message input
         const messageInput = document.getElementById('messageInput');
         if (messageInput) {
             messageInput.addEventListener('input', () => {
@@ -50,42 +49,28 @@ class ChatManager {
             });
         }
 
-        // Send button
         document.getElementById('sendBtn')?.addEventListener('click', () => {
             this.sendMessage();
         });
-
-        // Attachment button
         document.getElementById('attachmentBtn')?.addEventListener('click', () => {
             document.getElementById('fileInput').click();
         });
-
-        // File input
         document.getElementById('fileInput')?.addEventListener('change', (e) => {
             this.handleFileSelection(e.target.files);
         });
-
-        // Emoji button
         document.getElementById('emojiBtn')?.addEventListener('click', (e) => {
             this.toggleEmojiPicker(e);
         });
-
-        // Reply cancel button
         document.getElementById('cancelReply')?.addEventListener('click', () => {
             this.cancelReply();
         });
-
-        // Create DM button (sidebar)
         document.getElementById('openDMModalBtn')?.addEventListener('click', () => {
             this.showCreateDMModal();
         });
-
-        // DM Modal functionality
         this.setupDMModalListeners();
     }
 
     setupDMModalListeners() {
-        // Close modal
         document.getElementById('closeDMModal')?.addEventListener('click', () => {
             this.hideCreateDMModal();
         });
@@ -93,18 +78,12 @@ class ChatManager {
         document.getElementById('cancelDM')?.addEventListener('click', () => {
             this.hideCreateDMModal();
         });
-
-        // User search in modal
         document.getElementById('dmUserSearch')?.addEventListener('input', (e) => {
             this.searchDMUsers(e.target.value);
         });
-
-        // Create DM/Group (modal submit button)
         document.getElementById('createDMSubmitBtn')?.addEventListener('click', () => {
             this.createDirectMessage();
         });
-
-        // Group image upload
         document.getElementById('groupImagePlaceholder')?.addEventListener('click', () => {
             document.getElementById('groupImageInput').click();
         });
@@ -117,16 +96,10 @@ class ChatManager {
     async loadConversations() {
         try {
             const response = await fetch('/user/home/api/chat.php?action=conversations');
-            
-            // Check if response is ok
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
-            // Get the text first to see what we're actually receiving
             const text = await response.text();
-            
-            // Try to parse as JSON
             let data;
             try {
                 data = JSON.parse(text);
@@ -181,31 +154,20 @@ class ChatManager {
 
     async openChat(roomId) {
         if (this.currentRoomId === roomId) return;
-
-        // Leave current room if any
         if (this.currentRoomId) {
             window.socketClient?.leaveRoom(this.currentRoomId);
         }
 
         this.currentRoomId = roomId;
-        
-        // Join new room
         window.socketClient?.joinRoom(roomId);
-
-        // Update UI
         this.showChatSection();
         this.updateActiveConversation();
-        
-        // Load messages
         await this.loadMessages(roomId);
-        
-        // Update chat header
         this.updateChatHeader();
     }
 
     async loadMessages(roomId) {
         try {
-            // Show loading state
             const container = document.getElementById('chatMessages');
             if (container) {
                 container.innerHTML = '<div class="loading-state"><p>Loading messages...</p></div>';
@@ -217,7 +179,6 @@ class ChatManager {
             if (data.messages) {
                 this.messages = data.messages;
                 this.renderMessages(data.messages);
-                // Ensure we scroll to bottom after loading messages
                 setTimeout(() => this.scrollToBottom(), 100);
             }
         } catch (error) {
@@ -237,8 +198,6 @@ class ChatManager {
             container.innerHTML = '<div class="empty-state"><p>No messages yet. Start the conversation!</p></div>';
             return;
         }
-
-        // Group messages by user and time
         const groupedMessages = this.groupMessages(messages);
         
         container.innerHTML = groupedMessages.map(group => {
@@ -248,8 +207,6 @@ class ChatManager {
                 return this.renderSingleMessage(group.message);
             }
         }).join('');
-
-        // Add event listeners to message actions
         this.setupMessageActionListeners(container);
     }
 
@@ -362,8 +319,6 @@ class ChatManager {
         
         const fileName = attachmentUrl.split('/').pop();
         const fileExtension = fileName.split('.').pop().toLowerCase();
-        
-        // Check if it's an image
         if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension)) {
             return `
                 <div class="message-attachment image-attachment">
@@ -376,8 +331,6 @@ class ChatManager {
                 </div>
             `;
         }
-        
-        // For other file types, show a download link
         return `
             <div class="message-attachment file-attachment">
                 <div class="attachment-icon">
@@ -392,7 +345,6 @@ class ChatManager {
     }
 
     renderReplyReference(replyTo) {
-        // Safety checks for missing data
         if (!replyTo) return '';
         
         const username = replyTo.username || replyTo.display_name || 'Unknown User';
@@ -423,16 +375,11 @@ class ChatManager {
     }
 
     processMessageContent(content) {
-        // Process mentions
         content = content.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-        
-        // Process basic markdown
         content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
         content = content.replace(/~~(.*?)~~/g, '<del>$1</del>');
         content = content.replace(/`(.*?)`/g, '<code>$1</code>');
-        
-        // Process URLs
         content = content.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
         
         return content;
@@ -464,8 +411,6 @@ class ChatManager {
                         break;
                 }
             }
-
-            // Handle reaction clicks
             const reactionBtn = e.target.closest('.reaction-btn');
             if (reactionBtn) {
                 const messageItem = reactionBtn.closest('.message-item');
@@ -473,8 +418,6 @@ class ChatManager {
                 const emoji = reactionBtn.dataset.emoji;
                 this.toggleReaction(messageId, emoji);
             }
-
-            // Handle reply reference clicks
             const replyRef = e.target.closest('.reply-reference');
             if (replyRef) {
                 const replyToId = replyRef.dataset.replyTo;
@@ -489,8 +432,6 @@ class ChatManager {
 
         if (!content && this.selectedFiles.length === 0) return;
         if (!this.currentRoomId) return;
-
-        // Handle file uploads first
         let attachmentUrl = null;
         if (this.selectedFiles.length > 0) {
             attachmentUrl = await this.uploadFiles();
@@ -511,10 +452,8 @@ class ChatManager {
         console.log('Sending message with data:', messageData);
 
         if (this.editingMessageId) {
-            // Edit message
             await this.editMessage(this.editingMessageId, content);
         } else {
-            // Send new message
             try {
                 console.log('Sending message to room:', this.currentRoomId, 'Content:', content);
                 console.log('Message data:', messageData);
@@ -552,23 +491,17 @@ class ChatManager {
                 console.log('Send message response:', data);
 
                 if (data.success) {
-                    // Message sent successfully
                     messageInput.value = '';
                     this.autoResizeTextarea(messageInput);
                     this.cancelReply();
                     this.clearSelectedFiles();
-                    
-                    // Add message to UI immediately
                     if (data.message) {
                         console.log('Adding message to UI:', data.message);
                         this.addMessage(data.message);
                     } else {
                         console.log('No message data returned, reloading messages');
-                        // Fallback: reload messages if no message data returned
                         this.loadMessages(this.currentRoomId);
                     }
-                    
-                    // Also try to send via socket for real-time update to other users
                     window.socketClient?.sendMessage(this.currentRoomId, content, this.replyingTo);
                 } else {
                     console.error('Failed to send message:', data.error);
@@ -598,18 +531,14 @@ class ChatManager {
             const data = await response.json();
 
             if (data.success) {
-                // Update the message in our local array
                 const messageIndex = this.messages.findIndex(m => m.id == messageId);
                 if (messageIndex !== -1) {
                     this.messages[messageIndex].content = content;
                     this.messages[messageIndex].edited_at = new Date().toISOString();
-                    // Re-render messages to show the edit immediately
                     this.renderMessages(this.messages);
                 }
                 
                 this.cancelEdit();
-                
-                // Update message via socket for other users
                 window.socketClient?.editMessage(messageId, content);
                 
                 this.showSuccessNotification('Message edited successfully');
@@ -629,13 +558,10 @@ class ChatManager {
             this.showErrorNotification('Message not found');
             return;
         }
-
-        // Copy message content to clipboard
         navigator.clipboard.writeText(message.content).then(() => {
             this.showSuccessNotification('Message copied to clipboard!');
         }).catch(err => {
             console.error('Failed to copy message:', err);
-            // Fallback for older browsers
             this.fallbackCopyToClipboard(message.content);
         });
     }
@@ -700,15 +626,12 @@ class ChatManager {
                 const data = await response.json();
 
                 if (data.success) {
-                    // Reload messages to show updated list
                     this.loadMessages(this.currentRoomId);
                 } else {
                     console.error('Failed to delete message:', data.error);
-                    // this.showErrorNotification('Failed to delete message: ' + (data.error || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error deleting message:', error);
-                // this.showErrorNotification('Network error while deleting message');
             } finally {
                 modal.classList.add('hidden');
                 confirmBtn.removeEventListener('click', handleConfirm);
@@ -721,8 +644,6 @@ class ChatManager {
             confirmBtn.removeEventListener('click', handleConfirm);
             cancelBtn.removeEventListener('click', handleCancel);
         };
-
-        // Close modal when clicking outside
         const handleClickOutside = (e) => {
             if (e.target === modal) {
                 handleCancel();
@@ -763,15 +684,11 @@ class ChatManager {
             }
 
             if (data.success) {
-                // Update reactions immediately in the UI
                 if (data.reactions) {
                     this.updateMessageReactions(messageId, data.reactions);
                 } else {
-                    // Fallback: reload just the reactions for this message
                     await this.refreshMessageReactions(messageId);
                 }
-                
-                // Update reaction via socket for other users
                 window.socketClient?.reactToMessage(messageId, emoji);
             } else {
                 console.error('Failed to react to message:', data.error);
@@ -796,8 +713,6 @@ class ChatManager {
         replyUsername.textContent = message.display_name;
         replyContent.textContent = message.content;
         replyContext.classList.remove('hidden');
-
-        // Focus message input
         document.getElementById('messageInput').focus();
     }
 
@@ -811,18 +726,13 @@ class ChatManager {
         messageInput.value = message.content;
         this.autoResizeTextarea(messageInput);
         messageInput.focus();
-
-        // Change send button to save
         const sendBtn = document.getElementById('sendBtn');
         sendBtn.innerHTML = '<i class="fas fa-save"></i>';
         sendBtn.title = 'Save changes';
-
-        // Show edit context with cancel option
         this.showEditContext(message);
     }
 
     showEditContext(message) {
-        // Create or get edit context element
         let editContext = document.getElementById('editContext');
         if (!editContext) {
             editContext = document.createElement('div');
@@ -840,22 +750,16 @@ class ChatManager {
                     <span id="editOriginalContent"></span>
                 </div>
             `;
-            
-            // Insert before message input area
             const messageInputContainer = document.querySelector('.message-input-container') || 
                                         document.querySelector('.message-input') || 
                                         document.getElementById('messageInput').parentElement;
             if (messageInputContainer) {
                 messageInputContainer.insertBefore(editContext, messageInputContainer.firstChild);
             }
-
-            // Add cancel event listener
             document.getElementById('cancelEdit').addEventListener('click', () => {
                 this.cancelEdit();
             });
         }
-
-        // Update content
         document.getElementById('editOriginalContent').textContent = message.content;
         editContext.classList.remove('hidden');
     }
@@ -870,13 +774,9 @@ class ChatManager {
         const messageInput = document.getElementById('messageInput');
         messageInput.value = '';
         this.autoResizeTextarea(messageInput);
-
-        // Reset send button
         const sendBtn = document.getElementById('sendBtn');
         sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
         sendBtn.title = 'Send message';
-
-        // Hide edit context
         const editContext = document.getElementById('editContext');
         if (editContext) {
             editContext.classList.add('hidden');
@@ -923,14 +823,11 @@ class ChatManager {
     }
 
     showEmojiPickerForMessage(messageId, button) {
-        // Expanded emoji selection
         const emojis = [
             '�', '❤️', '😮', '�', '�', '�', '�', '👏', '🙏', '🔥',
             '🎉', '💯', '😎', '🤔', '😊', '😭', '🥺', '😤', '🙄', '😴',
             '🤗', '🤯', '🥳', '😋', '🤤', '🤢', '🤮', '😈', '👻', '💀'
         ];
-        
-        // Create emoji picker container
         let picker = document.getElementById('emojiPicker');
         if (!picker) {
             picker = document.createElement('div');
@@ -938,8 +835,6 @@ class ChatManager {
             picker.className = 'emoji-picker';
             document.body.appendChild(picker);
         }
-
-        // Smart positioning to prevent overflow
         const rect = button.getBoundingClientRect();
         const pickerWidth = 280;
         const pickerHeight = 320;
@@ -948,16 +843,12 @@ class ChatManager {
         
         let left = rect.left;
         let top = rect.top - pickerHeight - 10; // Default: above button
-        
-        // Adjust horizontal position if overflowing
         if (left + pickerWidth > windowWidth) {
             left = windowWidth - pickerWidth - 20;
         }
         if (left < 20) {
             left = 20;
         }
-        
-        // Adjust vertical position if overflowing
         if (top < 20) {
             top = rect.bottom + 10; // Show below button if no space above
         }
@@ -968,13 +859,9 @@ class ChatManager {
         picker.style.left = left + 'px';
         picker.style.top = top + 'px';
         picker.style.display = 'grid';
-
-        // Populate with emojis
         picker.innerHTML = emojis.map(emoji => 
             `<button class="emoji-btn" data-emoji="${emoji}">${emoji}</button>`
         ).join('');
-
-        // Add click handlers
         picker.addEventListener('click', async (e) => {
             if (e.target.classList.contains('emoji-btn')) {
                 const emoji = e.target.dataset.emoji;
@@ -982,8 +869,6 @@ class ChatManager {
                 picker.style.display = 'none';
             }
         });
-
-        // Close picker when clicking outside
         setTimeout(() => {
             document.addEventListener('click', function closeEmojiPicker(e) {
                 if (!picker.contains(e.target) && e.target !== button) {
@@ -1022,11 +907,9 @@ class ChatManager {
             }
             
             if (data.success) {
-                // Update reactions immediately in the UI
                 if (data.reactions) {
                     this.updateMessageReactions(messageId, data.reactions);
                 } else {
-                    // Fallback: reload just the reactions for this message
                     await this.refreshMessageReactions(messageId);
                 }
                 
@@ -1070,17 +953,11 @@ class ChatManager {
             window.socketClient?.startTyping(this.currentRoomId);
         }
     }
-
-    // Real-time message handlers
     addMessage(message) {
-        // Ensure the message has all required properties
         if (!message.reactions) {
             message.reactions = [];
         }
-        
-        // If this message is a reply, make sure we have the complete reply reference data
         if (message.reply_to && (!message.reply_to.username || !message.reply_to.content)) {
-            // Find the original message in our current messages array
             const originalMessage = this.messages.find(m => m.id == message.reply_to.id || m.id == message.reply_to);
             if (originalMessage) {
                 message.reply_to = {
@@ -1092,12 +969,8 @@ class ChatManager {
         }
         
         this.messages.push(message);
-        // Re-render messages to maintain grouping
         this.renderMessages(this.messages);
         this.scrollToBottom();
-        
-        // Also update the conversation list to show the latest message
-        // Use a small delay to ensure the database is updated
         setTimeout(() => {
             this.loadConversations();
         }, 100);
@@ -1117,7 +990,6 @@ class ChatManager {
     }
 
     updateMessageReactions(messageId, reactions) {
-        // Ensure messageId is converted to the same type as stored in messages
         const numericMessageId = parseInt(messageId);
         const stringMessageId = String(messageId);
         
@@ -1125,23 +997,19 @@ class ChatManager {
         
         if (message) {
             message.reactions = reactions;
-            // Update just the reactions for this message
             const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
             
             if (messageElement) {
                 const reactionsContainer = messageElement.querySelector('.message-reactions');
                 
                 if (reactionsContainer) {
-                    // Replace the entire reactions container
                     const newReactionsHTML = this.renderMessageReactions(reactions);
                     if (reactions.length > 0) {
                         reactionsContainer.outerHTML = newReactionsHTML;
                     } else {
-                        // If no reactions, remove the container
                         reactionsContainer.remove();
                     }
                 } else if (reactions.length > 0) {
-                    // Add new reactions container if it doesn't exist
                     const content = messageElement.querySelector('.message-content');
                     if (content) {
                         content.insertAdjacentHTML('afterend', this.renderMessageReactions(reactions));
@@ -1171,7 +1039,6 @@ class ChatManager {
     }
 
     updateActiveConversation() {
-        // Update active state in conversation list
         document.querySelectorAll('.dm-item').forEach(item => {
             item.classList.remove('active');
         });
@@ -1219,20 +1086,16 @@ class ChatManager {
         const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
         const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-        // Today - show time
         if (diffInDays === 0) {
             return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
         }
-        // Yesterday
         else if (diffInDays === 1) {
             return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
         }
-        // This year - show month and day
         else if (date.getFullYear() === now.getFullYear()) {
             return date.toLocaleDateString([], { month: '2-digit', day: '2-digit' }) + 
                    ` at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
         }
-        // Different year - show full date
         else {
             return date.toLocaleDateString([], { month: '2-digit', day: '2-digit', year: 'numeric' }) + 
                    ` at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
@@ -1253,7 +1116,6 @@ class ChatManager {
     scrollToBottom() {
         const chatMessages = document.getElementById('chatMessages');
         if (chatMessages) {
-            // Use requestAnimationFrame to ensure DOM is updated
             requestAnimationFrame(() => {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             });
@@ -1272,7 +1134,6 @@ class ChatManager {
     }
 
     showErrorNotification(message) {
-        // Create or get existing notification container
         let container = document.getElementById('errorNotifications');
         if (!container) {
             container = document.createElement('div');
@@ -1281,7 +1142,6 @@ class ChatManager {
             document.body.appendChild(container);
         }
 
-        // Create notification element
         const notification = document.createElement('div');
         notification.className = 'error-notification';
         notification.innerHTML = `
@@ -1294,7 +1154,6 @@ class ChatManager {
 
         container.appendChild(notification);
 
-        // Auto-remove after 5 seconds
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.remove();
@@ -1303,7 +1162,6 @@ class ChatManager {
     }
 
     showSuccessNotification(message) {
-        // Create or get existing notification container
         let container = document.getElementById('successNotifications');
         if (!container) {
             container = document.createElement('div');
@@ -1312,7 +1170,6 @@ class ChatManager {
             document.body.appendChild(container);
         }
 
-        // Create notification element
         const notification = document.createElement('div');
         notification.className = 'success-notification';
         notification.innerHTML = `
@@ -1325,7 +1182,6 @@ class ChatManager {
 
         container.appendChild(notification);
 
-        // Auto-remove after 3 seconds
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.remove();
@@ -1333,7 +1189,6 @@ class ChatManager {
         }, 3000);
     }
 
-    // Create DM Modal functionality
     showCreateDMModal() {
         const modal = document.getElementById('createDMModal');
         modal.classList.remove('hidden');
@@ -1376,7 +1231,6 @@ class ChatManager {
             </div>
         `).join('');
 
-        // Add click listeners for user selection
         container.addEventListener('click', (e) => {
             const userItem = e.target.closest('.user-item');
             if (userItem) {
@@ -1407,14 +1261,12 @@ class ChatManager {
 
         selectedCount.textContent = `SELECTED USERS (${selectedItems.length}):`;
 
-        // Show group settings if more than 1 user selected
         if (selectedItems.length > 1) {
             groupSettings.classList.remove('hidden');
         } else {
             groupSettings.classList.add('hidden');
         }
 
-        // Render selected user tags
         selectedTags.innerHTML = Array.from(selectedItems).map(item => {
             const userId = item.dataset.userId;
             const userName = item.querySelector('.user-name').textContent;
@@ -1449,12 +1301,10 @@ class ChatManager {
         const groupName = selectedItems.length > 1 ? 
                          document.getElementById('groupNameInput').value.trim() : null;
 
-        // Handle group image upload if it's a group and image is selected
         let groupImageUrl = null;
         if (selectedItems.length > 1) {
             const groupImageInput = document.getElementById('groupImageInput');
             if (groupImageInput.files && groupImageInput.files[0]) {
-                // Upload the group image first
                 const uploadedImageUrl = await this.uploadGroupImage(groupImageInput.files[0]);
                 if (uploadedImageUrl) {
                     groupImageUrl = uploadedImageUrl;
@@ -1480,11 +1330,9 @@ class ChatManager {
 
             if (data.room_id) {
                 this.hideCreateDMModal();
-                
-                // Wait a bit for the conversation to be fully created in the database
+
                 await new Promise(resolve => setTimeout(resolve, 100));
                 
-                // Refresh conversation list and open the new chat
                 await this.loadConversations();
                 await this.openChat(data.room_id);
             } else {
@@ -1497,16 +1345,13 @@ class ChatManager {
     }
 
     resetDMModal() {
-        // Clear selections
         document.querySelectorAll('#dmUserList .user-item.selected').forEach(item => {
             this.toggleUserSelection(item);
         });
 
-        // Clear group settings
         document.getElementById('groupNameInput').value = '';
         document.getElementById('groupSettings').classList.add('hidden');
 
-        // Clear group image
         const groupImageInput = document.getElementById('groupImageInput');
         const groupImagePlaceholder = document.getElementById('groupImagePlaceholder');
         if (groupImageInput) groupImageInput.value = '';
@@ -1514,7 +1359,6 @@ class ChatManager {
             groupImagePlaceholder.innerHTML = '<i class="fas fa-camera"></i>';
         }
 
-        // Clear search
         document.getElementById('dmUserSearch').value = '';
     }
 
@@ -1528,7 +1372,6 @@ class ChatManager {
         });
     }
 
-    // File upload functionality
     async uploadFiles() {
         if (this.selectedFiles.length === 0) return null;
 
@@ -1543,7 +1386,6 @@ class ChatManager {
                 body: formData
             });
 
-            // Log response details for debugging
             console.log('Upload response status:', response.status);
             console.log('Upload response headers:', [...response.headers.entries()]);
             
@@ -1560,8 +1402,6 @@ class ChatManager {
             }
 
             if (data.uploaded_files && data.uploaded_files.length > 0) {
-                // Return the first file URL for now
-                // In a more advanced implementation, you might handle multiple files differently
                 const fileUrl = data.uploaded_files[0].url;
                 console.log('Upload successful, returning URL:', fileUrl);
                 return fileUrl;
@@ -1610,9 +1450,7 @@ class ChatManager {
         }
     }
 
-    // Notification system
     showNotification(message, type = 'info') {
-        // Create or get existing notification container
         let container = document.getElementById('notificationContainer');
         if (!container) {
             container = document.createElement('div');
@@ -1628,7 +1466,6 @@ class ChatManager {
             document.body.appendChild(container);
         }
 
-        // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.style.cssText = `
@@ -1661,7 +1498,6 @@ class ChatManager {
 
         container.appendChild(notification);
 
-        // Auto-remove after timeout
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.style.animation = 'slideOutRight 0.3s ease-in';
@@ -1671,6 +1507,4 @@ class ChatManager {
     }
 }
 
-// Initialize chat manager
 window.chatManager = new ChatManager();
-// Fixed syntax error - reload complete

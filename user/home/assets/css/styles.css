@@ -478,7 +478,6 @@ body {
     color: #fff;
 }
 
-/* Add Friend Tab */
 .add-friend-container {
     max-width: 600px;
 }
@@ -561,7 +560,6 @@ body {
     display: none;
 }
 
-/* Pending Sections */
 .pending-sections {
     margin-top: 16px;
 }
@@ -579,13 +577,12 @@ body {
     margin-bottom: 16px;
 }
 
-/* Chat Section */
 .chat-section {
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Ensure full height */
-    overflow: hidden; /* Prevent overflow */
+    height: 100vh;
+    overflow: hidden;
 }
 
 .chat-header {
@@ -637,10 +634,9 @@ body {
     padding: 16px;
     overflow-y: auto;
     scroll-behavior: smooth;
-    min-height: 0; /* Ensure flex child can shrink */
+    min-height: 0;
 }
 
-/* Custom scrollbar for chat messages */
 .chat-messages::-webkit-scrollbar {
     width: 8px;
 }
@@ -658,7 +654,6 @@ body {
     background: var(--scrollbar-auto-thumb);
 }
 
-/* Message Bubbles */
 .message-group {
     margin-bottom: 20px;
 }
@@ -739,7 +734,6 @@ body {
     color: var(--interactive-hover);
 }
 
-/* Message Attachments */
 .message-attachment {
     margin: 8px 0;
     border-radius: var(--border-radius);
@@ -802,7 +796,6 @@ body {
     text-transform: uppercase;
 }
 
-/* Reply Messages */
 .reply-reference {
     margin-left: 48px;
     margin-bottom: 4px;
@@ -825,7 +818,6 @@ body {
     transform: rotate(90deg);
 }
 
-/* Typing Indicator */
 .typing-indicator {
     padding: 8px 16px;
     font-size: 14px;
@@ -833,7 +825,6 @@ body {
     font-style: italic;
 }
 
-/* Loading and Error States */
 .loading-state, .error-state, .empty-state {
     display: flex;
     justify-content: center;
@@ -853,7 +844,6 @@ body {
     50% { opacity: 0.5; }
 }
 
-/* Emoji Picker */
 .emoji-picker {
     position: fixed;
     background: var(--bg-floating);
@@ -868,7 +858,6 @@ body {
     overflow-y: auto;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     z-index: 10000;
-    /* Ensure it doesn't overflow viewport */
     max-width: calc(100vw - 40px);
     max-height: calc(100vh - 40px);
 }
@@ -893,7 +882,6 @@ body {
     transform: scale(1.1);
 }
 
-/* Message Reactions */
 .message-reactions {
     display: flex;
     flex-wrap: wrap;
@@ -948,7 +936,6 @@ body {
     text-align: center;
 }
 
-/* Notification System */
 .error-notifications, .success-notifications {
     position: fixed;
     top: 20px;
@@ -1007,7 +994,6 @@ body {
     }
 }
 
-/* Message Input */
 .message-input-container {
     padding: 16px;
 }
@@ -1150,7 +1136,6 @@ body {
     color: var(--text-muted);
 }
 
-/* Active Now Section */
 .active-now-section {
     width: 280px;
     background-color: var(--bg-secondary);
@@ -1218,7 +1203,6 @@ body {
     gap: 4px;
 }
 
-/* Modals */
 .modal {
     position: fixed;
     top: 0;
@@ -1338,7 +1322,6 @@ body {
     background-color: #dc2626;
 }
 
-/* Select Users Section */
 .select-users-section label {
     display: block;
     font-size: 12px;
@@ -1460,7 +1443,6 @@ body {
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* Group Settings */
 .group-settings label {
     display: block;
     font-size: 12px;
@@ -1514,7 +1496,6 @@ body {
     color: var(--interactive-muted);
 }
 
-/* Emoji Picker */
 .emoji-picker {
     position: absolute;
     bottom: 100%;
@@ -1581,7 +1562,6 @@ body {
     background-color: var(--background-modifier-hover);
 }
 
-/* Scrollbars */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -1600,7 +1580,6 @@ body {
     background: #1a1b1e;
 }
 
-/* Utility Classes */
 .hidden {
     display: none !important;
 }
@@ -1621,7 +1600,6 @@ body {
     margin-top: 16px;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .active-now-section {
         display: none;
@@ -1659,7 +1637,6 @@ body {
     }
 }
 
-/* Edit Context Styles */
 .edit-context {
     background-color: var(--bg-floating);
     border: 1px solid var(--bg-tertiary);
@@ -1715,7 +1692,6 @@ body {
     font-style: italic;
 }
 
-/* Notification Animations */
 @keyframes slideInRight {
     from {
         transform: translateX(100%);
@@ -1738,7 +1714,6 @@ body {
     }
 }
 
-/* Discord-like Server Sidebar */
 .server-sidebar {
     width: 72px;
     background-color: var(--bg-tertiary);
@@ -1850,7 +1825,6 @@ body {
     margin: 8px 0;
 }
 
-/* Server Item Indicator */
 .server-item::before {
     content: '';
     position: absolute;
@@ -1874,7 +1848,6 @@ body {
     height: 40px;
 }
 
-/* Tooltip */
 .server-item[data-tooltip] {
     position: relative;
 }
@@ -1922,7 +1895,6 @@ body {
     }
 }
 
-/* User Servers List */
 .user-servers {
     display: flex;
     flex-direction: column;
@@ -1930,7 +1902,6 @@ body {
     gap: 8px;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .server-sidebar {
         width: 60px;
