@@ -315,7 +315,7 @@ $captcha = generateCaptcha();
                 </div>
             
             <?php elseif (!$show_step_2 && $current_step == 1): ?>
-                <!-- STEP 1: Basic Information -->
+
                 <form method="post" action="" id="register-form">
                     <div class="form-group">
                         <label class="form-label">Username</label>
@@ -371,7 +371,7 @@ $captcha = generateCaptcha();
                 </div>
             
             <?php else: ?>
-                <!-- STEP 2: Security Question -->
+
                 <p class="security-description">Set up a security question to help recover your account if you forget your password.</p>
                 <form method="POST" action="" id="register-step2-form">
                     <div class="form-group">
@@ -391,7 +391,7 @@ $captcha = generateCaptcha();
                         <small style="color: rgba(255, 255, 255, 0.6); font-size: 12px;">Used for account recovery if you forget your password</small>
                     </div>
                     <div class="captcha-section">
-                        <!-- -->
+
                         <div class="form-group">
                             <label class="form-label">Verification</label>
                             <div class="captcha-container">

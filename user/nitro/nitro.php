@@ -93,7 +93,7 @@ if (isset($_POST['action'])) {
 </head>
 <body>
     <div class="nitro-container">
-        <!-- Header -->
+
         <div class="header">
             <button class="back-btn" onclick="history.back()">
                 <span class="back-icon">←</span>
@@ -101,7 +101,7 @@ if (isset($_POST['action'])) {
             </button>
         </div>
 
-        <!-- Main Content -->
+
         <div class="main-content">
             <div class="hero-section">
                 <h1 class="main-title">Get more with Nitro</h1>
@@ -110,9 +110,9 @@ if (isset($_POST['action'])) {
                 </p>
             </div>
 
-            <!-- Cards Section -->
+
             <div class="cards-section">
-                <!-- Nitro Subscription Card -->
+
                 <div class="nitro-card">
                     <div class="card-header">
                         <div class="nitro-icon">💎</div>
@@ -159,7 +159,7 @@ if (isset($_POST['action'])) {
                     </button>
                 </div>
 
-                <!-- Gift Redemption Card -->
+
                 <div class="gift-card">
                     <div class="gift-icon">🎁</div>
                     <h3>Got a gift?</h3>
@@ -179,7 +179,7 @@ if (isset($_POST['action'])) {
                 </div>
             </div>
 
-            <!-- Perks Section -->
+
             <div class="perks-section">
                 <div class="perks-column">
                     <h2>Nitro Perks</h2>
@@ -260,7 +260,7 @@ if (isset($_POST['action'])) {
                 </div>
             </div>
 
-            <!-- Footer -->
+
             <div class="footer">
                 <p>Questions? Check out our support articles or contact us.</p>
                 <div class="footer-links">
@@ -272,7 +272,7 @@ if (isset($_POST['action'])) {
         </div>
     </div>
 
-    <!-- Success Modal -->
+
     <div id="successModal" class="modal">
         <div class="modal-content success-modal">
             <div class="success-icon">✓</div>
@@ -282,7 +282,7 @@ if (isset($_POST['action'])) {
         </div>
     </div>
 
-    <!-- Subscription Modal -->
+
     <div id="subscriptionModal" class="modal">
         <div class="modal-content subscription-modal">
             <div class="modal-header">
@@ -316,7 +316,7 @@ if (isset($_POST['action'])) {
         </div>
     </div>
 
-    <!-- Toast Container -->
+
     <div id="toastContainer" class="toast-container"></div>
 
     <script src="nitro.js"></script>
