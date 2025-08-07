@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: /auth/login.php');
     exit;
@@ -23,7 +22,6 @@ $username = $_SESSION['username'] ?? 'Guest';
 </head>
 <body>
     <script>
-        // Set global user data for WebSocket authentication
         window.currentUser = {
             id: <?php echo $user_id; ?>,
             username: '<?php echo htmlspecialchars($username); ?>'
@@ -33,7 +31,6 @@ $username = $_SESSION['username'] ?? 'Guest';
 
         <div class="server-sidebar">
             <div class="server-nav">
-                <!-- Home Button -->
                 <div class="server-item home-server active" data-tooltip="Home">
                     <div class="server-icon">
                         <a href="../home/index.php">
@@ -44,7 +41,6 @@ $username = $_SESSION['username'] ?? 'Guest';
                 
                 <div class="server-separator"></div>
                 
-                <!-- User Servers List -->
                 <div class="user-servers" id="userServersList">
                     <div class="server-item" data-tooltip="My Server">
                         <div class="server-icon">
@@ -57,7 +53,6 @@ $username = $_SESSION['username'] ?? 'Guest';
                 
                 <div class="server-separator"></div>
                 
-                <!-- Explore Button -->
                 <div class="server-item" data-tooltip="Explore Public Servers">
                     <div class="server-icon">
                         <a href="../server/user-explore.php">
@@ -68,7 +63,6 @@ $username = $_SESSION['username'] ?? 'Guest';
             
             </div>
         </div>
-        <!-- Sidebar Navigation -->
         <div class="sidebar">
             <div class="sidebar-header" style="display: none;">
                 <div class="user-info">
@@ -81,12 +75,10 @@ $username = $_SESSION['username'] ?? 'Guest';
             </div>
 
             <div class="sidebar-content">
-                <!-- Search Bar -->
                 <div class="search-container">
                     <input type="text" placeholder="Find or start a conversation..." class="search-input" id="conversationSearch">
                 </div>
 
-                <!-- Navigation Tabs -->
                 <div class="nav-tabs">
                     <div class="nav-tab active" data-tab="friends">
                         <i class="fas fa-user-friends"></i>
@@ -100,7 +92,6 @@ $username = $_SESSION['username'] ?? 'Guest';
                     </a>
                 </div>
 
-                <!-- Direct Messages Section -->
                 <div class="direct-messages">
                     <div class="section-header">
                         <span>DIRECT MESSAGES</span>
@@ -109,12 +100,10 @@ $username = $_SESSION['username'] ?? 'Guest';
                         </button>
                     </div>
                     <div class="dm-list" id="directMessagesList">
-                        <!-- Direct messages will be loaded here -->
                     </div>
                 </div>
             </div>
 
-            <!-- User Panel -->
             <div class="user-panel">
                 <div class="user-info-panel">
                     <img src="" alt="Avatar" class="panel-avatar" id="panelUserAvatar">
@@ -131,9 +120,7 @@ $username = $_SESSION['username'] ?? 'Guest';
             </div>
         </div>
 
-        <!-- Main Content Area -->
         <div class="main-content">
-            <!-- Friends Section -->
             <div class="friends-section" id="friendsSection">
                 <div class="friends-header">
                     <h2><i class="fas fa-user-friends"></i> Friends</h2>
@@ -146,27 +133,24 @@ $username = $_SESSION['username'] ?? 'Guest';
                 </div>
 
                 <div class="friends-content">
-                    <!-- Online Tab -->
                     <div class="tab-content active" id="onlineTab">
                         <div class="search-container">
                             <input type="text" placeholder="Search online friends..." class="search-input" id="onlineSearch">
                         </div>
                         <div class="friends-list" id="onlineFriendsList">
-                            <!-- Online friends will be loaded here -->
+
                         </div>
                     </div>
 
-                    <!-- All Tab -->
                     <div class="tab-content" id="allTab">
                         <div class="search-container">
                             <input type="text" placeholder="Search all friends..." class="search-input" id="allSearch">
                         </div>
                         <div class="friends-list" id="allFriendsList">
-                            <!-- All friends will be loaded here -->
+
                         </div>
                     </div>
 
-                    <!-- Pending Tab -->
                     <div class="tab-content" id="pendingTab">
                         <div class="search-container">
                             <input type="text" placeholder="Search requests..." class="search-input" id="pendingSearch">
@@ -175,19 +159,18 @@ $username = $_SESSION['username'] ?? 'Guest';
                             <div class="pending-section">
                                 <h3>INCOMING FRIEND REQUESTS — <span id="incomingCount">0</span></h3>
                                 <div class="friends-list" id="incomingRequestsList">
-                                    <!-- Incoming requests will be loaded here -->
+   
                                 </div>
                             </div>
                             <div class="pending-section">
                                 <h3>OUTGOING FRIEND REQUESTS — <span id="outgoingCount">0</span></h3>
                                 <div class="friends-list" id="outgoingRequestsList">
-                                    <!-- Outgoing requests will be loaded here -->
+              
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Add Friend Tab -->
                     <div class="tab-content" id="addTab">
                         <div class="add-friend-container">
                             <h3>Add Friend</h3>
@@ -206,7 +189,6 @@ $username = $_SESSION['username'] ?? 'Guest';
                 </div>
             </div>
 
-            <!-- Chat Section -->
             <div class="chat-section hidden" id="chatSection">
                 <div class="chat-header">
                     <div class="chat-info">
@@ -218,18 +200,10 @@ $username = $_SESSION['username'] ?? 'Guest';
                             <span class="chat-status" id="chatStatus"></span>
                         </div>
                     </div>
-                    <!-- <div class="chat-controls">
-                        <button class="control-btn"><i class="fas fa-phone"></i></button>
-                        <button class="control-btn"><i class="fas fa-video"></i></button>
-                        <button class="control-btn"><i class="fas fa-user-plus"></i></button>
-                        <button class="control-btn"><i class="fas fa-search"></i></button>
-                        <button class="control-btn"><i class="fas fa-inbox"></i></button>
-                        <button class="control-btn"><i class="fas fa-question-circle"></i></button>
-                    </div> -->
                 </div>
 
                 <div class="chat-messages" id="chatMessages">
-                    <!-- Messages will be loaded here -->
+
                 </div>
 
                 <div class="typing-indicator hidden" id="typingIndicator">
@@ -248,7 +222,7 @@ $username = $_SESSION['username'] ?? 'Guest';
                     </div>
                     <div class="file-preview-container hidden" id="filePreviewContainer">
                         <div class="file-previews" id="filePreviews">
-                            <!-- File previews will appear here -->
+
                         </div>
                     </div>
                     <div class="message-input">
@@ -268,19 +242,16 @@ $username = $_SESSION['username'] ?? 'Guest';
             </div>
         </div>
 
-        <!-- Active Now Section -->
         <div class="active-now-section" id="activeNowSection">
             <div class="active-now-header">
                 <h3>Active Now</h3>
             </div>
             <div class="active-now-list" id="activeNowList">
-                <!-- Active users will be loaded here -->
+
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
-    <!-- Create Direct Message Modal -->
     <div class="modal hidden" id="createDMModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -299,11 +270,11 @@ $username = $_SESSION['username'] ?? 'Guest';
                     <div class="selected-users" id="selectedUsers">
                         <span class="selected-count">SELECTED USERS (0):</span>
                         <div class="selected-user-tags" id="selectedUserTags">
-                            <!-- Selected user tags will appear here -->
+
                         </div>
                     </div>
                     <div class="user-list" id="dmUserList">
-                        <!-- Friends list for DM selection -->
+
                     </div>
                 </div>
                 <div class="group-settings hidden" id="groupSettings">
@@ -326,7 +297,6 @@ $username = $_SESSION['username'] ?? 'Guest';
         </div>
     </div>
 
-    <!-- Delete Message Confirmation Modal -->
     <div class="modal hidden" id="deleteMessageModal">
         <div class="modal-content small">
             <div class="modal-header">
@@ -342,7 +312,6 @@ $username = $_SESSION['username'] ?? 'Guest';
         </div>
     </div>
 
-    <!-- Emoji Picker -->
     <div class="emoji-picker hidden" id="emojiPicker">
         <div class="emoji-categories">
             <button class="emoji-category active" data-category="smileys">😀</button>
@@ -356,7 +325,7 @@ $username = $_SESSION['username'] ?? 'Guest';
             <button class="emoji-category" data-category="flags">🏁</button>
         </div>
         <div class="emoji-grid" id="emojiGrid">
-            <!-- Emojis will be loaded here -->
+
         </div>
     </div>
 

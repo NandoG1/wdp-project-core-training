@@ -1,4 +1,3 @@
-// Socket.IO client for real-time communication
 class SocketClient {
     constructor() {
         this.socket = null;
@@ -10,7 +9,6 @@ class SocketClient {
     }
 
     init() {
-        // Initialize socket connection
         this.socket = io('http://localhost:8010', {
             transports: ['websocket', 'polling'],
             withCredentials: true,
@@ -21,7 +19,6 @@ class SocketClient {
     }
 
     setupEventListeners() {
-        // Connection events
         this.socket.on('connect', () => {
             console.log('Connected to WebSocket server');
             this.authenticateUser();
@@ -39,8 +36,6 @@ class SocketClient {
                 context: error.context,
                 type: error.type
             });
-            
-            // Try to reconnect with different transport
             setTimeout(() => {
                 console.log('Attempting to reconnect...');
                 this.socket.connect();
@@ -54,8 +49,6 @@ class SocketClient {
         this.socket.on('reconnect', (attemptNumber) => {
             console.log('WebSocket reconnected after', attemptNumber, 'attempts');
         });
-
-        // User authentication
         this.socket.on('authenticated', (userData) => {
             console.log('Successfully authenticated:', userData);
             this.currentUser = userData;
@@ -65,8 +58,6 @@ class SocketClient {
         this.socket.on('authentication_failed', (data) => {
             console.error('Authentication failed:', data.message);
         });
-
-        // Friend requests
         this.socket.on('friend_request_received', (data) => {
             this.handleFriendRequestReceived(data);
         });
@@ -74,8 +65,6 @@ class SocketClient {
         this.socket.on('friend_request_accepted', (data) => {
             this.handleFriendRequestAccepted(data);
         });
-
-        // Message events
         this.socket.on('new_message', (data) => {
             this.handleNewMessage(data);
         });
@@ -91,8 +80,6 @@ class SocketClient {
         this.socket.on('message_reaction', (data) => {
             this.handleMessageReaction(data);
         });
-
-        // Typing events
         this.socket.on('user_typing', (data) => {
             this.handleUserTyping(data);
         });
@@ -100,32 +87,24 @@ class SocketClient {
         this.socket.on('user_stopped_typing', (data) => {
             this.handleUserStoppedTyping(data);
         });
-
-        // User status events
         this.socket.on('user_status_changed', (data) => {
             this.handleUserStatusChanged(data);
         });
-
-        // Mention events
         this.socket.on('mentioned', (data) => {
             this.handleMention(data);
         });
     }
 
     authenticateUser() {
-        // Get user data from PHP session or global variable
         let userId = null;
         
         console.log('Attempting authentication...');
         console.log('window.currentUser:', window.currentUser);
         console.log('sessionStorage userId:', sessionStorage.getItem('userId'));
-        
-        // Try to get from global window variable (set by PHP)
         if (window.currentUser && window.currentUser.id) {
             userId = window.currentUser.id;
             console.log('Using window.currentUser.id:', userId);
         } 
-        // Try to get from session storage
         else if (sessionStorage.getItem('userId')) {
             userId = sessionStorage.getItem('userId');
             console.log('Using sessionStorage userId:', userId);
@@ -141,14 +120,12 @@ class SocketClient {
         } else {
             console.error('No user ID found for authentication');
             console.log('Attempting to fetch user data from server...');
-            // Try to get user data from server
             this.fetchUserData();
         }
     }
 
     async fetchUserData() {
         try {
-            // Try different API endpoints
             const possibleEndpoints = [
                 'api/user.php?action=current',
                 '../user-server/api/user.php?action=getCurrentUser',
@@ -180,7 +157,6 @@ class SocketClient {
             }
             
             console.error('All API endpoints failed - using fallback');
-            // Fallback: try to authenticate with a demo user ID
             window.currentUser = { id: 1, username: 'demo_user' };
             sessionStorage.setItem('userId', '1');
             this.authenticateUser();
@@ -189,8 +165,6 @@ class SocketClient {
             console.error('Failed to fetch user data:', error);
         }
     }
-
-    // Room management
     joinRoom(roomId) {
         if (this.currentRoom) {
             this.socket.emit('leave_room', this.currentRoom);
@@ -205,8 +179,6 @@ class SocketClient {
             this.currentRoom = null;
         }
     }
-
-    // Message operations
     sendMessage(roomId, content, replyTo = null) {
         this.socket.emit('send_message', {
             room_id: roomId,
@@ -234,8 +206,6 @@ class SocketClient {
             emoji: emoji
         });
     }
-
-    // Typing indicators
     startTyping(roomId) {
         if (this.typingTimeout) {
             clearTimeout(this.typingTimeout);
@@ -255,25 +225,16 @@ class SocketClient {
         }
         this.socket.emit('stop_typing', { room_id: roomId });
     }
-
-    // User status
     updateUserStatus(status) {
         this.socket.emit('update_status', { status: status });
     }
-
-    // Event handlers
     handleFriendRequestReceived(data) {
-        // Show notification
         this.showNotification('Friend Request', `${data.username} sent you a friend request`, 'friend-request');
-        
-        // Update pending requests count
         window.friendsManager?.loadPendingRequests();
     }
 
     handleFriendRequestAccepted(data) {
         this.showNotification('Friend Request Accepted', `${data.username} accepted your friend request`, 'friend-accepted');
-        
-        // Update friends lists
         window.friendsManager?.loadAllFriends();
         window.friendsManager?.loadOnlineFriends();
         window.friendsManager?.loadPendingRequests();
@@ -281,13 +242,9 @@ class SocketClient {
 
     handleNewMessage(data) {
         if (data.room_id === this.currentRoom) {
-            // Add message to current chat
             window.chatManager?.addMessage(data.message);
         } else {
-            // Update conversation list with new message
             window.chatManager?.updateConversationList();
-            
-            // Show notification if mentioned
             if (data.message.content.includes(`@${this.currentUser?.username}`)) {
                 this.showNotification('Mentioned', `${data.message.username}: ${data.message.content}`, 'mention');
             }
@@ -327,7 +284,6 @@ class SocketClient {
     }
 
     handleUserStatusChanged(data) {
-        // Update user status in friends list and active users
         window.friendsManager?.updateUserStatus(data.user_id, data.status);
         window.homeManager?.updateActiveUsers();
     }
@@ -360,20 +316,16 @@ class SocketClient {
     }
 
     showNotification(title, message, type = 'info') {
-        // Check if notifications are supported and permitted
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification(title, {
                 body: message,
                 icon: '/assets/images/icon.png'
             });
         }
-        
-        // Also show in-app notification
         this.showInAppNotification(title, message, type);
     }
 
     showInAppNotification(title, message, type) {
-        // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
@@ -385,8 +337,6 @@ class SocketClient {
                 <i class="fas fa-times"></i>
             </button>
         `;
-        
-        // Add to notification container
         let container = document.getElementById('notificationContainer');
         if (!container) {
             container = document.createElement('div');
@@ -396,39 +346,27 @@ class SocketClient {
         }
         
         container.appendChild(notification);
-        
-        // Add close functionality
         notification.querySelector('.notification-close').addEventListener('click', () => {
             notification.remove();
         });
-        
-        // Auto remove after 5 seconds
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.remove();
             }
         }, 5000);
     }
-
-    // Request notification permission
     requestNotificationPermission() {
         if ('Notification' in window && Notification.permission === 'default') {
             Notification.requestPermission();
         }
     }
-
-    // Disconnect
     disconnect() {
         if (this.socket) {
             this.socket.disconnect();
         }
     }
 }
-
-// Initialize socket client
 window.socketClient = new SocketClient();
-
-// Request notification permission on load
 document.addEventListener('DOMContentLoaded', () => {
     window.socketClient.requestNotificationPermission();
 });

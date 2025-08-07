@@ -1,4 +1,3 @@
-// Friends management functionality
 class FriendsManager {
     constructor() {
         this.currentTab = 'online';
@@ -17,15 +16,12 @@ class FriendsManager {
     }
 
     setupEventListeners() {
-        // Friend tab navigation
         document.querySelectorAll('.friends-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 const tabName = e.target.dataset.tab;
                 this.switchTab(tabName);
             });
         });
-
-        // Search functionality
         document.getElementById('onlineSearch')?.addEventListener('input', (e) => {
             this.searchFriends('online', e.target.value);
         });
@@ -37,8 +33,6 @@ class FriendsManager {
         document.getElementById('pendingSearch')?.addEventListener('input', (e) => {
             this.searchPendingRequests(e.target.value);
         });
-
-        // Add friend functionality
         document.getElementById('sendFriendRequest')?.addEventListener('click', () => {
             this.sendFriendRequest();
         });
@@ -51,21 +45,16 @@ class FriendsManager {
     }
 
     switchTab(tabName) {
-        // Update active tab
         document.querySelectorAll('.friends-tab').forEach(tab => {
             tab.classList.remove('active');
         });
         document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-        // Show corresponding content
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.remove('active');
         });
         document.getElementById(`${tabName}Tab`).classList.add('active');
 
         this.currentTab = tabName;
-
-        // Load data for the tab
         switch (tabName) {
             case 'online':
                 this.loadOnlineFriends();
@@ -157,17 +146,12 @@ class FriendsManager {
                 </div>
             </div>
         `).join('');
-
-        // Add event listeners for friend actions
         this.setupFriendActionListeners(container);
     }
 
     renderPendingRequests(data) {
-        // Update counts
         document.getElementById('incomingCount').textContent = data.incoming.length;
         document.getElementById('outgoingCount').textContent = data.outgoing.length;
-
-        // Render incoming requests
         const incomingContainer = document.getElementById('incomingRequestsList');
         if (data.incoming.length === 0) {
             incomingContainer.innerHTML = '<div class="empty-state"><p>No incoming friend requests.</p></div>';
@@ -193,8 +177,6 @@ class FriendsManager {
                 </div>
             `).join('');
         }
-
-        // Render outgoing requests
         const outgoingContainer = document.getElementById('outgoingRequestsList');
         if (data.outgoing.length === 0) {
             outgoingContainer.innerHTML = '<div class="empty-state"><p>No outgoing friend requests.</p></div>';
@@ -217,8 +199,6 @@ class FriendsManager {
                 </div>
             `).join('');
         }
-
-        // Add event listeners for request actions
         this.setupRequestActionListeners(incomingContainer, outgoingContainer);
     }
 
@@ -277,8 +257,6 @@ class FriendsManager {
             this.showError('Please enter a username');
             return;
         }
-
-        // Disable button and show loading
         sendButton.disabled = true;
         sendButton.textContent = 'Sending...';
 
@@ -299,7 +277,6 @@ class FriendsManager {
             if (data.success) {
                 this.showSuccess('Friend request sent successfully!');
                 usernameInput.value = '';
-                // Update pending requests if on that tab
                 if (this.currentTab === 'pending') {
                     this.loadPendingRequests();
                 }
@@ -331,7 +308,6 @@ class FriendsManager {
             const data = await response.json();
 
             if (data.success) {
-                // Reload friends lists
                 this.loadPendingRequests();
                 this.loadAllFriends();
                 this.loadOnlineFriends();
@@ -412,7 +388,6 @@ class FriendsManager {
             const data = await response.json();
 
             if (data.room_id) {
-                // Switch to chat view
                 window.chatManager?.openChat(data.room_id);
             } else {
                 this.showError(data.error || 'Failed to create direct message');
@@ -463,15 +438,12 @@ class FriendsManager {
     }
 
     updateUserStatus(userId, status) {
-        // Update status in all friend lists
         ['online', 'all'].forEach(type => {
             const friend = this.friends[type].find(f => f.id === userId);
             if (friend) {
                 friend.status = status;
             }
         });
-
-        // Re-render current tab if it's affected
         if (this.currentTab === 'online' || this.currentTab === 'all') {
             this.loadActiveTab();
         }
@@ -545,7 +517,6 @@ class FriendsManager {
     }
 
     showFriendOptions(userId, button) {
-        // Create context menu for friend options
         const contextMenu = document.createElement('div');
         contextMenu.className = 'context-menu';
         contextMenu.innerHTML = `
@@ -566,8 +537,6 @@ class FriendsManager {
                 <span>Remove Friend</span>
             </div>
         `;
-
-        // Position the menu
         const rect = button.getBoundingClientRect();
         contextMenu.style.position = 'fixed';
         contextMenu.style.top = `${rect.bottom + 5}px`;
@@ -575,8 +544,6 @@ class FriendsManager {
         contextMenu.style.zIndex = '1000';
 
         document.body.appendChild(contextMenu);
-
-        // Handle menu item clicks
         contextMenu.addEventListener('click', (e) => {
             const item = e.target.closest('.context-menu-item');
             if (!item) return;
@@ -584,23 +551,18 @@ class FriendsManager {
             const action = item.dataset.action;
             switch (action) {
                 case 'profile':
-                    // Show user profile
                     break;
                 case 'message':
                     this.startDirectMessage(userId);
                     break;
                 case 'call':
-                    // Start voice call
                     break;
                 case 'remove':
-                    // Remove friend (implement later)
                     break;
             }
 
             contextMenu.remove();
         });
-
-        // Close menu when clicking outside
         const closeMenu = (e) => {
             if (!contextMenu.contains(e.target)) {
                 contextMenu.remove();
@@ -613,6 +575,4 @@ class FriendsManager {
         }, 10);
     }
 }
-
-// Initialize friends manager
 window.friendsManager = new FriendsManager();

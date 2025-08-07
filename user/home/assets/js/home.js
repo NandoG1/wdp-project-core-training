@@ -1,4 +1,3 @@
-// Home page management functionality
 class HomeManager {
     constructor() {
         this.currentUser = null;
@@ -10,42 +9,31 @@ class HomeManager {
         this.setupEventListeners();
         this.loadCurrentUser();
         this.loadActiveUsers();
-        
-        // Refresh active users every 30 seconds
         setInterval(() => {
             this.loadActiveUsers();
         }, 30000);
     }
 
     setupEventListeners() {
-        // Navigation tab switching
         document.querySelectorAll('.nav-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 const tabName = e.target.dataset.tab;
                 this.switchMainTab(tabName);
             });
         });
-
-        // Conversation search
         document.getElementById('conversationSearch')?.addEventListener('input', (e) => {
             this.searchConversations(e.target.value);
         });
-
-        // User status controls
         document.querySelectorAll('.user-controls .control-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.handleUserControl(e.target.closest('.control-btn'));
             });
         });
-
-        // Modal close functionality
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 this.closeAllModals();
             }
         });
-
-        // Escape key to close modals
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeAllModals();
@@ -55,8 +43,6 @@ class HomeManager {
 
     async loadCurrentUser() {
         try {
-            // This would typically get user data from session
-            // For now, we'll simulate it
             const response = await fetch('/user/home/api/user.php?action=current');
             const data = await response.json();
             
@@ -66,7 +52,6 @@ class HomeManager {
             }
         } catch (error) {
             console.error('Error loading current user:', error);
-            // Fallback user data
             this.currentUser = {
                 id: 1,
                 username: 'user',
@@ -80,17 +65,12 @@ class HomeManager {
     }
 
     updateUserInfo(user) {
-        // Update user info in sidebar header
         document.getElementById('currentUsername').textContent = user.username;
         document.getElementById('currentDiscriminator').textContent = `#${user.discriminator}`;
         document.getElementById('currentUserAvatar').src = user.avatar || '/assets/images/default-avatar.png';
-
-        // Update user info in panel
         document.getElementById('panelUsername').textContent = user.username;
         document.getElementById('panelDiscriminator').textContent = `#${user.discriminator}`;
         document.getElementById('panelUserAvatar').src = user.avatar || '/assets/images/default-avatar.png';
-
-        // Update socket client user data
         if (window.socketClient) {
             window.socketClient.currentUser = user;
         }
@@ -152,7 +132,6 @@ class HomeManager {
             const data = await response.json();
 
             if (data.room_id) {
-                // Switch to chat view
                 window.chatManager?.openChat(data.room_id);
             } else {
                 console.error('Failed to create direct message:', data.error);
@@ -163,13 +142,10 @@ class HomeManager {
     }
 
     switchMainTab(tabName) {
-        // Update active tab
         document.querySelectorAll('.nav-tab').forEach(tab => {
             tab.classList.remove('active');
         });
         document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-
-        // Handle tab-specific actions
         switch (tabName) {
             case 'friends':
                 this.showFriendsSection();
@@ -181,21 +157,14 @@ class HomeManager {
     }
 
     showFriendsSection() {
-        // Show friends section, hide chat
         window.chatManager?.showFriendsSection();
-        
-        // Load friends data if needed
         if (window.friendsManager) {
             window.friendsManager.loadActiveTab();
         }
     }
 
     showNitroSection() {
-        // This would show nitro-related content
-        // For now, just hide chat and show a placeholder
         window.chatManager?.showFriendsSection();
-        
-        // You could implement nitro functionality here
         console.log('Nitro section not implemented yet');
     }
 
@@ -237,7 +206,6 @@ class HomeManager {
     }
 
     toggleMute() {
-        // Toggle microphone mute
         const btn = document.querySelector('[title="Mute"]');
         const icon = btn.querySelector('i');
         
@@ -253,7 +221,6 @@ class HomeManager {
     }
 
     toggleDeafen() {
-        // Toggle audio deafen
         const btn = document.querySelector('[title="Deafen"]');
         const icon = btn.querySelector('i');
         
@@ -269,7 +236,6 @@ class HomeManager {
     }
 
     openSettings() {
-        // Open settings modal/page
         console.log('Settings not implemented yet');
     }
 
@@ -297,8 +263,6 @@ class HomeManager {
             modal.classList.add('hidden');
         });
     }
-
-    // Notification system
     showNotification(title, message, type = 'info', duration = 5000) {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
@@ -311,8 +275,6 @@ class HomeManager {
                 <i class="fas fa-times"></i>
             </button>
         `;
-
-        // Add to notification container
         let container = document.getElementById('notificationContainer');
         if (!container) {
             container = document.createElement('div');
@@ -322,13 +284,9 @@ class HomeManager {
         }
 
         container.appendChild(notification);
-
-        // Add close functionality
         notification.querySelector('.notification-close').addEventListener('click', () => {
             this.removeNotification(notification);
         });
-
-        // Auto remove after duration
         setTimeout(() => {
             this.removeNotification(notification);
         }, duration);
@@ -344,8 +302,6 @@ class HomeManager {
             }, 300);
         }
     }
-
-    // Theme management
     toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -358,8 +314,6 @@ class HomeManager {
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
     }
-
-    // Utility functions
     formatTime(timestamp) {
         const date = new Date(timestamp);
         const now = new Date();
@@ -390,29 +344,20 @@ class HomeManager {
         
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
-
-    // Keyboard shortcuts
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + K for quick search
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 document.getElementById('conversationSearch')?.focus();
             }
-
-            // Ctrl/Cmd + Shift + A for add friend
             if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
                 e.preventDefault();
                 window.friendsManager?.switchTab('add');
             }
-
-            // Ctrl/Cmd + Shift + N for new DM
             if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'N') {
                 e.preventDefault();
                 window.chatManager?.showCreateDMModal();
             }
-
-            // Alt + Up/Down for conversation navigation
             if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
                 e.preventDefault();
                 this.navigateConversations(e.key === 'ArrowUp' ? -1 : 1);
@@ -443,8 +388,6 @@ class HomeManager {
             window.chatManager?.openChat(parseInt(roomId));
         }
     }
-
-    // Connection status monitoring
     setupConnectionMonitoring() {
         window.addEventListener('online', () => {
             this.showNotification('Connection Restored', 'You are back online', 'success');
@@ -457,27 +400,18 @@ class HomeManager {
     }
 
     handleReconnection() {
-        // Refresh data after reconnection
         this.loadActiveUsers();
         window.chatManager?.loadConversations();
         window.friendsManager?.loadActiveTab();
     }
-
-    // Initialize everything
     initializeApp() {
         this.loadTheme();
         this.setupKeyboardShortcuts();
         this.setupConnectionMonitoring();
-        
-        // Mark app as ready
         document.body.classList.add('app-ready');
     }
 }
-
-// Initialize home manager
 window.homeManager = new HomeManager();
-
-// Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.homeManager.initializeApp();
 });
