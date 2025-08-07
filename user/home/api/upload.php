@@ -1,25 +1,20 @@
 <?php
-// Disable error display to prevent HTML output
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
-// Start output buffering to capture any unexpected output
 ob_start();
 
-// Start session first, before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 require_once 'config.php';
 
-// Clean any previous output
 if (ob_get_level()) {
     ob_clean();
 }
 
-// Set content type to JSON from the start
 if (!headers_sent()) {
     header('Content-Type: application/json');
     header('Cache-Control: no-cache, must-revalidate');
@@ -27,7 +22,6 @@ if (!headers_sent()) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Debug logging
 error_log("Upload.php called - Method: " . $method);
 error_log("Files present: " . (isset($_FILES['files']) ? 'YES' : 'NO'));
 
@@ -39,13 +33,11 @@ try {
     exit;
 }
 
-// Check if files were uploaded
 if ($method !== 'POST' || !isset($_FILES['files'])) {
     send_response(['error' => 'No files uploaded'], 400);
 }
 
 try {
-    // Configuration
     $upload_dir = '../uploads/';
     $max_file_size = 50 * 1024 * 1024; // 50MB
     $allowed_types = [
@@ -57,14 +49,12 @@ try {
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     ];
 
-    // Create upload directory if it doesn't exist
     if (!file_exists($upload_dir)) {
         if (!mkdir($upload_dir, 0755, true)) {
             throw new Exception('Failed to create upload directory');
         }
     }
 
-    // Create user-specific directory
     $user_upload_dir = $upload_dir . $user_id . '/';
     if (!file_exists($user_upload_dir)) {
         if (!mkdir($user_upload_dir, 0755, true)) {
@@ -75,7 +65,6 @@ try {
 $uploaded_files = [];
 $errors = [];
 
-// Handle multiple files - check for both 'files' and array format
 $files = isset($_FILES['files']) ? $_FILES['files'] : null;
 
 if (!$files) {
@@ -85,7 +74,6 @@ if (!$files) {
 $file_count = is_array($files['name']) ? count($files['name']) : 1;
 
 for ($i = 0; $i < $file_count; $i++) {
-    // Get file information
     if (is_array($files['name'])) {
         $file_name = $files['name'][$i];
         $file_tmp = $files['tmp_name'][$i];
@@ -100,19 +88,16 @@ for ($i = 0; $i < $file_count; $i++) {
         $file_error = $files['error'];
     }
 
-    // Skip if there's an upload error
     if ($file_error !== UPLOAD_ERR_OK) {
         $errors[] = "Upload error for {$file_name}: " . get_upload_error_message($file_error);
         continue;
     }
 
-    // Validate file size
     if ($file_size > $max_file_size) {
         $errors[] = "File {$file_name} is too large. Maximum size is " . format_bytes($max_file_size);
         continue;
     }
 
-    // Validate file type
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $detected_type = finfo_file($finfo, $file_tmp);
     finfo_close($finfo);
@@ -122,14 +107,11 @@ for ($i = 0; $i < $file_count; $i++) {
         continue;
     }
 
-    // Generate unique filename
     $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
     $unique_name = generateUniqueFileName($file_name, $file_extension);
     $file_path = $user_upload_dir . $unique_name;
 
-    // Move uploaded file
     if (move_uploaded_file($file_tmp, $file_path)) {
-        // Just return the file URL, don't store in database yet
         $file_url = '/user/home/uploads/' . $user_id . '/' . $unique_name;
         
         $uploaded_files[] = [
@@ -143,7 +125,6 @@ for ($i = 0; $i < $file_count; $i++) {
     }
 }
 
-// Send response
 $response = ['uploaded_files' => $uploaded_files];
 if (!empty($errors)) {
     $response['errors'] = $errors;
@@ -156,7 +137,6 @@ send_response($response);
     send_response(['error' => 'Upload failed: ' . $e->getMessage()], 500);
 }
 
-// Helper functions
 function generateUniqueFileName($original_name, $extension) {
     $timestamp = time();
     $random = bin2hex(random_bytes(8));
@@ -167,7 +147,6 @@ function generateUniqueFileName($original_name, $extension) {
 function storeFileInfo($user_id, $original_name, $stored_name, $file_url, $file_size, $file_type) {
     global $mysqli;
     
-    // Create uploads table if it doesn't exist
     $create_table = "CREATE TABLE IF NOT EXISTS Uploads (
         ID INT AUTO_INCREMENT PRIMARY KEY,
         UserID INT NOT NULL,
@@ -192,12 +171,10 @@ function storeFileInfo($user_id, $original_name, $stored_name, $file_url, $file_
 }
 
 function generateThumbnail($file_path, $file_type, $user_id) {
-    // Skip thumbnail generation if not an image
     if (strpos($file_type, 'image/') !== 0) {
         return null;
     }
     
-    // Skip thumbnail generation if GD extension is not available
     if (!extension_loaded('gd')) {
         error_log("GD extension not available, skipping thumbnail generation");
         return null;
@@ -213,7 +190,6 @@ function generateThumbnail($file_path, $file_type, $user_id) {
         $thumbnail_path = $thumbnail_dir . $file_name . '_thumb.jpg';
         $thumbnail_url = '/user/home/uploads/' . $user_id . '/thumbnails/' . $file_name . '_thumb.jpg';
         
-        // Create thumbnail
         if (createImageThumbnail($file_path, $thumbnail_path, 200, 200)) {
             return $thumbnail_url;
         }
@@ -226,7 +202,6 @@ function generateThumbnail($file_path, $file_type, $user_id) {
 
 function createImageThumbnail($source_path, $thumbnail_path, $max_width, $max_height) {
     try {
-        // Check if GD extension is loaded
         if (!extension_loaded('gd')) {
             error_log("GD extension is not loaded");
             return false;
@@ -240,7 +215,6 @@ function createImageThumbnail($source_path, $thumbnail_path, $max_width, $max_he
         
         $mime_type = $image_info['mime'];
     
-    // Create image resource from source
     switch ($mime_type) {
         case 'image/jpeg':
             $source_image = imagecreatefromjpeg($source_path);
@@ -265,15 +239,12 @@ function createImageThumbnail($source_path, $thumbnail_path, $max_width, $max_he
     $source_width = imagesx($source_image);
     $source_height = imagesy($source_image);
     
-    // Calculate thumbnail dimensions
     $ratio = min($max_width / $source_width, $max_height / $source_height);
     $thumbnail_width = round($source_width * $ratio);
     $thumbnail_height = round($source_height * $ratio);
     
-    // Create thumbnail
     $thumbnail_image = imagecreatetruecolor($thumbnail_width, $thumbnail_height);
     
-    // Preserve transparency for PNG and GIF
     if ($mime_type === 'image/png' || $mime_type === 'image/gif') {
         imagealphablending($thumbnail_image, false);
         imagesavealpha($thumbnail_image, true);
@@ -281,7 +252,6 @@ function createImageThumbnail($source_path, $thumbnail_path, $max_width, $max_he
         imagefill($thumbnail_image, 0, 0, $transparent);
     }
     
-    // Copy and resize
     imagecopyresampled(
         $thumbnail_image, $source_image,
         0, 0, 0, 0,
@@ -289,10 +259,8 @@ function createImageThumbnail($source_path, $thumbnail_path, $max_width, $max_he
         $source_width, $source_height
     );
     
-    // Save thumbnail as JPEG
     $result = imagejpeg($thumbnail_image, $thumbnail_path, 85);
     
-    // Clean up memory
     imagedestroy($source_image);
     imagedestroy($thumbnail_image);
     
@@ -335,7 +303,6 @@ function format_bytes($bytes, $precision = 2) {
     return round($bytes, $precision) . ' ' . $units[$i];
 }
 
-// Safety fallback - if we somehow reach here without sending a response
 if (!headers_sent()) {
     error_log("Upload.php reached end without sending response - this should not happen");
     send_response(['error' => 'Unexpected server error'], 500);

@@ -23,12 +23,9 @@ switch ($method) {
 }
 
 function getCurrentUser() {
-    // Start session to get user ID
     session_start();
     
     if (!isset($_SESSION['user_id'])) {
-        // For demo purposes, return a default user
-        // In production, this should validate actual session
         $default_user = [
             'id' => 1,
             'username' => 'demo_user',

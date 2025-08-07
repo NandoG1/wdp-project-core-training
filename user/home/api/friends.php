@@ -31,7 +31,6 @@ switch ($method) {
     case 'POST':
         $data = json_decode(file_get_contents('php://input'), true);
         
-        // Validate JSON input
         if (json_last_error() !== JSON_ERROR_NONE) {
             send_response(['error' => 'Invalid JSON input'], 400);
             break;
@@ -140,7 +139,6 @@ function get_all_friends($user_id) {
 function get_pending_requests($user_id) {
     global $mysqli;
     
-    // Get incoming requests
     $incoming_query = "SELECT f.ID as request_id, u.ID, u.Username, u.ProfilePictureUrl, u.Status, u.DisplayName, u.Discriminator 
                        FROM FriendsList f 
                        INNER JOIN Users u ON f.UserID1 = u.ID 
@@ -165,7 +163,6 @@ function get_pending_requests($user_id) {
         ];
     }
     
-    // Get outgoing requests
     $outgoing_query = "SELECT f.ID as request_id, u.ID, u.Username, u.ProfilePictureUrl, u.Status, u.DisplayName, u.Discriminator 
                        FROM FriendsList f 
                        INNER JOIN Users u ON f.UserID2 = u.ID 
@@ -234,13 +231,11 @@ function search_friends($user_id, $query) {
 function send_friend_request($user_id, $username) {
     global $mysqli;
     
-    // Validate input
     if (empty($username)) {
         send_response(['error' => 'Username is required'], 400);
         return;
     }
     
-    // Parse username and discriminator
     if (strpos($username, '#') !== false) {
         list($username_part, $discriminator) = explode('#', $username, 2);
     } else {
@@ -248,19 +243,16 @@ function send_friend_request($user_id, $username) {
         $discriminator = null;
     }
     
-    // Trim whitespace
     $username_part = trim($username_part);
     if ($discriminator) {
         $discriminator = trim($discriminator);
     }
     
-    // Validate username part
     if (empty($username_part)) {
         send_response(['error' => 'Invalid username'], 400);
         return;
     }
     
-    // Find target user
     try {
         if ($discriminator) {
             $query = "SELECT ID FROM Users WHERE Username = ? AND Discriminator = ?";
@@ -288,7 +280,6 @@ function send_friend_request($user_id, $username) {
             return;
         }
         
-        // Check if friendship already exists
         $check_query = "SELECT * FROM FriendsList WHERE 
                         (UserID1 = ? AND UserID2 = ?) OR (UserID1 = ? AND UserID2 = ?)";
         $stmt = $mysqli->prepare($check_query);
@@ -306,7 +297,6 @@ function send_friend_request($user_id, $username) {
             }
         }
         
-        // Create friend request
         $insert_query = "INSERT INTO FriendsList (UserID1, UserID2, Status) VALUES (?, ?, 'pending')";
         $stmt = $mysqli->prepare($insert_query);
         $stmt->bind_param("ii", $user_id, $target_user_id);
@@ -326,7 +316,6 @@ function send_friend_request($user_id, $username) {
 function accept_friend_request($user_id, $request_id) {
     global $mysqli;
     
-    // Verify the request exists and is for this user
     $query = "SELECT * FROM FriendsList WHERE ID = ? AND UserID2 = ? AND Status = 'pending'";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param("ii", $request_id, $user_id);
@@ -337,7 +326,6 @@ function accept_friend_request($user_id, $request_id) {
         send_response(['error' => 'Friend request not found'], 404);
     }
     
-    // Update request status
     $update_query = "UPDATE FriendsList SET Status = 'accepted' WHERE ID = ?";
     $stmt = $mysqli->prepare($update_query);
     $stmt->bind_param("i", $request_id);
@@ -352,7 +340,6 @@ function accept_friend_request($user_id, $request_id) {
 function decline_friend_request($user_id, $request_id) {
     global $mysqli;
     
-    // Verify the request exists and is for this user
     $query = "SELECT * FROM FriendsList WHERE ID = ? AND UserID2 = ? AND Status = 'pending'";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param("ii", $request_id, $user_id);
@@ -363,7 +350,6 @@ function decline_friend_request($user_id, $request_id) {
         send_response(['error' => 'Friend request not found'], 404);
     }
     
-    // Delete the request
     $delete_query = "DELETE FROM FriendsList WHERE ID = ?";
     $stmt = $mysqli->prepare($delete_query);
     $stmt->bind_param("i", $request_id);
@@ -378,7 +364,6 @@ function decline_friend_request($user_id, $request_id) {
 function cancel_friend_request($user_id, $request_id) {
     global $mysqli;
     
-    // Verify the request exists and is from this user
     $query = "SELECT * FROM FriendsList WHERE ID = ? AND UserID1 = ? AND Status = 'pending'";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param("ii", $request_id, $user_id);
@@ -389,7 +374,6 @@ function cancel_friend_request($user_id, $request_id) {
         send_response(['error' => 'Friend request not found'], 404);
     }
     
-    // Delete the request
     $delete_query = "DELETE FROM FriendsList WHERE ID = ?";
     $stmt = $mysqli->prepare($delete_query);
     $stmt->bind_param("i", $request_id);

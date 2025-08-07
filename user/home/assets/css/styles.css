@@ -39,14 +39,12 @@ body {
     height: 100vh;
 }
 
-/* App Container */
 .app-container {
     display: flex;
     height: 100vh;
     width: 100vw;
 }
 
-/* Sidebar */
 .sidebar {
     width: 240px;
     background-color: var(--bg-secondary);
@@ -95,7 +93,6 @@ body {
     overflow-y: auto;
 }
 
-/* Search Container */
 .search-container {
     position: relative;
     margin-bottom: 16px;
@@ -116,7 +113,6 @@ body {
     color: var(--text-muted);
 }
 
-/* Navigation Tabs */
 .nav-tabs {
     margin-bottom: 16px;
 }
@@ -152,7 +148,6 @@ body {
     font-size: 14px;
 }
 
-/* Direct Messages */
 .direct-messages {
     margin-top: 16px;
 }
@@ -243,7 +238,6 @@ body {
     color: var(--text-muted);
 }
 
-/* User Panel */
 .user-panel {
     padding: 8px;
     background-color: var(--bg-tertiary);
@@ -306,7 +300,6 @@ body {
     color: var(--interactive-hover);
 }
 
-/* Main Content */
 .main-content {
     flex: 1;
     display: flex;
@@ -314,7 +307,6 @@ body {
     background-color: var(--bg-primary);
 }
 
-/* Friends Section */
 .friends-section {
     flex: 1;
     display: flex;
@@ -388,7 +380,6 @@ body {
     display: block;
 }
 
-/* Friends List */
 .friends-list {
     margin-top: 16px;
 }
