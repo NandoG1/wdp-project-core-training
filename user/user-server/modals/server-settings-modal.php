@@ -44,7 +44,7 @@
             <!-- Settings Content -->
             <div class="settings-content">
                 <!-- Server Profile Tab -->
-                <div class="settings-tab active" id="serverProfileTab">
+                <div class="settings-tab active" id="server-profileTab">
                     <div class="settings-header">
                         <h3>Server Profile</h3>
                         <p>Customize your server's appearance and profile information</p>
@@ -148,7 +148,7 @@
                 </div>
 
                 <!-- Channel Management Tab -->
-                <div class="settings-tab" id="channelManagementTab">
+                <div class="settings-tab" id="channel-managementTab">
                     <div class="settings-header">
                         <h3>Channel Management</h3>
                         <p>Manage channel names and settings for your server</p>
@@ -227,7 +227,7 @@
                 </div>
 
                 <!-- Delete Server Tab -->
-                <div class="settings-tab" id="deleteServerTab">
+                <div class="settings-tab" id="delete-serverTab">
                     <div class="settings-header danger">
                         <h3>Delete Server</h3>
                         <p>Permanently delete this server and all its data</p>

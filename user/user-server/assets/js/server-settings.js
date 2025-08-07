@@ -62,6 +62,8 @@ class ServerSettingsManager {
     }
 
     switchTab(tabName) {
+        console.log('switchTab called with:', tabName);
+        
         // Remove active class from all nav items and tabs
         document.querySelectorAll('#serverSettingsModal .settings-nav-item').forEach(item => {
             item.classList.remove('active');
@@ -74,8 +76,17 @@ class ServerSettingsManager {
         const navItem = document.querySelector(`#serverSettingsModal .settings-nav-item[data-tab="${tabName}"]`);
         const tabContent = document.getElementById(`${tabName}Tab`);
         
+        console.log('Found nav item:', navItem);
+        console.log('Found tab content:', tabContent);
+        console.log('Looking for tab ID:', `${tabName}Tab`);
+        
         if (navItem) navItem.classList.add('active');
-        if (tabContent) tabContent.classList.add('active');
+        if (tabContent) {
+            tabContent.classList.add('active');
+            console.log('Tab content activated');
+        } else {
+            console.error('Tab content not found for:', `${tabName}Tab`);
+        }
 
         // Load tab-specific data
         this.loadTabData(tabName);
@@ -165,19 +176,35 @@ class ServerSettingsManager {
     }
 
     async loadChannelManagement() {
-        if (!this.currentServer) return;
+        console.log('loadChannelManagement called');
+        if (!this.currentServer) {
+            console.error('No current server available for loading channels');
+            return;
+        }
 
         try {
+            console.log('Fetching channels for server ID:', this.currentServer.ID);
             const response = await fetch(this.apiUrl(`channels.php?action=getChannels&serverId=${this.currentServer.ID}`));
+            console.log('Channel fetch response:', response);
+            
             const data = await response.json();
+            console.log('Channel data received:', data);
 
             if (data.success) {
                 this.renderChannelsTable(data.channels);
             } else {
                 console.error('Failed to load channels:', data.error);
+                const tableBody = document.getElementById('channelsTableBody');
+                if (tableBody) {
+                    tableBody.innerHTML = '<div class="no-data">Failed to load channels: ' + (data.error || 'Unknown error') + '</div>';
+                }
             }
         } catch (error) {
             console.error('Error loading channels:', error);
+            const tableBody = document.getElementById('channelsTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '<div class="no-data">Error loading channels: ' + error.message + '</div>';
+            }
         }
     }
 
