@@ -59,6 +59,28 @@ class ServerSettingsManager {
         if (deleteServerInput) {
             deleteServerInput.addEventListener('input', () => this.validateDeleteInput());
         }
+
+        // Channel management controls
+        const channelSearchInput = document.getElementById('channelSearchInput');
+        const channelTypeFilter = document.getElementById('channelTypeFilter');
+        
+        if (channelSearchInput) {
+            channelSearchInput.addEventListener('input', () => this.filterChannels());
+        }
+        if (channelTypeFilter) {
+            channelTypeFilter.addEventListener('change', () => this.filterChannels());
+        }
+
+        // Member management controls
+        const memberSearchInput = document.getElementById('memberSearchInput');
+        const memberRoleFilter = document.getElementById('memberRoleFilter');
+        
+        if (memberSearchInput) {
+            memberSearchInput.addEventListener('input', () => this.filterMembers());
+        }
+        if (memberRoleFilter) {
+            memberRoleFilter.addEventListener('change', () => this.filterMembers());
+        }
     }
 
     switchTab(tabName) {
@@ -478,6 +500,210 @@ class ServerSettingsManager {
         } catch (error) {
             console.error('Error deleting server:', error);
             this.showToast('Failed to delete server', 'error');
+        }
+    }
+
+    // Channel Management Methods
+    editChannel(channelId, channelName, channelType) {
+        console.log('editChannel called:', { channelId, channelName, channelType });
+        
+        // Populate the edit modal
+        document.getElementById('editChannelName').value = channelName;
+        document.getElementById('editChannelId').value = channelId;
+        
+        // Set the channel prefix based on type
+        const prefix = document.getElementById('editChannelPrefix');
+        if (prefix) {
+            prefix.textContent = channelType === 'voice' ? '🔊' : '#';
+        }
+        
+        // Show the modal
+        document.getElementById('editChannelModal').classList.remove('hidden');
+    }
+
+    deleteChannel(channelId, channelName) {
+        console.log('deleteChannel called:', { channelId, channelName });
+        
+        if (!confirm(`Are you sure you want to delete channel "${channelName}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        this.performDeleteChannel(channelId, channelName);
+    }
+
+    async performDeleteChannel(channelId, channelName) {
+        try {
+            const formData = new FormData();
+            formData.append('action', 'deleteChannel');
+            formData.append('channelId', channelId);
+
+            const response = await fetch(this.apiUrl('channels.php'), {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.showToast(`Channel "${channelName}" deleted successfully`, 'success');
+                // Reload channels
+                this.loadChannelManagement();
+            } else {
+                this.showToast(data.error || 'Failed to delete channel', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting channel:', error);
+            this.showToast('Failed to delete channel', 'error');
+        }
+    }
+
+    async saveChannelEdit() {
+        const channelId = document.getElementById('editChannelId').value;
+        const channelName = document.getElementById('editChannelName').value.trim();
+        
+        if (!channelName) {
+            this.showToast('Channel name is required', 'error');
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('action', 'updateChannel');
+            formData.append('channelId', channelId);
+            formData.append('name', channelName);
+
+            const response = await fetch(this.apiUrl('channels.php'), {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.showToast('Channel updated successfully', 'success');
+                document.getElementById('editChannelModal').classList.add('hidden');
+                // Reload channels
+                this.loadChannelManagement();
+            } else {
+                this.showToast(data.error || 'Failed to update channel', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating channel:', error);
+            this.showToast('Failed to update channel', 'error');
+        }
+    }
+
+    // Filter and Search Methods
+    filterChannels() {
+        const searchTerm = document.getElementById('channelSearchInput').value.toLowerCase();
+        const typeFilter = document.getElementById('channelTypeFilter').value;
+        
+        console.log('Filtering channels:', { searchTerm, typeFilter });
+        
+        const rows = document.querySelectorAll('#channelsTableBody .table-row');
+        rows.forEach(row => {
+            const channelName = row.querySelector('.channel-info span').textContent.toLowerCase();
+            const channelType = row.querySelector('.channel-type').textContent.toLowerCase();
+            
+            const matchesSearch = channelName.includes(searchTerm);
+            const matchesType = typeFilter === 'all' || channelType === typeFilter;
+            
+            row.style.display = (matchesSearch && matchesType) ? 'flex' : 'none';
+        });
+    }
+
+    filterMembers() {
+        const searchTerm = document.getElementById('memberSearchInput').value.toLowerCase();
+        const roleFilter = document.getElementById('memberRoleFilter').value;
+        
+        console.log('Filtering members:', { searchTerm, roleFilter });
+        
+        const rows = document.querySelectorAll('#membersTableBody .table-row');
+        rows.forEach(row => {
+            const memberName = row.querySelector('.member-name').textContent.toLowerCase();
+            const memberUsername = row.querySelector('.member-username').textContent.toLowerCase();
+            const memberRole = row.querySelector('.member-role').textContent;
+            
+            const matchesSearch = memberName.includes(searchTerm) || memberUsername.includes(searchTerm);
+            const matchesRole = roleFilter === 'all' || memberRole === roleFilter;
+            
+            row.style.display = (matchesSearch && matchesRole) ? 'flex' : 'none';
+        });
+    }
+
+    // Member Management Methods
+    changeMemberRole(userId, newRole) {
+        console.log('changeMemberRole called:', { userId, newRole });
+        
+        if (!confirm(`Are you sure you want to change this member's role to ${newRole}?`)) {
+            return;
+        }
+
+        this.performChangeMemberRole(userId, newRole);
+    }
+
+    async performChangeMemberRole(userId, newRole) {
+        try {
+            const formData = new FormData();
+            formData.append('action', 'changeMemberRole');
+            formData.append('serverId', this.currentServer.ID);
+            formData.append('userId', userId);
+            formData.append('role', newRole);
+
+            const response = await fetch(this.apiUrl('servers.php'), {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.showToast(`Member role changed to ${newRole} successfully`, 'success');
+                // Reload members
+                this.loadMemberManagement();
+            } else {
+                this.showToast(data.error || 'Failed to change member role', 'error');
+            }
+        } catch (error) {
+            console.error('Error changing member role:', error);
+            this.showToast('Failed to change member role', 'error');
+        }
+    }
+
+    kickMember(userId, username) {
+        console.log('kickMember called:', { userId, username });
+        
+        if (!confirm(`Are you sure you want to kick "${username}" from the server?`)) {
+            return;
+        }
+
+        this.performKickMember(userId, username);
+    }
+
+    async performKickMember(userId, username) {
+        try {
+            const formData = new FormData();
+            formData.append('action', 'kickMember');
+            formData.append('serverId', this.currentServer.ID);
+            formData.append('userId', userId);
+
+            const response = await fetch(this.apiUrl('servers.php'), {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.showToast(`${username} has been kicked from the server`, 'success');
+                // Reload members
+                this.loadMemberManagement();
+            } else {
+                this.showToast(data.error || 'Failed to kick member', 'error');
+            }
+        } catch (error) {
+            console.error('Error kicking member:', error);
+            this.showToast('Failed to kick member', 'error');
         }
     }
 

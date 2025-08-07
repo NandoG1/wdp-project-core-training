@@ -96,6 +96,12 @@ switch ($action) {
     case 'getServerMembers':
         getServerMembers($user_id);
         break;
+    case 'changeMemberRole':
+        changeMemberRole($user_id);
+        break;
+    case 'kickMember':
+        kickMember($user_id);
+        break;
     case 'deleteServer':
         deleteServer($user_id);
         break;
@@ -904,6 +910,90 @@ function getServerMembers($user_id) {
     } catch (Exception $e) {
         error_log("Error getting server members: " . $e->getMessage());
         send_response(['error' => 'Failed to load server members'], 500);
+    }
+}
+
+function changeMemberRole($user_id) {
+    global $mysqli;
+    
+    $server_id = $_POST['serverId'] ?? '';
+    $target_user_id = $_POST['userId'] ?? '';
+    $new_role = $_POST['role'] ?? '';
+    
+    if (empty($server_id) || empty($target_user_id) || empty($new_role)) {
+        send_response(['error' => 'Server ID, user ID, and role are required'], 400);
+    }
+    
+    if (!in_array($new_role, ['Admin', 'Member'])) {
+        send_response(['error' => 'Invalid role'], 400);
+    }
+    
+    // Check if user is owner
+    if (!is_server_owner($user_id, $server_id)) {
+        send_response(['error' => 'Only server owner can change member roles'], 403);
+    }
+    
+    try {
+        $stmt = $mysqli->prepare("
+            UPDATE UserServerMemberships 
+            SET Role = ? 
+            WHERE UserID = ? AND ServerID = ?
+        ");
+        $stmt->bind_param("sii", $new_role, $target_user_id, $server_id);
+        $stmt->execute();
+        
+        if ($stmt->affected_rows > 0) {
+            send_response(['success' => true, 'message' => 'Member role updated successfully']);
+        } else {
+            send_response(['error' => 'No changes made'], 400);
+        }
+    } catch (Exception $e) {
+        error_log("Error changing member role: " . $e->getMessage());
+        send_response(['error' => 'Failed to change member role'], 500);
+    }
+}
+
+function kickMember($user_id) {
+    global $mysqli;
+    
+    $server_id = $_POST['serverId'] ?? '';
+    $target_user_id = $_POST['userId'] ?? '';
+    
+    if (empty($server_id) || empty($target_user_id)) {
+        send_response(['error' => 'Server ID and user ID are required'], 400);
+    }
+    
+    // Check if user is owner or admin
+    if (!is_server_admin($user_id, $server_id)) {
+        send_response(['error' => 'Only server owner or admin can kick members'], 403);
+    }
+    
+    // Check if target user is owner
+    if (is_server_owner($target_user_id, $server_id)) {
+        send_response(['error' => 'Cannot kick server owner'], 400);
+    }
+    
+    // If current user is admin, they can only kick members, not other admins
+    if (!is_server_owner($user_id, $server_id) && is_server_admin($target_user_id, $server_id)) {
+        send_response(['error' => 'Admins cannot kick other admins'], 403);
+    }
+    
+    try {
+        $stmt = $mysqli->prepare("
+            DELETE FROM UserServerMemberships 
+            WHERE UserID = ? AND ServerID = ?
+        ");
+        $stmt->bind_param("ii", $target_user_id, $server_id);
+        $stmt->execute();
+        
+        if ($stmt->affected_rows > 0) {
+            send_response(['success' => true, 'message' => 'Member kicked successfully']);
+        } else {
+            send_response(['error' => 'Member not found'], 404);
+        }
+    } catch (Exception $e) {
+        error_log("Error kicking member: " . $e->getMessage());
+        send_response(['error' => 'Failed to kick member'], 500);
     }
 }
 ?>

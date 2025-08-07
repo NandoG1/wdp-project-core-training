@@ -280,6 +280,7 @@
         </div>
         <div class="modal-body">
             <form id="editChannelForm">
+                <input type="hidden" id="editChannelId" value="">
                 <div class="form-group">
                     <label for="editChannelName">Channel Name</label>
                     <div class="channel-name-input">
