@@ -29,16 +29,48 @@ switch ($action) {
 function createInvite($user_id) {
     global $mysqli;
     
+    error_log("createInvite called with user_id: $user_id");
+    
+    // Create ServerInvite table if it doesn't exist
+    try {
+        $result = $mysqli->query("
+            CREATE TABLE IF NOT EXISTS ServerInvite (
+                ID INTEGER(10) PRIMARY KEY AUTO_INCREMENT,
+                ServerID INTEGER(10) NOT NULL,
+                InviteLink VARCHAR(50) NOT NULL UNIQUE,
+                CreatedBy INTEGER(10) NOT NULL,
+                CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                ExpiresAt TIMESTAMP NULL,
+                MaxUses INTEGER(10) DEFAULT 0,
+                Uses INTEGER(10) DEFAULT 0,
+                FOREIGN KEY (ServerID) REFERENCES Server(ID) ON DELETE CASCADE,
+                FOREIGN KEY (CreatedBy) REFERENCES Users(ID) ON DELETE CASCADE
+            )
+        ");
+        if (!$result) {
+            error_log("Failed to create ServerInvite table: " . $mysqli->error);
+        }
+    } catch (Exception $e) {
+        error_log("Error creating ServerInvite table: " . $e->getMessage());
+    }
+    
     $server_id = $_POST['serverId'] ?? '';
     $expires_in = intval($_POST['expiresIn'] ?? 0); // 0 = never expires
     $max_uses = intval($_POST['maxUses'] ?? 0); // 0 = unlimited
     
+    error_log("createInvite parameters - server_id: $server_id, expires_in: $expires_in, max_uses: $max_uses");
+    
     if (empty($server_id)) {
+        error_log("createInvite error: Server ID is empty");
         send_response(['error' => 'Server ID is required'], 400);
     }
     
     // Check if user is member of server
-    if (!is_server_member($user_id, $server_id)) {
+    $is_member = is_server_member($user_id, $server_id);
+    error_log("is_server_member($user_id, $server_id) returned: " . ($is_member ? 'true' : 'false'));
+    
+    if (!$is_member) {
+        error_log("createInvite error: Access denied for user $user_id on server $server_id");
         send_response(['error' => 'Access denied'], 403);
     }
     
@@ -51,7 +83,7 @@ function createInvite($user_id) {
         }
         
         $stmt = $mysqli->prepare("
-            INSERT INTO ServerInvite (ServerID, InviteLink, CreatedBy, ExpiresAt, MaxUses) 
+            INSERT INTO ServerInvite (ServerID, InviteLink, InviteUserID, ExpiresAt, MaxUses) 
             VALUES (?, ?, ?, ?, ?)
         ");
         $stmt->bind_param("isisi", $server_id, $invite_code, $user_id, $expires_at, $max_uses);

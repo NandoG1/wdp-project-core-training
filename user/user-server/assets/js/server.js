@@ -1803,10 +1803,30 @@ class ServerApp {
     }
 
     openInvitePeopleModal() {
-        if (this.currentServer) {
+        let serverId = null;
+        
+        // Try to get server ID from currentServer
+        if (this.currentServer && this.currentServer.ID) {
+            serverId = this.currentServer.ID;
+        } else {
+            // Try alternative methods to get server ID
+            const urlParams = new URLSearchParams(window.location.search);
+            serverId = urlParams.get('serverId') || urlParams.get('server') || urlParams.get('id');
+            
+            if (!serverId) {
+                const activeServer = document.querySelector('.server-item.active');
+                if (activeServer) {
+                    serverId = activeServer.getAttribute('data-server-id');
+                }
+            }
+        }
+        
+        if (serverId) {
             $('#invitePeopleModal').removeClass('hidden');
-            // Initialize invite modal with current server
-            window.inviteSystem.loadServerInvites(this.currentServer.ID);
+            // Initialize invite modal with server ID
+            window.inviteSystem.loadServerInvites(serverId);
+        } else {
+            alert('Please select a server first');
         }
     }
 
@@ -1959,11 +1979,8 @@ function deleteServerFromLeave() {
 let serverApp;
 
 $(document).ready(() => {
-    serverApp = new ServerApp();
+    window.serverApp = new ServerApp();
 });
-
-// Export for use in other files
-window.serverApp = serverApp;
 
 // Additional Modal Functions
 
@@ -2047,31 +2064,81 @@ function closeInvitePeopleModal() {
 }
 
 function copyInviteLink() {
-    const inviteLink = document.getElementById('inviteLink');
-    inviteLink.select();
+    const inviteLinkText = document.getElementById('inviteLinkText');
+    if (!inviteLinkText || !inviteLinkText.textContent.trim()) {
+        alert('No invite link to copy');
+        return;
+    }
+    
+    // Create a temporary textarea to copy the text
+    const textarea = document.createElement('textarea');
+    textarea.value = inviteLinkText.textContent;
+    document.body.appendChild(textarea);
+    textarea.select();
     document.execCommand('copy');
+    document.body.removeChild(textarea);
     
     const copyBtn = document.getElementById('copyInviteBtn');
-    const originalText = copyBtn.innerHTML;
+    const originalHtml = copyBtn.innerHTML;
     copyBtn.innerHTML = '<i class="fas fa-check"></i>';
     setTimeout(() => {
-        copyBtn.innerHTML = originalText;
+        copyBtn.innerHTML = originalHtml;
     }, 2000);
 }
 
 function regenerateInviteLink() {
-    const formData = new FormData();
-    formData.append('action', 'regenerate_invite');
-    formData.append('server_id', currentServerId);
+    console.log('regenerateInviteLink called');
+    console.log('window.serverApp:', window.serverApp);
+    console.log('window.serverApp.currentServer:', window.serverApp?.currentServer);
     
-    fetch('api/invite.php', {
+    let serverId = null;
+    
+    // Try to get server ID from serverApp
+    if (window.serverApp && window.serverApp.currentServer && window.serverApp.currentServer.ID) {
+        serverId = window.serverApp.currentServer.ID;
+    } else {
+        // Try to get server ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        serverId = urlParams.get('serverId') || urlParams.get('server') || urlParams.get('id');
+        
+        // Try to get from DOM data attribute
+        if (!serverId) {
+            const activeServer = document.querySelector('.server-item.active');
+            if (activeServer) {
+                serverId = activeServer.getAttribute('data-server-id');
+            }
+        }
+    }
+    
+    if (!serverId) {
+        console.error('No server selected - serverApp:', window.serverApp, 'currentServer:', window.serverApp?.currentServer);
+        alert('Please select a server first');
+        return;
+    }
+    
+    const expirationSelect = document.getElementById('inviteExpiration');
+    const expiresIn = expirationSelect ? expirationSelect.value : 1440; // default to 1 day
+    
+    console.log('Creating invite for server ID:', serverId);
+    
+    const formData = new FormData();
+    formData.append('action', 'createInvite');
+    formData.append('serverId', serverId);
+    formData.append('expiresIn', expiresIn);
+    
+    fetch('api/invites.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
-        if (data.success) {
-            document.getElementById('inviteLink').value = data.invite_link;
+        console.log('Response data:', data);
+        if (data.success && data.invite) {
+            const inviteUrl = `${window.location.origin}/invite/${data.invite.InviteLink}`;
+            document.getElementById('inviteLinkText').textContent = inviteUrl;
         } else {
             alert(data.message || 'Failed to regenerate invite link');
         }
@@ -2083,16 +2150,51 @@ function regenerateInviteLink() {
 }
 
 function inviteTitibot() {
-    const formData = new FormData();
-    formData.append('action', 'invite_titibot');
-    formData.append('server_id', currentServerId);
+    console.log('inviteTitibot called');
+    console.log('window.serverApp:', window.serverApp);
+    console.log('window.serverApp.currentServer:', window.serverApp?.currentServer);
     
-    fetch('api/invite.php', {
+    let serverId = null;
+    
+    // Try to get server ID from serverApp
+    if (window.serverApp && window.serverApp.currentServer && window.serverApp.currentServer.ID) {
+        serverId = window.serverApp.currentServer.ID;
+    } else {
+        // Try to get server ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        serverId = urlParams.get('serverId') || urlParams.get('server') || urlParams.get('id');
+        
+        // Try to get from DOM data attribute
+        if (!serverId) {
+            const activeServer = document.querySelector('.server-item.active');
+            if (activeServer) {
+                serverId = activeServer.getAttribute('data-server-id');
+            }
+        }
+    }
+    
+    if (!serverId) {
+        console.error('No server selected - serverApp:', window.serverApp, 'currentServer:', window.serverApp?.currentServer);
+        alert('Please select a server first');
+        return;
+    }
+    
+    console.log('Inviting Titibot to server ID:', serverId);
+    
+    const formData = new FormData();
+    formData.append('action', 'inviteTitibot');
+    formData.append('serverId', serverId);
+    
+    fetch('api/invites.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             alert('Titibot has been invited to the server!');
         } else {
@@ -2155,9 +2257,14 @@ function saveServerName() {
         return;
     }
     
+    if (!window.serverApp || !window.serverApp.currentServer || !window.serverApp.currentServer.ID) {
+        alert('Error: No server selected');
+        return;
+    }
+    
     const formData = new FormData();
     formData.append('action', 'update_server_name');
-    formData.append('server_id', currentServerId);
+    formData.append('server_id', window.serverApp.currentServer.ID);
     formData.append('name', serverName);
     
     fetch('api/server.php', {
@@ -2181,9 +2288,14 @@ function saveServerName() {
 function saveServerDescription() {
     const serverDescription = document.getElementById('serverDescriptionInput').value.trim();
     
+    if (!window.serverApp || !window.serverApp.currentServer || !window.serverApp.currentServer.ID) {
+        alert('Error: No server selected');
+        return;
+    }
+    
     const formData = new FormData();
     formData.append('action', 'update_server_description');
-    formData.append('server_id', currentServerId);
+    formData.append('server_id', window.serverApp.currentServer.ID);
     formData.append('description', serverDescription);
     
     fetch('api/server.php', {
@@ -2207,9 +2319,14 @@ function saveServerDescription() {
 function saveServerCategory() {
     const serverCategory = document.getElementById('serverCategorySelect').value;
     
+    if (!window.serverApp || !window.serverApp.currentServer || !window.serverApp.currentServer.ID) {
+        alert('Error: No server selected');
+        return;
+    }
+    
     const formData = new FormData();
     formData.append('action', 'update_server_category');
-    formData.append('server_id', currentServerId);
+    formData.append('server_id', window.serverApp.currentServer.ID);
     formData.append('category', serverCategory);
     
     fetch('api/server.php', {
@@ -2239,9 +2356,14 @@ function deleteServer() {
         return;
     }
     
+    if (!window.serverApp || !window.serverApp.currentServer || !window.serverApp.currentServer.ID) {
+        alert('Error: No server selected');
+        return;
+    }
+    
     const formData = new FormData();
     formData.append('action', 'delete_server');
-    formData.append('server_id', currentServerId);
+    formData.append('server_id', window.serverApp.currentServer.ID);
     
     fetch('api/server.php', {
         method: 'POST',
@@ -2313,9 +2435,14 @@ function confirmOwnershipTransfer() {
         return;
     }
     
+    if (!window.serverApp || !window.serverApp.currentServer || !window.serverApp.currentServer.ID) {
+        alert('Error: No server selected');
+        return;
+    }
+    
     const formData = new FormData();
     formData.append('action', 'transfer_ownership');
-    formData.append('server_id', currentServerId);
+    formData.append('server_id', window.serverApp.currentServer.ID);
     formData.append('new_owner_id', memberId);
     
     fetch('api/server.php', {
@@ -2519,3 +2646,176 @@ function changePassword() {
         alert('Failed to change password');
     });
 }
+
+// Invite System
+class InviteSystem {
+    constructor() {
+        this.currentServerInvites = [];
+    }
+
+    loadServerInvites(serverId) {
+        console.log('loadServerInvites called with serverId:', serverId);
+        
+        if (!serverId) {
+            console.error('No serverId provided to loadServerInvites');
+            document.getElementById('inviteLinkText').textContent = 'Error: No server selected';
+            return;
+        }
+        
+        // Generate initial invite link when modal opens
+        this.generateInviteLink(serverId);
+        
+        // Load existing invites
+        fetch(`api/invites.php?action=getInvites&serverId=${serverId}`)
+            .then(response => {
+                console.log('getInvites response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('getInvites response data:', data);
+                if (data.success) {
+                    this.currentServerInvites = data.invites;
+                    this.displayRecentInvites();
+                } else {
+                    console.error('getInvites failed:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading invites:', error);
+            });
+    }
+
+    generateInviteLink(serverId) {
+        console.log('generateInviteLink called with serverId:', serverId);
+        
+        const expirationSelect = document.getElementById('inviteExpiration');
+        const expiresIn = expirationSelect ? expirationSelect.value : 1440; // default to 1 day
+
+        const formData = new FormData();
+        formData.append('action', 'createInvite');
+        formData.append('serverId', serverId);
+        formData.append('expiresIn', expiresIn);
+
+        fetch('api/invites.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log('createInvite response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('createInvite response data:', data);
+            if (data.success && data.invite) {
+                const inviteUrl = `${window.location.origin}/invite/${data.invite.InviteLink}`;
+                document.getElementById('inviteLinkText').textContent = inviteUrl;
+                this.currentServerInvites.unshift(data.invite);
+                this.displayRecentInvites();
+            } else {
+                console.error('createInvite failed:', data);
+                document.getElementById('inviteLinkText').textContent = 'Failed to generate invite link';
+            }
+        })
+        .catch(error => {
+            console.error('Error generating invite:', error);
+            document.getElementById('inviteLinkText').textContent = 'Error generating invite link';
+        });
+    }
+
+    displayRecentInvites() {
+        const container = document.getElementById('recentInvitesList');
+        if (!container) return;
+
+        if (this.currentServerInvites.length === 0) {
+            container.innerHTML = '<p class="no-invites">No recent invites</p>';
+            return;
+        }
+
+        const invitesHtml = this.currentServerInvites.map(invite => {
+            const expiresText = invite.ExpiresAt ? 
+                `Expires: ${new Date(invite.ExpiresAt).toLocaleDateString()}` : 
+                'Never expires';
+            
+            const usesText = invite.MaxUses > 0 ? 
+                `${invite.Uses}/${invite.MaxUses} uses` : 
+                `${invite.Uses} uses`;
+
+            return `
+                <div class="invite-item">
+                    <div class="invite-info">
+                        <div class="invite-code">${invite.InviteLink}</div>
+                        <div class="invite-details">
+                            <span class="invite-creator">Created by ${invite.CreatedByUsername}</span>
+                            <span class="invite-expiry">${expiresText}</span>
+                            <span class="invite-uses">${usesText}</span>
+                        </div>
+                    </div>
+                    <div class="invite-actions">
+                        <button class="btn-icon" onclick="window.inviteSystem.copyInviteCode('${invite.InviteLink}')" title="Copy">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="btn-icon btn-danger" onclick="window.inviteSystem.deleteInvite(${invite.ID})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = invitesHtml;
+    }
+
+    copyInviteCode(inviteCode) {
+        const inviteUrl = `${window.location.origin}/invite/${inviteCode}`;
+        navigator.clipboard.writeText(inviteUrl).then(() => {
+            // Show temporary success message
+            const btn = event.target.closest('button');
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+                btn.innerHTML = originalIcon;
+            }, 1000);
+        }).catch(error => {
+            console.error('Error copying to clipboard:', error);
+            alert('Failed to copy invite link');
+        });
+    }
+
+    deleteInvite(inviteId) {
+        if (!confirm('Are you sure you want to delete this invite?')) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('action', 'deleteInvite');
+        formData.append('inviteId', inviteId);
+
+        fetch('api/invites.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove from local array and update display
+                this.currentServerInvites = this.currentServerInvites.filter(inv => inv.ID != inviteId);
+                this.displayRecentInvites();
+            } else {
+                alert(data.message || 'Failed to delete invite');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting invite:', error);
+            alert('Failed to delete invite');
+        });
+    }
+}
+
+// Initialize invite system
+window.inviteSystem = new InviteSystem();
