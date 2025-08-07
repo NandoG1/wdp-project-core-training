@@ -41,7 +41,7 @@
             <!-- Settings Content -->
             <div class="settings-content">
                 <!-- My Account Tab -->
-                <div class="settings-tab active" id="myAccountTab">
+                <div class="settings-tab active" id="my-accountTab">
                     <div class="settings-header">
                         <h3>My Account</h3>
                         <p>Manage your account information and settings</p>
@@ -124,7 +124,7 @@
                 </div>
 
                 <!-- Voice & Video Tab -->
-                <div class="settings-tab" id="voiceVideoTab">
+                <div class="settings-tab" id="voice-videoTab">
                     <div class="settings-header">
                         <h3>Voice & Video</h3>
                         <p>Configure your audio and video settings for the best communication experience</p>
@@ -190,6 +190,9 @@
                                     <div class="test-bar"></div>
                                     <div class="test-bar"></div>
                                     <div class="test-bar"></div>
+                                    <div class="test-bar"></div>
+                                    <div class="test-bar"></div>
+                                    <div class="test-bar"></div>
                                 </div>
                             </div>
                         </div>
@@ -207,8 +210,13 @@
                         </div>
 
                         <div class="camera-preview-section">
-                            <h4>Camera Preview</h4>
+                            <h4><i class="fas fa-video"></i> Camera Preview</h4>
                             <div class="camera-preview" id="cameraPreview">
+                                <div class="camera-preview-placeholder" id="cameraPlaceholder">
+                                    <i class="fas fa-video-slash"></i>
+                                    <p>Camera preview will appear here</p>
+                                    <p>Click "Test Camera" to start</p>
+                                </div>
                                 <video id="cameraVideo" autoplay muted></video>
                                 <div class="camera-overlay">
                                     <button class="btn-danger" id="stopCameraBtn" onclick="stopCamera()">
@@ -217,14 +225,14 @@
                                 </div>
                             </div>
                             <button class="btn-primary" id="testCameraBtn" onclick="testCamera()">
-                                Test Camera
+                                <i class="fas fa-play"></i> Test Camera
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Delete Account Tab -->
-                <div class="settings-tab" id="deleteAccountTab">
+                <div class="settings-tab" id="delete-accountTab">
                     <div class="settings-header danger">
                         <h3>Delete Account</h3>
                         <p>Permanently delete your account and all associated data</p>
