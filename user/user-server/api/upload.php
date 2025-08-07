@@ -78,6 +78,11 @@ try {
         processImage($upload_path, $upload_type);
     }
     
+    // Update user profile if it's avatar or banner
+    if ($upload_type === 'avatar' || $upload_type === 'banner') {
+        updateUserProfile($user_id, $upload_type, $public_url);
+    }
+    
     // Log upload to database
     logUpload($user_id, $upload_type, $unique_name, $file_name, $file_size, $public_url);
     
@@ -344,6 +349,30 @@ function logUpload($user_id, $upload_type, $filename, $original_name, $file_size
     } catch (Exception $e) {
         error_log("Error logging upload: " . $e->getMessage());
         // Don't fail the upload if logging fails
+    }
+}
+
+function updateUserProfile($user_id, $upload_type, $public_url) {
+    global $mysqli;
+    
+    try {
+        if ($upload_type === 'avatar') {
+            $stmt = $mysqli->prepare("UPDATE Users SET ProfilePictureUrl = ? WHERE ID = ?");
+        } elseif ($upload_type === 'banner') {
+            $stmt = $mysqli->prepare("UPDATE Users SET BannerProfile = ? WHERE ID = ?");
+        } else {
+            return; // Not a profile-related upload
+        }
+        
+        $stmt->bind_param("si", $public_url, $user_id);
+        $stmt->execute();
+        
+        if ($stmt->affected_rows > 0) {
+            error_log("Updated user profile: $upload_type for user $user_id");
+        }
+    } catch (Exception $e) {
+        error_log("Error updating user profile: " . $e->getMessage());
+        throw $e; // Re-throw to handle in calling function
     }
 }
 ?>

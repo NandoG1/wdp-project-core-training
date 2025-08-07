@@ -15,6 +15,7 @@ $username = $_SESSION['username'] ?? 'User';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MisVord - Servers</title>
     <link rel="stylesheet" href="assets/css/server.css">
+    <link rel="stylesheet" href="assets/css/user-settings.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -280,6 +281,7 @@ $username = $_SESSION['username'] ?? 'User';
     <script src="assets/js/channels.js"></script>
     <script src="assets/js/voice.js"></script>
     <script src="assets/js/modals.js"></script>
+    <script src="assets/js/user-settings.js"></script>
     <script>
         // Initialize with user data
         window.currentUser = {

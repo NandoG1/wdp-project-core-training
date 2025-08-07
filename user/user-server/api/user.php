@@ -19,17 +19,20 @@ switch ($action) {
     case 'updateBanner':
         updateBanner($user_id);
         break;
-    case 'changePassword':
-        changePassword($user_id);
+    case 'getSecurityQuestion':
+        getSecurityQuestion($user_id);
         break;
     case 'verifySecurityQuestion':
         verifySecurityQuestion($user_id);
         break;
-    case 'deleteAccount':
-        deleteAccount($user_id);
+    case 'changePassword':
+        changePassword($user_id);
         break;
     case 'checkOwnedServers':
         checkOwnedServers($user_id);
+        break;
+    case 'deleteAccount':
+        deleteAccount($user_id);
         break;
     case 'updateStatus':
         updateStatus($user_id);
@@ -62,52 +65,124 @@ function getCurrentUser($user_id) {
 function updateProfile($user_id) {
     global $mysqli;
     
-    $field = $_POST['field'] ?? '';
-    $value = sanitize_input($_POST['value'] ?? '');
-    
-    if (empty($field)) {
-        send_response(['error' => 'Field is required'], 400);
-    }
-    
-    $allowed_fields = ['Username', 'DisplayName', 'Bio'];
-    if (!in_array($field, $allowed_fields)) {
-        send_response(['error' => 'Invalid field'], 400);
-    }
-    
-    try {
-        // Special validation for username
-        if ($field === 'Username') {
-            if (strlen($value) < 2 || strlen($value) > 32) {
+    // Check if it's a single field update or multiple fields
+    if (isset($_POST['field']) && isset($_POST['value'])) {
+        // Single field update
+        $field = $_POST['field'];
+        $value = sanitize_input($_POST['value']);
+        
+        if (empty($field)) {
+            send_response(['error' => 'Field is required'], 400);
+        }
+        
+        $allowed_fields = ['Username', 'DisplayName', 'Bio'];
+        if (!in_array($field, $allowed_fields)) {
+            send_response(['error' => 'Invalid field'], 400);
+        }
+        
+        try {
+            // Special validation for username
+            if ($field === 'Username') {
+                if (strlen($value) < 2 || strlen($value) > 32) {
+                    send_response(['error' => 'Username must be between 2 and 32 characters'], 400);
+                }
+                
+                // Check if username is already taken
+                $stmt = $mysqli->prepare("SELECT ID FROM Users WHERE Username = ? AND ID != ?");
+                $stmt->bind_param("si", $value, $user_id);
+                $stmt->execute();
+                
+                if ($stmt->get_result()->num_rows > 0) {
+                    send_response(['error' => 'Username is already taken'], 400);
+                }
+            }
+            
+            // Special validation for bio
+            if ($field === 'Bio' && strlen($value) > 1000) {
+                send_response(['error' => 'Bio must be 1000 characters or less'], 400);
+            }
+            
+            $stmt = $mysqli->prepare("UPDATE Users SET $field = ? WHERE ID = ?");
+            $stmt->bind_param("si", $value, $user_id);
+            $stmt->execute();
+            
+            if ($stmt->affected_rows > 0 || $mysqli->affected_rows > 0) {
+                send_response(['success' => true, 'message' => 'Profile updated successfully']);
+            } else {
+                send_response(['error' => 'No changes made'], 400);
+            }
+        } catch (Exception $e) {
+            error_log("Error updating profile field: " . $e->getMessage());
+            send_response(['error' => 'Failed to update profile'], 500);
+        }
+    } else {
+        // Multiple field update
+        $username = sanitize_input($_POST['username'] ?? '');
+        $displayName = sanitize_input($_POST['displayName'] ?? '');
+        $bio = sanitize_input($_POST['bio'] ?? '');
+        
+        $updates = [];
+        $params = [];
+        $types = '';
+        
+        // Validate and prepare updates
+        if (!empty($username)) {
+            if (strlen($username) < 2 || strlen($username) > 32) {
                 send_response(['error' => 'Username must be between 2 and 32 characters'], 400);
             }
             
             // Check if username is already taken
             $stmt = $mysqli->prepare("SELECT ID FROM Users WHERE Username = ? AND ID != ?");
-            $stmt->bind_param("si", $value, $user_id);
+            $stmt->bind_param("si", $username, $user_id);
             $stmt->execute();
             
             if ($stmt->get_result()->num_rows > 0) {
                 send_response(['error' => 'Username is already taken'], 400);
             }
+            
+            $updates[] = "Username = ?";
+            $params[] = $username;
+            $types .= 's';
         }
         
-        // Special validation for bio
-        if ($field === 'Bio' && strlen($value) > 1000) {
-            send_response(['error' => 'Bio must be 1000 characters or less'], 400);
+        if (isset($_POST['displayName'])) {
+            $updates[] = "DisplayName = ?";
+            $params[] = $displayName;
+            $types .= 's';
         }
         
-        $stmt = $mysqli->prepare("UPDATE Users SET $field = ? WHERE ID = ?");
-        $stmt->bind_param("si", $value, $user_id);
-        $stmt->execute();
-        
-        if ($stmt->affected_rows > 0) {
-            send_response(['success' => true, 'message' => 'Profile updated successfully']);
-        } else {
-            send_response(['error' => 'No changes made'], 400);
+        if (isset($_POST['bio'])) {
+            if (strlen($bio) > 1000) {
+                send_response(['error' => 'Bio must be 1000 characters or less'], 400);
+            }
+            
+            $updates[] = "Bio = ?";
+            $params[] = $bio;
+            $types .= 's';
         }
-    } catch (Exception $e) {
-        error_log("Error updating profile: " . $e->getMessage());
-        send_response(['error' => 'Failed to update profile'], 500);
+        
+        if (empty($updates)) {
+            send_response(['error' => 'No valid fields to update'], 400);
+        }
+        
+        try {
+            $sql = "UPDATE Users SET " . implode(', ', $updates) . " WHERE ID = ?";
+            $params[] = $user_id;
+            $types .= 'i';
+            
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            
+            if ($stmt->affected_rows > 0 || $mysqli->affected_rows > 0) {
+                send_response(['success' => true, 'message' => 'Profile updated successfully']);
+            } else {
+                send_response(['error' => 'No changes made'], 400);
+            }
+        } catch (Exception $e) {
+            error_log("Error updating profile: " . $e->getMessage());
+            send_response(['error' => 'Failed to update profile'], 500);
+        }
     }
 }
 
@@ -188,6 +263,34 @@ function verifySecurityQuestion($user_id) {
     } catch (Exception $e) {
         error_log("Error verifying security question: " . $e->getMessage());
         send_response(['error' => 'Failed to verify security question'], 500);
+    }
+}
+
+function getSecurityQuestion($user_id) {
+    global $mysqli;
+    
+    try {
+        $stmt = $mysqli->prepare("SELECT SecurityQuestion FROM Users WHERE ID = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($user = $result->fetch_assoc()) {
+            $question = $user['SecurityQuestion'];
+            if (empty($question)) {
+                $question = 'What is your favorite color?'; // Default question
+            }
+            
+            send_response([
+                'success' => true,
+                'question' => $question
+            ]);
+        } else {
+            send_response(['error' => 'User not found'], 404);
+        }
+    } catch (Exception $e) {
+        error_log("Error getting security question: " . $e->getMessage());
+        send_response(['error' => 'Failed to get security question'], 500);
     }
 }
 

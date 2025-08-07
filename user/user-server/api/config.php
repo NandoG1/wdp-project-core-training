@@ -73,7 +73,7 @@ function validate_session() {
 // Function to get user by ID
 function get_user_by_id($user_id) {
     global $mysqli;
-    $stmt = $mysqli->prepare("SELECT ID, Username, Email, ProfilePictureUrl, Status, DisplayName, Discriminator, Bio FROM Users WHERE ID = ?");
+    $stmt = $mysqli->prepare("SELECT ID, Username, Email, ProfilePictureUrl, BannerProfile, Status, DisplayName, Discriminator, Bio FROM Users WHERE ID = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
