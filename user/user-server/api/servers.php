@@ -2,8 +2,6 @@
 require_once 'config.php';
 
 header('Content-Type: application/json');
-
-// Image upload handler function
 function handleImageUpload($file, $upload_dir) {
     $debug_file = __DIR__ . '/server_debug.log';
     file_put_contents($debug_file, "=== Image Upload Debug ===\n", FILE_APPEND);
@@ -12,24 +10,18 @@ function handleImageUpload($file, $upload_dir) {
     
     $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     $max_size = 5 * 1024 * 1024; // 5MB
-    
-    // Validate file type
     if (!in_array($file['type'], $allowed_types)) {
         $error = "Invalid file type: " . $file['type'];
         error_log($error);
         file_put_contents($debug_file, "ERROR: $error\n", FILE_APPEND);
         return false;
     }
-    
-    // Validate file size
     if ($file['size'] > $max_size) {
         $error = "File too large: " . $file['size'];
         error_log($error);
         file_put_contents($debug_file, "ERROR: $error\n", FILE_APPEND);
         return false;
     }
-    
-    // Create upload directory if it doesn't exist
     $upload_path = __DIR__ . '/../../../uploads/' . $upload_dir;
     file_put_contents($debug_file, "Upload path: $upload_path\n", FILE_APPEND);
     
@@ -42,18 +34,13 @@ function handleImageUpload($file, $upload_dir) {
         }
         file_put_contents($debug_file, "Created directory: $upload_path\n", FILE_APPEND);
     }
-    
-    // Generate unique filename
     $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = uniqid() . '_' . time() . '.' . $file_extension;
     $full_path = $upload_path . '/' . $filename;
     
     file_put_contents($debug_file, "Generated filename: $filename\n", FILE_APPEND);
     file_put_contents($debug_file, "Full path: $full_path\n", FILE_APPEND);
-    
-    // Move uploaded file
     if (move_uploaded_file($file['tmp_name'], $full_path)) {
-        // Return relative path for database storage
         $relative_path = '/uploads/' . $upload_dir . '/' . $filename;
         file_put_contents($debug_file, "SUCCESS: File uploaded to $relative_path\n", FILE_APPEND);
         return $relative_path;
@@ -157,7 +144,6 @@ function getServer($user_id) {
     }
     
     try {
-        // Check if user is member of server
         if (!is_server_member($user_id, $server_id)) {
             send_response(['error' => 'Access denied'], 403);
         }
@@ -185,13 +171,9 @@ function getServer($user_id) {
 
 function createServer($user_id) {
     global $mysqli, $server_categories;
-    
-    // Create debug log file for tracking
     $debug_file = __DIR__ . '/server_debug.log';
     $debug_msg = "\n=== Server Creation Debug - " . date('Y-m-d H:i:s') . " ===\n";
     file_put_contents($debug_file, $debug_msg, FILE_APPEND);
-    
-    // Debug logging
     error_log("createServer called for user: " . $user_id);
     file_put_contents($debug_file, "User ID: $user_id\n", FILE_APPEND);
     error_log("POST data: " . json_encode($_POST));
@@ -201,12 +183,8 @@ function createServer($user_id) {
     $description = sanitize_input($_POST['description'] ?? '');
     $category = sanitize_input($_POST['category'] ?? 'Other');
     $is_public = isset($_POST['isPublic']) ? (bool)$_POST['isPublic'] : false;
-    
-    // Handle file uploads
     $icon_server = null;
     $banner_server = null;
-    
-    // Process server icon upload
     if (isset($_FILES['iconServer']) && $_FILES['iconServer']['error'] === UPLOAD_ERR_OK) {
         $icon_server = handleImageUpload($_FILES['iconServer'], 'server-icons');
         if ($icon_server === false) {
@@ -215,8 +193,6 @@ function createServer($user_id) {
         }
         file_put_contents($debug_file, "Icon uploaded: $icon_server\n", FILE_APPEND);
     }
-    
-    // Process server banner upload
     if (isset($_FILES['bannerServer']) && $_FILES['bannerServer']['error'] === UPLOAD_ERR_OK) {
         $banner_server = handleImageUpload($_FILES['bannerServer'], 'server-banners');
         if ($banner_server === false) {
@@ -240,16 +216,12 @@ function createServer($user_id) {
     
     try {
         error_log("Starting database transaction");
-        
-        // Check all related tables for ID column issues
         $debug_file = __DIR__ . '/server_debug.log';
         $tables_to_check = ['Server', 'UserServerMemberships', 'Channel'];
         
         foreach ($tables_to_check as $table) {
             error_log("=== Checking table: $table ===");
             file_put_contents($debug_file, "=== Checking table: $table ===\n", FILE_APPEND);
-            
-            // Check table status and auto-increment
             $check_stmt = $mysqli->prepare("SHOW TABLE STATUS LIKE '$table'");
             $check_stmt->execute();
             $table_status = $check_stmt->get_result()->fetch_assoc();
@@ -259,13 +231,9 @@ function createServer($user_id) {
             error_log("$table auto-increment value: " . $auto_inc);
             error_log("$table engine: " . $engine);
             file_put_contents($debug_file, "$table auto-increment: $auto_inc, engine: $engine\n", FILE_APPEND);
-            
-            // Check table structure
             $desc_stmt = $mysqli->prepare("DESCRIBE `$table`");
             $desc_stmt->execute();
             $columns = $desc_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-            
-            // Find ID column
             foreach ($columns as $column) {
                 if (stripos($column['Field'], 'ID') !== false) {
                     $col_info = json_encode($column);
@@ -273,8 +241,6 @@ function createServer($user_id) {
                     file_put_contents($debug_file, "$table ID column ({$column['Field']}): $col_info\n", FILE_APPEND);
                 }
             }
-            
-            // Check current max ID value
             $max_stmt = $mysqli->prepare("SELECT MAX(ID) as max_id FROM `$table`");
             if ($max_stmt && $max_stmt->execute()) {
                 $max_result = $max_stmt->get_result()->fetch_assoc();
@@ -283,8 +249,6 @@ function createServer($user_id) {
                 file_put_contents($debug_file, "$table current max ID: $max_id\n", FILE_APPEND);
             }
         }
-        
-        // Create server
         error_log("=== Attempting to insert into Server table ===");
         $stmt = $mysqli->prepare("
             INSERT INTO Server (Name, Description, Category, IconServer, BannerServer, IsPrivate) 
@@ -307,8 +271,6 @@ function createServer($user_id) {
         
         $server_id = $mysqli->insert_id;
         error_log("SUCCESS: Server created with ID: " . $server_id);
-        
-        // Add creator as owner
         error_log("=== Attempting to insert into UserServerMemberships table ===");
         $stmt = $mysqli->prepare("
             INSERT INTO UserServerMemberships (UserID, ServerID, Role) 
@@ -322,8 +284,6 @@ function createServer($user_id) {
         }
         
         error_log("SUCCESS: Owner membership added");
-        
-        // Create default channels
         $channels = [
             ['general', 'text'],
             ['General', 'voice']
@@ -358,8 +318,6 @@ function createServer($user_id) {
         $mysqli->rollback();
         $error_msg = "Error creating server: " . $e->getMessage() . "\nMySQL error: " . $mysqli->error;
         error_log($error_msg);
-        
-        // Write detailed error to debug file
         $debug_file = __DIR__ . '/server_debug.log';
         file_put_contents($debug_file, "ERROR: " . $error_msg . "\n", FILE_APPEND);
         file_put_contents($debug_file, "MySQL errno: " . $mysqli->errno . "\n", FILE_APPEND);
@@ -379,8 +337,6 @@ function updateServer($user_id) {
     if (empty($server_id) || empty($field)) {
         send_response(['error' => 'Server ID and field are required'], 400);
     }
-    
-    // Check if user is owner or admin
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -423,14 +379,11 @@ function deleteServer($user_id) {
     if (empty($server_id)) {
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is owner
     if (!is_server_owner($user_id, $server_id)) {
         send_response(['error' => 'Only server owner can delete the server'], 403);
     }
     
     try {
-        // Get server name for confirmation
         $stmt = $mysqli->prepare("SELECT Name FROM Server WHERE ID = ?");
         $stmt->bind_param("i", $server_id);
         $stmt->execute();
@@ -445,8 +398,6 @@ function deleteServer($user_id) {
         }
         
         $mysqli->begin_transaction();
-        
-        // Delete server (cascading deletes will handle related records)
         $stmt = $mysqli->prepare("DELETE FROM Server WHERE ID = ?");
         $stmt->bind_param("i", $server_id);
         $stmt->execute();
@@ -471,7 +422,6 @@ function joinServer($user_id) {
     }
     
     try {
-        // Find valid invite
         $stmt = $mysqli->prepare("
             SELECT si.ServerID, s.Name 
             FROM ServerInvite si 
@@ -487,13 +437,9 @@ function joinServer($user_id) {
         }
         
         $server_id = $invite['ServerID'];
-        
-        // Check if already member
         if (is_server_member($user_id, $server_id)) {
             send_response(['error' => 'You are already a member of this server'], 400);
         }
-        
-        // Add user to server
         $stmt = $mysqli->prepare("
             INSERT INTO UserServerMemberships (UserID, ServerID, Role) 
             VALUES (?, ?, 'Member')
@@ -522,14 +468,10 @@ function leaveServer($user_id) {
     }
     
     try {
-        // Check if user is member
         if (!is_server_member($user_id, $server_id)) {
             send_response(['error' => 'You are not a member of this server'], 400);
         }
-        
-        // Check if user is owner
         if (is_server_owner($user_id, $server_id)) {
-            // Count other members
             $stmt = $mysqli->prepare("
                 SELECT COUNT(*) as member_count 
                 FROM UserServerMemberships 
@@ -543,7 +485,6 @@ function leaveServer($user_id) {
             if ($count > 0) {
                 send_response(['error' => 'You must transfer ownership before leaving the server'], 400);
             } else {
-                // Delete server if owner is last member
                 $stmt = $mysqli->prepare("DELETE FROM Server WHERE ID = ?");
                 $stmt->bind_param("i", $server_id);
                 $stmt->execute();
@@ -552,8 +493,6 @@ function leaveServer($user_id) {
                 return;
             }
         }
-        
-        // Remove user from server
         $stmt = $mysqli->prepare("
             DELETE FROM UserServerMemberships 
             WHERE UserID = ? AND ServerID = ?
@@ -582,13 +521,9 @@ function transferOwnership($user_id) {
     if ($confirmation !== 'transfer ownership') {
         send_response(['error' => 'Confirmation text is incorrect'], 400);
     }
-    
-    // Check if user is owner
     if (!is_server_owner($user_id, $server_id)) {
         send_response(['error' => 'Only server owner can transfer ownership'], 403);
     }
-    
-    // Check if new owner is admin
     if (!is_server_admin($new_owner_id, $server_id)) {
         send_response(['error' => 'New owner must be an admin'], 400);
     }
@@ -596,7 +531,6 @@ function transferOwnership($user_id) {
     $mysqli->begin_transaction();
     
     try {
-        // Update current owner to admin
         $stmt = $mysqli->prepare("
             UPDATE UserServerMemberships 
             SET Role = 'Admin' 
@@ -604,8 +538,6 @@ function transferOwnership($user_id) {
         ");
         $stmt->bind_param("ii", $user_id, $server_id);
         $stmt->execute();
-        
-        // Update new owner
         $stmt = $mysqli->prepare("
             UPDATE UserServerMemberships 
             SET Role = 'Owner' 
@@ -653,8 +585,6 @@ function getPublicServers() {
         }
         
         $where_clause = implode(" AND ", $where_conditions);
-        
-        // Get servers with member count
         $stmt = $mysqli->prepare("
             SELECT s.*, COUNT(usm.UserID) as MemberCount
             FROM Server s 
@@ -680,8 +610,6 @@ function getPublicServers() {
         while ($row = $result->fetch_assoc()) {
             $servers[] = $row;
         }
-        
-        // Get total count for pagination
         $count_stmt = $mysqli->prepare("
             SELECT COUNT(*) as total 
             FROM Server s 
@@ -724,8 +652,6 @@ function updateServerName($user_id) {
     if (empty($server_id) || empty($name)) {
         send_response(['error' => 'Server ID and name are required'], 400);
     }
-    
-    // Check if user is owner or admin
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -755,8 +681,6 @@ function updateServerDescription($user_id) {
     if (empty($server_id)) {
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is owner or admin
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -790,8 +714,6 @@ function updateServerCategory($user_id) {
     if (!in_array($category, $server_categories)) {
         send_response(['error' => 'Invalid category'], 400);
     }
-    
-    // Check if user is owner or admin
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -825,8 +747,6 @@ function uploadServerImage($user_id) {
     if (!in_array($image_type, ['server_icon', 'server_banner'])) {
         send_response(['error' => 'Invalid image type'], 400);
     }
-    
-    // Check if user is owner or admin
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -836,8 +756,6 @@ function uploadServerImage($user_id) {
     }
     
     $file = $_FILES['file'];
-    
-    // Use the existing handleImageUpload function
     $upload_dir = $image_type === 'server_icon' ? 'server-icons' : 'server-banners';
     $image_path = handleImageUpload($file, $upload_dir);
     
@@ -846,7 +764,6 @@ function uploadServerImage($user_id) {
     }
     
     try {
-        // Update the server with the new image path
         $field = $image_type === 'server_icon' ? 'IconServer' : 'BannerServer';
         $stmt = $mysqli->prepare("UPDATE Server SET $field = ? WHERE ID = ?");
         $stmt->bind_param("si", $image_path, $server_id);
@@ -875,8 +792,6 @@ function getServerMembers($user_id) {
     if (empty($server_id)) {
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is member of server
     if (!is_server_member($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -927,8 +842,6 @@ function changeMemberRole($user_id) {
     if (!in_array($new_role, ['Admin', 'Member'])) {
         send_response(['error' => 'Invalid role'], 400);
     }
-    
-    // Check if user is owner
     if (!is_server_owner($user_id, $server_id)) {
         send_response(['error' => 'Only server owner can change member roles'], 403);
     }
@@ -962,18 +875,12 @@ function kickMember($user_id) {
     if (empty($server_id) || empty($target_user_id)) {
         send_response(['error' => 'Server ID and user ID are required'], 400);
     }
-    
-    // Check if user is owner or admin
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Only server owner or admin can kick members'], 403);
     }
-    
-    // Check if target user is owner
     if (is_server_owner($target_user_id, $server_id)) {
         send_response(['error' => 'Cannot kick server owner'], 400);
     }
-    
-    // If current user is admin, they can only kick members, not other admins
     if (!is_server_owner($user_id, $server_id) && is_server_admin($target_user_id, $server_id)) {
         send_response(['error' => 'Admins cannot kick other admins'], 403);
     }

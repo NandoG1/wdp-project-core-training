@@ -40,8 +40,6 @@ function createInvite($user_id) {
         error_log("createInvite error: Server ID is empty");
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is member of server
     $is_member = is_server_member($user_id, $server_id);
     error_log("is_server_member($user_id, $server_id) returned: " . ($is_member ? 'true' : 'false'));
     
@@ -66,8 +64,6 @@ function createInvite($user_id) {
         $stmt->execute();
         
         $invite_id = $mysqli->insert_id;
-        
-        // Get the created invite with server info
         $stmt = $mysqli->prepare("
             SELECT si.*, s.Name as ServerName, s.IconServer, u.Username as CreatedByUsername
             FROM ServerInvite si
@@ -97,8 +93,6 @@ function getInvites($user_id) {
     if (empty($server_id)) {
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is member of server
     if (!is_server_member($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -150,7 +144,6 @@ function getInviteInfo() {
         $result = $stmt->get_result();
         
         if ($invite = $result->fetch_assoc()) {
-            // Check if invite has reached max uses
             if ($invite['MaxUses'] > 0 && $invite['Uses'] >= $invite['MaxUses']) {
                 send_response(['error' => 'Invite has expired (max uses reached)'], 400);
             }
@@ -175,7 +168,6 @@ function deleteInvite($user_id) {
     }
     
     try {
-        // Get invite info to check permissions
         $stmt = $mysqli->prepare("
             SELECT si.*, s.ID as ServerID 
             FROM ServerInvite si
@@ -189,8 +181,6 @@ function deleteInvite($user_id) {
         if (!$invite = $result->fetch_assoc()) {
             send_response(['error' => 'Invite not found'], 404);
         }
-        
-        // Check if user can delete (creator of invite or server admin)
         $can_delete = ($invite['InviterUserID'] == $user_id) || is_server_admin($user_id, $invite['ServerID']);
         
         if (!$can_delete) {
@@ -220,14 +210,11 @@ function inviteTitibot($user_id) {
     if (empty($server_id)) {
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is admin or owner
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
     
     try {
-        // Check if Titibot already exists in the system
         $stmt = $mysqli->prepare("SELECT ID FROM Users WHERE Username = 'Titibot'");
         $stmt->execute();
         $result = $stmt->get_result();
@@ -236,7 +223,6 @@ function inviteTitibot($user_id) {
         if ($bot = $result->fetch_assoc()) {
             $titibot_id = $bot['ID'];
         } else {
-            // Create Titibot user (without Role column as it doesn't exist in Users table)
             $stmt = $mysqli->prepare("
                 INSERT INTO Users (Username, DisplayName, Email, Password, ProfilePictureUrl, Bio) 
                 VALUES ('Titibot', 'Titibot', 'titibot@system.local', '', '/assets/images/titibot-avatar.png', 'I am Titibot, your friendly server assistant!')
@@ -244,8 +230,6 @@ function inviteTitibot($user_id) {
             $stmt->execute();
             $titibot_id = $mysqli->insert_id;
         }
-        
-        // Check if Titibot is already in the server
         $stmt = $mysqli->prepare("
             SELECT ID FROM UserServerMemberships 
             WHERE UserID = ? AND ServerID = ?
@@ -256,8 +240,6 @@ function inviteTitibot($user_id) {
         if ($stmt->get_result()->num_rows > 0) {
             send_response(['error' => 'Titibot is already in this server'], 400);
         }
-        
-        // Add Titibot to server (Role is in UserServerMemberships table)
         $stmt = $mysqli->prepare("
             INSERT INTO UserServerMemberships (UserID, ServerID, Role) 
             VALUES (?, ?, 'Bot')

@@ -47,7 +47,6 @@ function getCurrentUser($user_id) {
     try {
         $user = get_user_by_id($user_id);
         if ($user) {
-            // Mask email for security
             $email = $user['Email'];
             $masked_email = substr($email, 0, 2) . str_repeat('*', strlen($email) - 6) . substr($email, -4);
             $user['MaskedEmail'] = $masked_email;
@@ -64,10 +63,7 @@ function getCurrentUser($user_id) {
 
 function updateProfile($user_id) {
     global $mysqli;
-    
-    // Check if it's a single field update or multiple fields
     if (isset($_POST['field']) && isset($_POST['value'])) {
-        // Single field update
         $field = $_POST['field'];
         $value = sanitize_input($_POST['value']);
         
@@ -81,13 +77,10 @@ function updateProfile($user_id) {
         }
         
         try {
-            // Special validation for username
             if ($field === 'Username') {
                 if (strlen($value) < 2 || strlen($value) > 32) {
                     send_response(['error' => 'Username must be between 2 and 32 characters'], 400);
                 }
-                
-                // Check if username is already taken
                 $stmt = $mysqli->prepare("SELECT ID FROM Users WHERE Username = ? AND ID != ?");
                 $stmt->bind_param("si", $value, $user_id);
                 $stmt->execute();
@@ -96,8 +89,6 @@ function updateProfile($user_id) {
                     send_response(['error' => 'Username is already taken'], 400);
                 }
             }
-            
-            // Special validation for bio
             if ($field === 'Bio' && strlen($value) > 1000) {
                 send_response(['error' => 'Bio must be 1000 characters or less'], 400);
             }
@@ -116,7 +107,6 @@ function updateProfile($user_id) {
             send_response(['error' => 'Failed to update profile'], 500);
         }
     } else {
-        // Multiple field update
         $username = sanitize_input($_POST['username'] ?? '');
         $displayName = sanitize_input($_POST['displayName'] ?? '');
         $bio = sanitize_input($_POST['bio'] ?? '');
@@ -124,14 +114,10 @@ function updateProfile($user_id) {
         $updates = [];
         $params = [];
         $types = '';
-        
-        // Validate and prepare updates
         if (!empty($username)) {
             if (strlen($username) < 2 || strlen($username) > 32) {
                 send_response(['error' => 'Username must be between 2 and 32 characters'], 400);
             }
-            
-            // Check if username is already taken
             $stmt = $mysqli->prepare("SELECT ID FROM Users WHERE Username = ? AND ID != ?");
             $stmt->bind_param("si", $username, $user_id);
             $stmt->execute();
@@ -245,7 +231,6 @@ function verifySecurityQuestion($user_id) {
         
         if ($user = $result->fetch_assoc()) {
             if (password_verify($answer, $user['SecurityAnswer'])) {
-                // Store verification in session
                 $_SESSION['security_verified'] = true;
                 $_SESSION['security_verified_at'] = time();
                 
@@ -311,8 +296,6 @@ function changePassword($user_id) {
     if (strlen($new_password) < 8) {
         send_response(['error' => 'Password must be at least 8 characters long'], 400);
     }
-    
-    // Check if security question was verified recently (within 10 minutes)
     if (!isset($_SESSION['security_verified']) || 
         !isset($_SESSION['security_verified_at']) || 
         (time() - $_SESSION['security_verified_at']) > 600) {
@@ -320,7 +303,6 @@ function changePassword($user_id) {
     }
     
     try {
-        // Get current password to check if it's different
         $stmt = $mysqli->prepare("SELECT Password FROM Users WHERE ID = ?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
@@ -336,8 +318,6 @@ function changePassword($user_id) {
             $stmt = $mysqli->prepare("UPDATE Users SET Password = ? WHERE ID = ?");
             $stmt->bind_param("si", $hashed_password, $user_id);
             $stmt->execute();
-            
-            // Clear security verification
             unset($_SESSION['security_verified']);
             unset($_SESSION['security_verified_at']);
             
@@ -391,7 +371,6 @@ function deleteAccount($user_id) {
     }
     
     try {
-        // Check if user owns any servers
         $stmt = $mysqli->prepare("
             SELECT COUNT(*) as owned_count 
             FROM UserServerMemberships 
@@ -404,8 +383,6 @@ function deleteAccount($user_id) {
         if ($owned_count > 0) {
             send_response(['error' => 'You must transfer ownership of all your servers before deleting your account'], 400);
         }
-        
-        // Get user info for confirmation
         $user = get_user_by_id($user_id);
         if (!$user) {
             send_response(['error' => 'User not found'], 404);
@@ -416,15 +393,11 @@ function deleteAccount($user_id) {
         }
         
         $mysqli->begin_transaction();
-        
-        // Delete user (cascading deletes will handle related records)
         $stmt = $mysqli->prepare("DELETE FROM Users WHERE ID = ?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         
         $mysqli->commit();
-        
-        // Destroy session
         session_destroy();
         
         send_response(['success' => true, 'message' => 'Account deleted successfully']);
@@ -446,7 +419,6 @@ function updateStatus($user_id) {
     }
     
     try {
-        // Update or insert user status
         $stmt = $mysqli->prepare("
             INSERT INTO UserLastSeens (UserID, Status, LastSeenAt) 
             VALUES (?, ?, NOW()) 

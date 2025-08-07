@@ -24,10 +24,10 @@ $username = $_SESSION['username'] ?? 'User';
 </head>
 <body>
     <div class="app-container">
-        <!-- Server Sidebar -->
+
         <div class="server-sidebar">
             <div class="server-nav">
-                <!-- Home Button -->
+
                 <div class="server-item home-server" data-tooltip="Home" onclick="navigateToHome()">
                     <div class="server-icon">
                         <i class="fas fa-home"></i>
@@ -36,12 +36,12 @@ $username = $_SESSION['username'] ?? 'User';
                 
                 <div class="server-separator"></div>
                 
-                <!-- User Servers List -->
+
                 <div class="user-servers" id="userServersList">
-                    <!-- User servers will be loaded here -->
+
                 </div>
                 
-                <!-- Add Server Button -->
+
                 <div class="server-item add-server" data-tooltip="Add a Server" onclick="openCreateServerModal()">
                     <div class="server-icon">
                         <i class="fas fa-plus"></i>
@@ -50,7 +50,7 @@ $username = $_SESSION['username'] ?? 'User';
                 
                 <div class="server-separator"></div>
                 
-                <!-- Explore Button -->
+
                 <div class="server-item explore-server" data-tooltip="Explore Public Servers" onclick="navigateToExplore()">
                     <div class="server-icon">
                         <i class="fas fa-compass"></i>
@@ -59,9 +59,9 @@ $username = $_SESSION['username'] ?? 'User';
             </div>
         </div>
 
-        <!-- Main Server Content -->
+
         <div class="server-content" id="serverContent">
-            <!-- Server Header -->
+
             <div class="server-header" id="serverHeader">
                 <div class="server-info">
                     <h2 id="serverName">Select a Server</h2>
@@ -75,24 +75,24 @@ $username = $_SESSION['username'] ?? 'User';
                 </div>
             </div>
 
-            <!-- Server Body -->
+
             <div class="server-body">
-                <!-- Channels Sidebar -->
+
                 <div class="channels-sidebar" id="channelsSidebar">
                     <div class="channels-header">
                         <div class="server-name-display" id="serverNameDisplay">
                             Select a Server
                         </div>
                         <div class="server-actions" id="serverActions">
-                            <!-- Server actions will appear here when server is selected -->
+
                         </div>
                     </div>
                     
                     <div class="channels-list" id="channelsList">
-                        <!-- Channels will be loaded here -->
+
                     </div>
                     
-                    <!-- User Panel -->
+
                     <div class="user-panel">
                         <div class="user-info">
                             <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
@@ -115,9 +115,9 @@ $username = $_SESSION['username'] ?? 'User';
                     </div>
                 </div>
 
-                <!-- Main Chat Area -->
+
                 <div class="chat-area" id="chatArea">
-                    <!-- Channel Header -->
+
                     <div class="channel-header" id="channelHeader">
                         <div class="channel-info">
                             <div class="channel-icon" id="channelIcon">
@@ -130,33 +130,33 @@ $username = $_SESSION['username'] ?? 'User';
                         </div>
                         <div class="channel-controls">
                             <button class="control-btn" id="startCallBtn" title="Start Call">
-                                <!-- <i class="fas fa-phone"></i> -->
+
                             </button>
                             <button class="control-btn" id="startVideoBtn" title="Start Video Call">
-                                <!-- <i class="fas fa-video"></i> -->
+
                             </button>
                             <button class="control-btn" id="invitePeopleBtn" title="Invite People">
-                                <!-- <i class="fas fa-user-plus"></i> -->
+
                             </button>
                             <button class="control-btn" id="channelSearchBtn" title="Search">
-                                <!-- <i class="fas fa-search"></i> -->
+
                             </button>
                             <button class="control-btn" id="notificationBtn" title="Notification Settings">
-                                <!-- <i class="fas fa-bell"></i> -->
+
                             </button>
                             <button class="control-btn" id="helpBtn" title="Help">
-                                <!-- <i class="fas fa-question-circle"></i> -->
+
                             </button>
                         </div>
                     </div>
 
-                    <!-- Messages Area -->
+
                     <div class="messages-container" id="messagesContainer">
                         <div class="messages-list" id="messagesList">
-                            <!-- Messages will be loaded here -->
+
                         </div>
                         
-                        <!-- Voice Channel Interface -->
+
                         <div class="voice-interface hidden" id="voiceInterface">
                             <div class="voice-header">
                                 <h3>Voice Channel</h3>
@@ -165,7 +165,7 @@ $username = $_SESSION['username'] ?? 'User';
                                 </button>
                             </div>
                             <div class="voice-participants" id="voiceParticipants">
-                                <!-- Voice participants will appear here -->
+
                             </div>
                             <div class="voice-controls">
                                 <button class="voice-control-btn" id="toggleVideoBtn" title="Toggle Video">
@@ -187,12 +187,12 @@ $username = $_SESSION['username'] ?? 'User';
                         </div>
                     </div>
 
-                    <!-- Typing Indicator -->
+
                     <div class="typing-indicator hidden" id="typingIndicator">
                         <span id="typingText"></span>
                     </div>
 
-                    <!-- Message Input -->
+
                     <div class="message-input-container" id="messageInputContainer">
                         <div class="reply-context hidden" id="replyContext">
                             <div class="reply-info">
@@ -222,7 +222,7 @@ $username = $_SESSION['username'] ?? 'User';
                     </div>
                 </div>
 
-                <!-- Members Sidebar -->
+
                 <div class="members-sidebar" id="membersSidebar">
                     <div class="members-header">
                         <div class="search-container">
@@ -231,14 +231,14 @@ $username = $_SESSION['username'] ?? 'User';
                         </div>
                     </div>
                     <div class="members-list" id="membersList">
-                        <!-- Members will be loaded here -->
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Server Dropdown Menu -->
+
     <div class="dropdown-menu hidden" id="serverDropdownMenu">
         <div class="dropdown-item" id="invitePeopleDropdown">
             <i class="fas fa-user-plus"></i>
@@ -259,7 +259,7 @@ $username = $_SESSION['username'] ?? 'User';
         </div>
     </div>
 
-    <!-- Drag and Drop Overlay -->
+
     <div class="drag-drop-overlay" id="dragDropOverlay">
         <div class="drag-drop-content">
             <i class="fas fa-cloud-upload-alt"></i>
@@ -268,7 +268,7 @@ $username = $_SESSION['username'] ?? 'User';
         </div>
     </div>
 
-    <!-- Modals -->
+
     <?php include 'modals/create-server-modal.php'; ?>
     <?php include 'modals/user-settings-modal.php'; ?>
     <?php include 'modals/server-settings-modal.php'; ?>
@@ -276,7 +276,7 @@ $username = $_SESSION['username'] ?? 'User';
     <?php include 'modals/create-channel-modal.php'; ?>
     <?php include 'modals/confirmation-modal.php'; ?>
 
-    <!-- Scripts -->
+
     <script src="assets/js/server.js"></script>
     <script src="assets/js/channels.js"></script>
     <script src="assets/js/voice.js"></script>
@@ -284,13 +284,10 @@ $username = $_SESSION['username'] ?? 'User';
     <script src="assets/js/user-settings.js"></script>
     <script src="assets/js/server-settings.js"></script>
     <script>
-        // Initialize with user data
         window.currentUser = {
             id: <?php echo $user_id; ?>,
             username: '<?php echo htmlspecialchars($username); ?>'
         };
-        
-        // Initialize the application
         console.log('Initializing with user:', window.currentUser);
     </script>
 </body>

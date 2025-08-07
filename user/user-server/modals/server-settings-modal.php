@@ -1,4 +1,4 @@
-<!-- Server Settings Modal -->
+
 <div class="modal hidden" id="serverSettingsModal">
     <div class="modal-overlay" onclick="closeServerSettingsModal()"></div>
     <div class="modal-content extra-large">
@@ -9,7 +9,7 @@
             </button>
         </div>
         <div class="modal-body settings-modal">
-            <!-- Settings Sidebar -->
+
             <div class="settings-sidebar">
                 <div class="settings-section">
                     <h4>SERVER SETTINGS</h4>
@@ -41,9 +41,9 @@
                 </div>
             </div>
 
-            <!-- Settings Content -->
+
             <div class="settings-content">
-                <!-- Server Profile Tab -->
+
                 <div class="settings-tab active" id="server-profileTab">
                     <div class="settings-header">
                         <h3>Server Profile</h3>
@@ -135,7 +135,7 @@
                     </form>
                 </div>
 
-                <!-- Channel Management Tab -->
+
                 <div class="settings-tab" id="channel-managementTab">
                     <div class="settings-header">
                         <h3>Channel Management</h3>
@@ -163,7 +163,7 @@
                             <div class="header-cell">ACTIONS</div>
                         </div>
                         <div class="table-body" id="channelsTableBody">
-                            <!-- Channels will be loaded here -->
+
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@
                     </div>
                 </div>
 
-                <!-- Members Tab -->
+
                 <div class="settings-tab" id="membersTab">
                     <div class="settings-header">
                         <h3>Member Management</h3>
@@ -204,7 +204,7 @@
                             <div class="header-cell">ACTIONS</div>
                         </div>
                         <div class="table-body" id="membersTableBody">
-                            <!-- Members will be loaded here -->
+
                         </div>
                     </div>
 
@@ -214,7 +214,7 @@
                     </div>
                 </div>
 
-                <!-- Delete Server Tab -->
+
                 <div class="settings-tab" id="delete-serverTab">
                     <div class="settings-header danger">
                         <h3>Delete Server</h3>
@@ -256,7 +256,7 @@
     </div>
 </div>
 
-<!-- Edit Channel Modal -->
+
 <div class="modal hidden" id="editChannelModal">
     <div class="modal-overlay" onclick="closeEditChannelModal()"></div>
     <div class="modal-content">
@@ -285,7 +285,7 @@
     </div>
 </div>
 
-<!-- Transfer Ownership Modal -->
+
 <div class="modal hidden" id="transferOwnershipModal">
     <div class="modal-overlay" onclick="closeTransferOwnershipModal()"></div>
     <div class="modal-content">
@@ -309,7 +309,7 @@
                 <div class="form-group">
                     <label for="newOwnerSelect">Select New Owner</label>
                     <select id="newOwnerSelect">
-                        <!-- Admin members will be loaded here -->
+
                     </select>
                 </div>
                 <div class="form-group">

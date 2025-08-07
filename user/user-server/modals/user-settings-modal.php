@@ -1,4 +1,4 @@
-<!-- User Settings Modal -->
+
 <div class="modal hidden" id="userSettingsModal">
     <div class="modal-overlay" onclick="closeUserSettingsModal()"></div>
     <div class="modal-content extra-large">
@@ -9,7 +9,7 @@
             </button>
         </div>
         <div class="modal-body settings-modal">
-            <!-- Settings Sidebar -->
+
             <div class="settings-sidebar">
                 <div class="settings-section">
                     <h4>USER SETTINGS</h4>
@@ -38,9 +38,9 @@
                 </div>
             </div>
 
-            <!-- Settings Content -->
+
             <div class="settings-content">
-                <!-- My Account Tab -->
+
                 <div class="settings-tab active" id="my-accountTab">
                     <div class="settings-header">
                         <h3>My Account</h3>
@@ -123,7 +123,7 @@
                     </form>
                 </div>
 
-                <!-- Voice & Video Tab -->
+
                 <div class="settings-tab" id="voice-videoTab">
                     <div class="settings-header">
                         <h3>Voice & Video</h3>
@@ -135,7 +135,7 @@
                         <button class="tab-btn" data-subtab="video">Video</button>
                     </div>
 
-                    <!-- Voice Settings -->
+
                     <div class="settings-subtab active" id="voiceSettings">
                         <div class="device-section">
                             <div class="device-group">
@@ -198,7 +198,7 @@
                         </div>
                     </div>
 
-                    <!-- Video Settings -->
+
                     <div class="settings-subtab" id="videoSettings">
                         <div class="device-section">
                             <div class="device-group">
@@ -231,7 +231,7 @@
                     </div>
                 </div>
 
-                <!-- Delete Account Tab -->
+
                 <div class="settings-tab" id="delete-accountTab">
                     <div class="settings-header danger">
                         <h3>Delete Account</h3>
@@ -268,7 +268,7 @@
     </div>
 </div>
 
-<!-- Password Change Modal -->
+
 <div class="modal hidden" id="passwordChangeModal">
     <div class="modal-overlay" onclick="closePasswordChangeModal()"></div>
     <div class="modal-content">
@@ -280,7 +280,7 @@
         </div>
         <div class="modal-body">
             <div class="password-change-steps">
-                <!-- Step 1: Security Question -->
+
                 <div class="password-step active" id="securityStep">
                     <h4>Security Verification</h4>
                     <p>Please answer your security question to continue.</p>
@@ -291,7 +291,7 @@
                     <button class="btn-primary" onclick="verifySecurityAnswer()">Verify</button>
                 </div>
 
-                <!-- Step 2: New Password -->
+
                 <div class="password-step" id="passwordStep">
                     <h4>Set New Password</h4>
                     <div class="form-group">

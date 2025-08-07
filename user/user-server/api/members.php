@@ -39,12 +39,9 @@ function getMembers($user_id) {
     if (empty($server_id)) {
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is member of server
     if (!is_server_member($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
-        // Joined at aku sama status di usm ilanigngekjwnfrngiuernguierhgerui
     try { 
         $stmt = $mysqli->prepare("
             SELECT u.ID, u.Username, u.DisplayName, u.ProfilePictureUrl, u.Discriminator,
@@ -69,13 +66,10 @@ function getMembers($user_id) {
         
         $members = [];
         while ($row = $result->fetch_assoc()) {
-            // Determine online status
             if ($row['Status'] && $row['LastSeenAt']) {
                 $last_seen = new DateTime($row['LastSeenAt']);
                 $now = new DateTime();
                 $diff = $now->diff($last_seen);
-                
-                // Consider offline if last seen more than 5 minutes ago
                 if ($diff->i > 5 || $diff->h > 0 || $diff->days > 0) {
                     $row['Status'] = 'offline';
                 }
@@ -103,25 +97,18 @@ function updateMemberRole($user_id) {
     if (empty($server_id) || empty($member_id) || empty($new_role)) {
         send_response(['error' => 'Server ID, member ID, and new role are required'], 400);
     }
-    
-    // Check if user is owner
     if (!is_server_owner($user_id, $server_id)) {
         send_response(['error' => 'Only server owner can change member roles'], 403);
     }
-    
-    // Validate role
     $valid_roles = ['Member', 'Admin'];
     if (!in_array($new_role, $valid_roles)) {
         send_response(['error' => 'Invalid role'], 400);
     }
-    
-    // Prevent changing own role
     if ($member_id == $user_id) {
         send_response(['error' => 'Cannot change your own role'], 400);
     }
     
     try {
-        // Check if member exists in server
         $stmt = $mysqli->prepare("
             SELECT Role FROM UserServerMemberships 
             WHERE UserID = ? AND ServerID = ?
@@ -133,13 +120,9 @@ function updateMemberRole($user_id) {
         if (!$member = $result->fetch_assoc()) {
             send_response(['error' => 'Member not found in server'], 404);
         }
-        
-        // Prevent changing owner role
         if ($member['Role'] === 'Owner') {
             send_response(['error' => 'Cannot change owner role'], 400);
         }
-        
-        // Update role
         $stmt = $mysqli->prepare("
             UPDATE UserServerMemberships 
             SET Role = ? 
@@ -169,19 +152,14 @@ function kickMember($user_id) {
     if (empty($server_id) || empty($member_id)) {
         send_response(['error' => 'Server ID and member ID are required'], 400);
     }
-    
-    // Check if user is admin or owner
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
-    
-    // Prevent kicking self
     if ($member_id == $user_id) {
         send_response(['error' => 'Cannot kick yourself'], 400);
     }
     
     try {
-        // Get member info
         $stmt = $mysqli->prepare("
             SELECT usm.Role, u.Username 
             FROM UserServerMemberships usm
@@ -195,18 +173,12 @@ function kickMember($user_id) {
         if (!$member = $result->fetch_assoc()) {
             send_response(['error' => 'Member not found in server'], 404);
         }
-        
-        // Prevent kicking owner
         if ($member['Role'] === 'Owner') {
             send_response(['error' => 'Cannot kick server owner'], 400);
         }
-        
-        // Admins can only kick members, not other admins (unless they're owner)
         if ($member['Role'] === 'Admin' && !is_server_owner($user_id, $server_id)) {
             send_response(['error' => 'Cannot kick other admins'], 403);
         }
-        
-        // Remove member from server
         $stmt = $mysqli->prepare("
             DELETE FROM UserServerMemberships 
             WHERE UserID = ? AND ServerID = ?
@@ -239,19 +211,14 @@ function banMember($user_id) {
     if (empty($server_id) || empty($member_id)) {
         send_response(['error' => 'Server ID and member ID are required'], 400);
     }
-    
-    // Check if user is admin or owner
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
-    
-    // Prevent banning self
     if ($member_id == $user_id) {
         send_response(['error' => 'Cannot ban yourself'], 400);
     }
     
     try {
-        // Get member info
         $stmt = $mysqli->prepare("
             SELECT usm.Role, u.Username 
             FROM UserServerMemberships usm
@@ -265,34 +232,24 @@ function banMember($user_id) {
         if (!$member = $result->fetch_assoc()) {
             send_response(['error' => 'Member not found in server'], 404);
         }
-        
-        // Prevent banning owner
         if ($member['Role'] === 'Owner') {
             send_response(['error' => 'Cannot ban server owner'], 400);
         }
-        
-        // Admins can only ban members, not other admins (unless they're owner)
         if ($member['Role'] === 'Admin' && !is_server_owner($user_id, $server_id)) {
             send_response(['error' => 'Cannot ban other admins'], 403);
         }
         
         $mysqli->begin_transaction();
-        
-        // Remove member from server
         $stmt = $mysqli->prepare("
             DELETE FROM UserServerMemberships 
             WHERE UserID = ? AND ServerID = ?
         ");
         $stmt->bind_param("ii", $member_id, $server_id);
         $stmt->execute();
-        
-        // Add to ban list (create table if needed)
         $expires_at = null;
         if ($duration > 0) {
             $expires_at = date('Y-m-d H:i:s', time() + ($duration * 3600)); // duration in hours
         }
-        
-        // Create ServerBans table if it doesn't exist
         $mysqli->query("
             CREATE TABLE IF NOT EXISTS ServerBans (
                 ID INTEGER(10) PRIMARY KEY AUTO_INCREMENT,
@@ -339,8 +296,6 @@ function unbanMember($user_id) {
     if (empty($server_id) || empty($member_id)) {
         send_response(['error' => 'Server ID and member ID are required'], 400);
     }
-    
-    // Check if user is admin or owner
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -371,8 +326,6 @@ function getBannedMembers($user_id) {
     if (empty($server_id)) {
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is admin or owner
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -412,8 +365,6 @@ function getMemberProfile($user_id) {
     if (empty($server_id) || empty($member_id)) {
         send_response(['error' => 'Server ID and member ID are required'], 400);
     }
-    
-    // Check if user is member of server
     if (!is_server_member($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -432,7 +383,6 @@ function getMemberProfile($user_id) {
         $result = $stmt->get_result();
         
         if ($member = $result->fetch_assoc()) {
-            // Get message count in server
             $stmt = $mysqli->prepare("
                 SELECT COUNT(*) as message_count
                 FROM Message m

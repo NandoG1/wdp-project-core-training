@@ -1,4 +1,4 @@
-<!-- Create Channel Modal -->
+
 <div class="modal hidden" id="createChannelModal">
     <div class="modal-overlay" onclick="closeCreateChannelModal()"></div>
     <div class="modal-content">

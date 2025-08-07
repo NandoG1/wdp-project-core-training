@@ -1,4 +1,4 @@
-<!-- Confirmation Modal -->
+
 <div class="modal hidden" id="confirmationModal">
     <div class="modal-overlay" onclick="closeConfirmationModal()"></div>
     <div class="modal-content small">
@@ -28,7 +28,7 @@
     </div>
 </div>
 
-<!-- Leave Server Modal -->
+
 <div class="modal hidden" id="leaveServerModal">
     <div class="modal-overlay" onclick="closeLeaveServerModal()"></div>
     <div class="modal-content">
@@ -41,7 +41,7 @@
         <div class="modal-body">
             <div class="leave-server-content">
                 <div class="server-leave-info" id="serverLeaveInfo">
-                    <!-- Server info will be populated here -->
+
                 </div>
                 <div class="leave-warning" id="leaveWarning">
                     <p>Are you sure you want to leave <strong id="leaveServerName">this server</strong>?</p>
@@ -79,7 +79,7 @@
     </div>
 </div>
 
-<!-- Success/Error Toast Notifications -->
+
 <div class="toast-container" id="toastContainer">
-    <!-- Toast notifications will appear here -->
+
 </div>

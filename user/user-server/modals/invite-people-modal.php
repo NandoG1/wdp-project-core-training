@@ -1,4 +1,4 @@
-<!-- Invite People Modal -->
+
 <div class="modal hidden" id="invitePeopleModal">
     <div class="modal-overlay" onclick="closeInvitePeopleModal()"></div>
     <div class="modal-content">
@@ -69,7 +69,7 @@
             <div class="invite-section">
                 <h3>Recent Invites</h3>
                 <div class="recent-invites" id="recentInvitesList">
-                    <!-- Recent invites will be loaded here -->
+
                 </div>
             </div>
         </div>
@@ -79,7 +79,7 @@
     </div>
 </div>
 
-<!-- Accept Invite Modal (for when users click invite links) -->
+
 <div class="modal hidden" id="acceptInviteModal">
     <div class="modal-overlay"></div>
     <div class="modal-content">
@@ -88,7 +88,7 @@
         </div>
         <div class="modal-body">
             <div class="server-invite-preview" id="serverInvitePreview">
-                <!-- Server preview will be loaded here -->
+
             </div>
         </div>
         <div class="modal-footer">

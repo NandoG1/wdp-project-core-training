@@ -307,7 +307,7 @@ if (isset($_POST['action'])) {
         <div class="server-icon add-server floating-add-btn" id="floatingAddBtn" onclick="showJoinServerModal()" title="Add Server">
             <span>+</span>
         </div>
-        <!-- Left Sidebar -->
+
         <!-- <div class="left-sidebar">
             <div class="server-list">
                 <div class="server-icon home-icon" title="Home">
@@ -325,7 +325,7 @@ if (isset($_POST['action'])) {
         </div> -->
         <div class="server-sidebar">
             <div class="server-nav">
-                <!-- Home Button -->
+
                 <div class="server-item home-server" data-tooltip="Home">
                     <div class="server-icon" style="color: white">
                         <a href="../home/index.php"><i class="fas fa-home">Home</i></a>
@@ -334,14 +334,14 @@ if (isset($_POST['action'])) {
                 
                 <div class="server-separator"></div>
                 
-                <!-- User Servers List -->
+
                 <div class="user-servers" id="userServersList">
                     <div class="server-icon">
                         <a href="../user-server/index.php"><i class="fas fa-home">Server</i></a>
                     </div>
                 </div>
                 
-                <!-- Add Server Button -->
+
                 <div class="server-item add-server" data-tooltip="Add a Server">
                     <div class="server-icon">
                         <i class="fas fa-plus">Explore</i>
@@ -353,7 +353,7 @@ if (isset($_POST['action'])) {
             </div>
         </div>
 
-        <!-- Categories Sidebar -->
+
         <div class="categories-sidebar">
             <div class="categories-header">
                 <h3>CATEGORIES</h3>
@@ -365,7 +365,7 @@ if (isset($_POST['action'])) {
                     <span class="category-name">All Servers</span>
                     <span class="category-count" id="totalCount">0</span>
                 </div>
-                <!-- Categories will be loaded dynamically -->
+
             </div>
             <div class="user-info-section">
                 <div class="user-info">
@@ -385,7 +385,7 @@ if (isset($_POST['action'])) {
             </div>
         </div>
 
-        <!-- Main Content -->
+
         <div class="main-content">
             <div class="content-header">
                 <h1 style="margin-bottom: 2rem; margin-top:3rem;">Explore Servers</h1>
@@ -440,7 +440,7 @@ if (isset($_POST['action'])) {
                 </div>
                 
                 <div class="servers-grid" id="serversGrid">
-                    <!-- Servers will be loaded dynamically -->
+
                 </div>
                 
                 <div class="loading-indicator" id="loadingIndicator">
@@ -455,7 +455,7 @@ if (isset($_POST['action'])) {
         </div>
     </div>
 
-    <!-- Server Detail Modal -->
+
     <div id="serverDetailModal" class="modal">
         <div class="modal-content server-detail-modal">
             <button class="modal-close">&times;</button>
@@ -492,7 +492,7 @@ if (isset($_POST['action'])) {
         </div>
     </div>
 
-    <!-- Join Server Modal -->
+
     <div id="joinServerModal" class="modal">
         <div class="modal-content join-server-modal">
             <div class="modal-header">
@@ -511,7 +511,7 @@ if (isset($_POST['action'])) {
         </div>
     </div>
 
-    <!-- Toast Container -->
+
     <div id="toastContainer" class="toast-container"></div>
 
     <script src="user-explore.js"></script>

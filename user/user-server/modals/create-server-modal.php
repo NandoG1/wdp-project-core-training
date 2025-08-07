@@ -1,4 +1,4 @@
-<!-- Create Server Modal -->
+
 <div class="modal hidden" id="createServerModal">
     <div class="modal-overlay" onclick="closeCreateServerModal()"></div>
     <div class="modal-content large">
@@ -14,7 +14,7 @@
                     <div class="server-identity">
                         <h3>Server Identity</h3>
                         
-                        <!-- Server Icon -->
+
                         <div class="form-group">
                             <label for="serverIcon">Server Icon</label>
                             <p class="form-description">We recommend an image of at least 512×512.</p>
@@ -30,7 +30,7 @@
                             </div>
                         </div>
 
-                        <!-- Server Banner -->
+
                         <div class="form-group">
                             <label for="serverBanner">Server Banner</label>
                             <p class="form-description">Recommended size: 960×540. This will be shown at the top of your server.</p>
@@ -46,14 +46,14 @@
                             </div>
                         </div>
 
-                        <!-- Server Name -->
+
                         <div class="form-group">
                             <label for="serverNameInput">Server Name <span class="required">*</span></label>
                             <input type="text" id="serverNameInput" name="name" placeholder="Enter server name" maxlength="100" required>
                             <div class="form-error" id="serverNameError"></div>
                         </div>
 
-                        <!-- Server Description -->
+
                         <div class="form-group">
                             <label for="serverDescriptionInput">Server Description</label>
                             <textarea id="serverDescriptionInput" name="description" placeholder="Tell people what your server is about" maxlength="1000" rows="3"></textarea>
@@ -66,7 +66,7 @@
                     <div class="server-settings">
                         <h3>Server Settings</h3>
                         
-                        <!-- Category Selection -->
+
                         <div class="form-group">
                             <label for="serverCategory">Category <span class="required">*</span></label>
                             <select id="serverCategory" name="category" required>
@@ -80,7 +80,7 @@
                             </select>
                         </div>
 
-                        <!-- Public/Private Toggle -->
+
                         <div class="form-group">
                             <div class="toggle-group">
                                 <div class="toggle-info">
@@ -106,7 +106,7 @@
     </div>
 </div>
 
-<!-- Image Cropper Modal -->
+
 <div class="modal hidden" id="imageCropperModal">
     <div class="modal-overlay"></div>
     <div class="modal-content large">
