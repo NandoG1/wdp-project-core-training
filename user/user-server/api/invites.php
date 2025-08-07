@@ -31,34 +31,10 @@ function createInvite($user_id) {
     
     error_log("createInvite called with user_id: $user_id");
     
-    // Create ServerInvite table if it doesn't exist
-    try {
-        $result = $mysqli->query("
-            CREATE TABLE IF NOT EXISTS ServerInvite (
-                ID INTEGER(10) PRIMARY KEY AUTO_INCREMENT,
-                ServerID INTEGER(10) NOT NULL,
-                InviteLink VARCHAR(50) NOT NULL UNIQUE,
-                CreatedBy INTEGER(10) NOT NULL,
-                CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                ExpiresAt TIMESTAMP NULL,
-                MaxUses INTEGER(10) DEFAULT 0,
-                Uses INTEGER(10) DEFAULT 0,
-                FOREIGN KEY (ServerID) REFERENCES Server(ID) ON DELETE CASCADE,
-                FOREIGN KEY (CreatedBy) REFERENCES Users(ID) ON DELETE CASCADE
-            )
-        ");
-        if (!$result) {
-            error_log("Failed to create ServerInvite table: " . $mysqli->error);
-        }
-    } catch (Exception $e) {
-        error_log("Error creating ServerInvite table: " . $e->getMessage());
-    }
-    
     $server_id = $_POST['serverId'] ?? '';
     $expires_in = intval($_POST['expiresIn'] ?? 0); // 0 = never expires
-    $max_uses = intval($_POST['maxUses'] ?? 0); // 0 = unlimited
     
-    error_log("createInvite parameters - server_id: $server_id, expires_in: $expires_in, max_uses: $max_uses");
+    error_log("createInvite parameters - server_id: $server_id, expires_in: $expires_in");
     
     if (empty($server_id)) {
         error_log("createInvite error: Server ID is empty");
@@ -79,14 +55,14 @@ function createInvite($user_id) {
         $expires_at = null;
         
         if ($expires_in > 0) {
-            $expires_at = date('Y-m-d H:i:s', time() + ($expires_in * 3600)); // hours to seconds
+            $expires_at = date('Y-m-d H:i:s', time() + ($expires_in * 60)); // minutes to seconds
         }
         
         $stmt = $mysqli->prepare("
-            INSERT INTO ServerInvite (ServerID, InviteLink, InviteUserID, ExpiresAt, MaxUses) 
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO ServerInvite (ServerID, InviteLink, InviterUserID, ExpiresAt) 
+            VALUES (?, ?, ?, ?)
         ");
-        $stmt->bind_param("isisi", $server_id, $invite_code, $user_id, $expires_at, $max_uses);
+        $stmt->bind_param("isis", $server_id, $invite_code, $user_id, $expires_at);
         $stmt->execute();
         
         $invite_id = $mysqli->insert_id;
@@ -96,7 +72,7 @@ function createInvite($user_id) {
             SELECT si.*, s.Name as ServerName, s.IconServer, u.Username as CreatedByUsername
             FROM ServerInvite si
             JOIN Server s ON si.ServerID = s.ID
-            JOIN Users u ON si.CreatedBy = u.ID
+            JOIN Users u ON si.InviterUserID = u.ID
             WHERE si.ID = ?
         ");
         $stmt->bind_param("i", $invite_id);
@@ -131,9 +107,9 @@ function getInvites($user_id) {
         $stmt = $mysqli->prepare("
             SELECT si.*, u.Username as CreatedByUsername, u.ProfilePictureUrl as CreatedByAvatar
             FROM ServerInvite si
-            JOIN Users u ON si.CreatedBy = u.ID
+            JOIN Users u ON si.InviterUserID = u.ID
             WHERE si.ServerID = ? AND (si.ExpiresAt IS NULL OR si.ExpiresAt > NOW())
-            ORDER BY si.CreatedAt DESC
+            ORDER BY si.ID DESC
         ");
         $stmt->bind_param("i", $server_id);
         $stmt->execute();
@@ -141,11 +117,6 @@ function getInvites($user_id) {
         
         $invites = [];
         while ($row = $result->fetch_assoc()) {
-            // Check if invite has reached max uses
-            if ($row['MaxUses'] > 0 && $row['Uses'] >= $row['MaxUses']) {
-                continue; // Skip expired invites
-            }
-            
             $invites[] = $row;
         }
         
@@ -220,7 +191,7 @@ function deleteInvite($user_id) {
         }
         
         // Check if user can delete (creator of invite or server admin)
-        $can_delete = ($invite['CreatedBy'] == $user_id) || is_server_admin($user_id, $invite['ServerID']);
+        $can_delete = ($invite['InviterUserID'] == $user_id) || is_server_admin($user_id, $invite['ServerID']);
         
         if (!$can_delete) {
             send_response(['error' => 'Access denied'], 403);

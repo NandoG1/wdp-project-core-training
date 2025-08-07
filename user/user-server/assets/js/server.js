@@ -2070,20 +2070,35 @@ function copyInviteLink() {
         return;
     }
     
-    // Create a temporary textarea to copy the text
-    const textarea = document.createElement('textarea');
-    textarea.value = inviteLinkText.textContent;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
+    // Extract just the invite code from the URL
+    const fullUrl = inviteLinkText.textContent;
+    const inviteCode = fullUrl.split('/invite/')[1] || fullUrl; // Extract code or use full text as fallback
     
-    const copyBtn = document.getElementById('copyInviteBtn');
-    const originalHtml = copyBtn.innerHTML;
-    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
-    setTimeout(() => {
-        copyBtn.innerHTML = originalHtml;
-    }, 2000);
+    // Copy just the invite code
+    navigator.clipboard.writeText(inviteCode).then(() => {
+        const copyBtn = document.getElementById('copyInviteBtn');
+        const originalHtml = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => {
+            copyBtn.innerHTML = originalHtml;
+        }, 2000);
+    }).catch(error => {
+        console.error('Error copying to clipboard:', error);
+        // Fallback to old method
+        const textarea = document.createElement('textarea');
+        textarea.value = inviteCode;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        const copyBtn = document.getElementById('copyInviteBtn');
+        const originalHtml = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => {
+            copyBtn.innerHTML = originalHtml;
+        }, 2000);
+    });
 }
 
 function regenerateInviteLink() {
@@ -2137,8 +2152,8 @@ function regenerateInviteLink() {
     .then(data => {
         console.log('Response data:', data);
         if (data.success && data.invite) {
-            const inviteUrl = `${window.location.origin}/invite/${data.invite.InviteLink}`;
-            document.getElementById('inviteLinkText').textContent = inviteUrl;
+            // Display just the invite code, not the full URL
+            document.getElementById('inviteLinkText').textContent = data.invite.InviteLink;
         } else {
             alert(data.message || 'Failed to regenerate invite link');
         }
@@ -2713,8 +2728,8 @@ class InviteSystem {
         .then(data => {
             console.log('createInvite response data:', data);
             if (data.success && data.invite) {
-                const inviteUrl = `${window.location.origin}/invite/${data.invite.InviteLink}`;
-                document.getElementById('inviteLinkText').textContent = inviteUrl;
+                // Display just the invite code, not the full URL
+                document.getElementById('inviteLinkText').textContent = data.invite.InviteLink;
                 this.currentServerInvites.unshift(data.invite);
                 this.displayRecentInvites();
             } else {
@@ -2741,10 +2756,6 @@ class InviteSystem {
             const expiresText = invite.ExpiresAt ? 
                 `Expires: ${new Date(invite.ExpiresAt).toLocaleDateString()}` : 
                 'Never expires';
-            
-            const usesText = invite.MaxUses > 0 ? 
-                `${invite.Uses}/${invite.MaxUses} uses` : 
-                `${invite.Uses} uses`;
 
             return `
                 <div class="invite-item">
@@ -2753,11 +2764,10 @@ class InviteSystem {
                         <div class="invite-details">
                             <span class="invite-creator">Created by ${invite.CreatedByUsername}</span>
                             <span class="invite-expiry">${expiresText}</span>
-                            <span class="invite-uses">${usesText}</span>
                         </div>
                     </div>
                     <div class="invite-actions">
-                        <button class="btn-icon" onclick="window.inviteSystem.copyInviteCode('${invite.InviteLink}')" title="Copy">
+                        <button class="btn-icon" onclick="window.inviteSystem.copyInviteCode('${invite.InviteLink}', this)" title="Copy">
                             <i class="fas fa-copy"></i>
                         </button>
                         <button class="btn-icon btn-danger" onclick="window.inviteSystem.deleteInvite(${invite.ID})" title="Delete">
@@ -2771,16 +2781,17 @@ class InviteSystem {
         container.innerHTML = invitesHtml;
     }
 
-    copyInviteCode(inviteCode) {
-        const inviteUrl = `${window.location.origin}/invite/${inviteCode}`;
-        navigator.clipboard.writeText(inviteUrl).then(() => {
-            // Show temporary success message
-            const btn = event.target.closest('button');
-            const originalIcon = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i>';
-            setTimeout(() => {
-                btn.innerHTML = originalIcon;
-            }, 1000);
+    copyInviteCode(inviteCode, buttonElement = null) {
+        // Copy just the invite code, not the full URL
+        navigator.clipboard.writeText(inviteCode).then(() => {
+            // Show temporary success message on the button if provided
+            if (buttonElement) {
+                const originalIcon = buttonElement.innerHTML;
+                buttonElement.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalIcon;
+                }, 1000);
+            }
         }).catch(error => {
             console.error('Error copying to clipboard:', error);
             alert('Failed to copy invite link');
