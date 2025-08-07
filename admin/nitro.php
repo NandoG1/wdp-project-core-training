@@ -1,14 +1,6 @@
 <?php
 session_start();
 require_once 'database.php';
-
-// Simple authentication check
-// if (!isset($_SESSION['admin_logged_in'])) {
-//     header('Location: login.php');
-//     exit();
-// }
-
-// Handle AJAX requests
 if (isset($_POST['action'])) {
     header('Content-Type: application/json');
     
@@ -22,8 +14,6 @@ if (isset($_POST['action'])) {
             echo json_encode(['users' => []]);
             exit();
         }
-        
-        // Get all users
         $query = "SELECT u.ID, u.Username, u.Email, u.Discriminator, u.AvatarURL,
                          (SELECT COUNT(*) FROM Nitro n WHERE n.UserID = u.ID) as HasNitro
                   FROM Users u 
@@ -34,8 +24,6 @@ if (isset($_POST['action'])) {
         while ($row = $result->fetch_assoc()) {
             $users[] = $row;
         }
-        
-        // Apply Jaro-Winkler algorithm
         $filteredUsers = [];
         foreach ($users as $user) {
             $usernameScore = jaroWinkler($searchTerm, $user['Username']);
@@ -47,13 +35,9 @@ if (isset($_POST['action'])) {
                 $filteredUsers[] = $user;
             }
         }
-        
-        // Sort by similarity score
         usort($filteredUsers, function($a, $b) {
             return $b['similarity_score'] <=> $a['similarity_score'];
         });
-        
-        // Limit to top 10 results
         $filteredUsers = array_slice($filteredUsers, 0, 10);
         
         echo json_encode(['users' => $filteredUsers]);
@@ -62,8 +46,6 @@ if (isset($_POST['action'])) {
     
     if ($_POST['action'] === 'generate_code') {
         $userId = !empty($_POST['user_id']) ? (int)$_POST['user_id'] : null;
-        
-        // Generate random code
         $code = generateNitroCode();
         
         $query = "INSERT INTO Nitro (UserID, Code) VALUES (?, ?)";
@@ -93,14 +75,10 @@ if (isset($_POST['action'])) {
         exit();
     }
 }
-
-// Get search parameter
 $search = $_GET['search'] ?? '';
 $page = (int)($_GET['page'] ?? 1);
 $limit = 10;
 $offset = ($page - 1) * $limit;
-
-// Build query based on search
 $database = new Database();
 $conn = $database->getConnection();
 
@@ -114,8 +92,6 @@ if (!empty($search)) {
     $params = [$searchParam, $searchParam, $searchParam];
     $types = "sss";
 }
-
-// Get statistics
 $statsQuery = "SELECT 
                  COUNT(*) as total_codes,
                  SUM(CASE WHEN UserID IS NULL THEN 1 ELSE 0 END) as active_codes,
@@ -123,8 +99,6 @@ $statsQuery = "SELECT
                FROM Nitro";
 $statsResult = $conn->query($statsQuery);
 $stats = $statsResult->fetch_assoc();
-
-// Get total count for pagination
 $countQuery = "SELECT COUNT(*) as total 
                FROM Nitro n 
                LEFT JOIN Users u ON n.UserID = u.ID 
@@ -138,8 +112,6 @@ if (!empty($params)) {
 } else {
     $totalCodes = $conn->query($countQuery)->fetch_assoc()['total'];
 }
-
-// Get nitro codes
 $query = "SELECT 
             n.ID,
             n.Code,
@@ -169,8 +141,6 @@ while ($row = $result->fetch_assoc()) {
 }
 
 $totalPages = ceil($totalCodes / $limit);
-
-// Jaro-Winkler algorithm implementation
 function jaro($s1, $s2) {
     $len1 = strlen($s1);
     $len2 = strlen($s2);
@@ -186,8 +156,6 @@ function jaro($s1, $s2) {
     
     $matches = 0;
     $transpositions = 0;
-    
-    // Find matches
     for ($i = 0; $i < $len1; $i++) {
         $start = max(0, $i - $match_distance);
         $end = min($i + $match_distance + 1, $len2);
@@ -202,8 +170,6 @@ function jaro($s1, $s2) {
     }
     
     if ($matches == 0) return 0.0;
-    
-    // Find transpositions
     $k = 0;
     for ($i = 0; $i < $len1; $i++) {
         if (!$s1_matches[$i]) continue;
@@ -224,8 +190,6 @@ function jaroWinkler($s1, $s2) {
     if ($jaro_score < 0.7) {
         return $jaro_score;
     }
-    
-    // Calculate prefix length (up to 4 characters)
     $prefix_length = 0;
     $max_prefix = min(4, min(strlen($s1), strlen($s2)));
     

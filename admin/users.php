@@ -1,14 +1,6 @@
 <?php
 session_start();
 require_once 'database.php';
-
-// Simple authentication check
-// if (!isset($_SESSION['admin_logged_in'])) {
-//     header('Location: login.php');
-//     exit();
-// }
-
-// Handle AJAX requests
 if (isset($_POST['action'])) {
     header('Content-Type: application/json');
     
@@ -43,15 +35,11 @@ if (isset($_POST['action'])) {
         exit();
     }
 }
-
-// Get filter and search parameters
 $filter = $_GET['filter'] ?? 'all';
 $search = $_GET['search'] ?? '';
 $page = (int)($_GET['page'] ?? 1);
 $limit = 10;
 $offset = ($page - 1) * $limit;
-
-// Build query based on filters
 $database = new Database();
 $conn = $database->getConnection();
 
@@ -71,8 +59,6 @@ if (!empty($search)) {
     $params = [$searchParam, $searchParam, $searchParam];
     $types = "sss";
 }
-
-// Get total count
 $countQuery = "SELECT COUNT(*) as total FROM Users $whereClause";
 if (!empty($params)) {
     $countStmt = $conn->prepare($countQuery);
@@ -82,8 +68,6 @@ if (!empty($params)) {
 } else {
     $totalUsers = $conn->query($countQuery)->fetch_assoc()['total'];
 }
-
-// Get users with pagination
 $query = "SELECT ID, Username, Email, Status, AvatarURL, Discriminator, DisplayName, CreatedAt
           FROM Users $whereClause 
         --   ORDER BY CreatedAt DESC 
@@ -448,29 +432,18 @@ $totalPages = ceil($totalUsers / $limit);
         let currentUserId = null;
         let currentUsername = null;
         let isLoading = false;
-
-        // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            // Show skeleton loading on page load
             showSkeletonLoading();
-            
-            // Simulate loading time and then show real content
             setTimeout(() => {
                 hideSkeletonLoading();
                 initializeEventListeners();
             }, 2000); // 2 second loading simulation
         });
-
-        // Show skeleton loading
         function showSkeletonLoading() {
             isLoading = true;
             const currentView = document.querySelector('.view-btn.active').dataset.view;
-            
-            // Hide real content
             document.getElementById('tableView').style.display = 'none';
             document.getElementById('gridView').style.display = 'none';
-            
-            // Show appropriate skeleton
             if (currentView === 'table') {
                 document.getElementById('skeletonTableView').classList.add('active');
                 document.getElementById('skeletonGridView').classList.remove('active');
@@ -478,21 +451,13 @@ $totalPages = ceil($totalUsers / $limit);
                 document.getElementById('skeletonGridView').classList.add('active');
                 document.getElementById('skeletonTableView').classList.remove('active');
             }
-            
-            // Add loading class to container
             document.getElementById('usersContainer').classList.add('loading');
         }
-
-        // Hide skeleton loading
         function hideSkeletonLoading() {
             isLoading = false;
             const currentView = document.querySelector('.view-btn.active').dataset.view;
-            
-            // Hide skeletons
             document.getElementById('skeletonTableView').classList.remove('active');
             document.getElementById('skeletonGridView').classList.remove('active');
-            
-            // Show real content with fade in
             setTimeout(() => {
                 if (currentView === 'table') {
                     document.getElementById('tableView').style.display = 'block';
@@ -503,15 +468,10 @@ $totalPages = ceil($totalUsers / $limit);
                     document.getElementById('gridView').classList.add('active');
                     document.getElementById('tableView').classList.remove('active');
                 }
-                
-                // Remove loading class
                 document.getElementById('usersContainer').classList.remove('loading');
             }, 100);
         }
-
-        // Initialize all event listeners
         function initializeEventListeners() {
-            // View toggle buttons
             document.querySelectorAll('.view-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     if (isLoading) return; // Prevent interaction during loading
@@ -520,20 +480,14 @@ $totalPages = ceil($totalUsers / $limit);
                     toggleView(view);
                 });
             });
-
-            // Filter dropdown
             document.getElementById('userFilter').addEventListener('change', function() {
                 if (isLoading) return;
                 applyFiltersWithLoading();
             });
-
-            // Search input
             document.getElementById('searchInput').addEventListener('input', debounce(function() {
                 if (isLoading) return;
                 applyFiltersWithLoading();
             }, 500));
-
-            // Ban/Unban buttons
             document.querySelectorAll('.ban-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const userId = this.dataset.userId;
@@ -549,8 +503,6 @@ $totalPages = ceil($totalUsers / $limit);
                     showUnbanModal(userId, username);
                 });
             });
-
-            // Modal event listeners
             document.getElementById('confirmBan').addEventListener('click', function() {
                 banUser(currentUserId);
             });
@@ -558,15 +510,11 @@ $totalPages = ceil($totalUsers / $limit);
             document.getElementById('confirmUnban').addEventListener('click', function() {
                 unbanUser(currentUserId);
             });
-
-            // Keyboard shortcuts
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     closeAllModals();
                 }
             });
-
-            // Modal background click to close
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) {
@@ -575,18 +523,12 @@ $totalPages = ceil($totalUsers / $limit);
                 });
             });
         }
-
-        // Apply filters with loading animation
         function applyFiltersWithLoading() {
             showSkeletonLoading();
-            
-            // Delay the actual filter application to show loading
             setTimeout(() => {
                 applyFilters();
             }, 800);
         }
-
-        // Toggle between table and grid view
         function toggleView(view) {
             if (isLoading) return;
             
@@ -595,17 +537,12 @@ $totalPages = ceil($totalUsers / $limit);
             const skeletonTableView = document.getElementById('skeletonTableView');
             const skeletonGridView = document.getElementById('skeletonGridView');
             const viewBtns = document.querySelectorAll('.view-btn');
-
-            // Update buttons
             viewBtns.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === view);
             });
-
-            // Show loading for view change
             showSkeletonLoading();
             
             setTimeout(() => {
-                // Update views
                 if (view === 'table') {
                     tableView.style.display = 'block';
                     gridView.style.display = 'none';
@@ -621,23 +558,15 @@ $totalPages = ceil($totalUsers / $limit);
                 hideSkeletonLoading();
             }, 600);
         }
-
-        // Apply filters and search
         function applyFilters() {
             const filter = document.getElementById('userFilter').value;
             const search = document.getElementById('searchInput').value;
-            
-            // Build URL with current parameters
             const url = new URL(window.location);
             url.searchParams.set('filter', filter);
             url.searchParams.set('search', search);
             url.searchParams.set('page', '1'); // Reset to first page
-            
-            // Reload page with new parameters
             window.location.href = url.toString();
         }
-
-        // Show ban modal
         function showBanModal(userId, username) {
             currentUserId = userId;
             currentUsername = username;
@@ -645,8 +574,6 @@ $totalPages = ceil($totalUsers / $limit);
             document.getElementById('banUsername').textContent = username;
             showModal('banModal');
         }
-
-        // Show unban modal
         function showUnbanModal(userId, username) {
             currentUserId = userId;
             currentUsername = username;
@@ -654,26 +581,18 @@ $totalPages = ceil($totalUsers / $limit);
             document.getElementById('unbanUsername').textContent = username;
             showModal('unbanModal');
         }
-
-        // Show modal
         function showModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
-
-        // Close modal
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.classList.remove('active');
             document.body.style.overflow = '';
-            
-            // Reset current user data
             currentUserId = null;
             currentUsername = null;
         }
-
-        // Close all modals
         function closeAllModals() {
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.classList.remove('active');
@@ -682,8 +601,6 @@ $totalPages = ceil($totalUsers / $limit);
             currentUserId = null;
             currentUsername = null;
         }
-
-        // Ban user via AJAX
         function banUser(userId) {
             if (!userId) return;
             
@@ -700,7 +617,6 @@ $totalPages = ceil($totalUsers / $limit);
                 if (data.success) {
                     showToast(`User ${currentUsername} has been banned successfully`, 'success');
                     closeModal('banModal');
-                    // Reload page to reflect changes with loading
                     setTimeout(() => {
                         showSkeletonLoading();
                         setTimeout(() => {
@@ -716,8 +632,6 @@ $totalPages = ceil($totalUsers / $limit);
                 showToast('An error occurred while banning the user', 'error');
             });
         }
-
-        // Unban user via AJAX
         function unbanUser(userId) {
             if (!userId) return;
             
@@ -734,7 +648,6 @@ $totalPages = ceil($totalUsers / $limit);
                 if (data.success) {
                     showToast(`User ${currentUsername} has been unbanned successfully`, 'success');
                     closeModal('unbanModal');
-                    // Reload page to reflect changes with loading
                     setTimeout(() => {
                         showSkeletonLoading();
                         setTimeout(() => {
@@ -750,8 +663,6 @@ $totalPages = ceil($totalUsers / $limit);
                 showToast('An error occurred while unbanning the user', 'error');
             });
         }
-
-        // Show toast notification
         function showToast(message, type = 'info') {
             const toastContainer = document.getElementById('toastContainer');
             
@@ -760,8 +671,6 @@ $totalPages = ceil($totalUsers / $limit);
             toast.textContent = message;
             
             toastContainer.appendChild(toast);
-            
-            // Auto remove after 5 seconds
             setTimeout(() => {
                 toast.style.animation = 'toastSlideOut 0.3s ease forwards';
                 setTimeout(() => {
@@ -770,8 +679,6 @@ $totalPages = ceil($totalUsers / $limit);
                     }
                 }, 300);
             }, 5000);
-            
-            // Click to dismiss
             toast.addEventListener('click', () => {
                 toast.style.animation = 'toastSlideOut 0.3s ease forwards';
                 setTimeout(() => {
@@ -781,8 +688,6 @@ $totalPages = ceil($totalUsers / $limit);
                 }, 300);
             });
         }
-
-        // Debounce function for search
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {

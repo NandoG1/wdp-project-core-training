@@ -1,14 +1,6 @@
 <?php
 session_start();
 require_once 'database.php';
-
-// Simple authentication check
-// if (!isset($_SESSION['admin_logged_in'])) {
-//     header('Location: login.php');
-//     exit();
-// }
-
-// Handle AJAX requests
 if (isset($_POST['action'])) {
     header('Content-Type: application/json');
     
@@ -17,18 +9,13 @@ if (isset($_POST['action'])) {
     
     if ($_POST['action'] === 'delete_server') {
         $serverId = (int)$_POST['server_id'];
-        
-        // Start transaction
         $conn->begin_transaction();
         
         try {
-            // Delete related records first (channels, memberships, etc.)
             $conn->query("DELETE FROM ChannelMessage WHERE ChannelID IN (SELECT ID FROM Channel WHERE ServerID = $serverId)");
             $conn->query("DELETE FROM Channel WHERE ServerID = $serverId");
             $conn->query("DELETE FROM UserServerMemberships WHERE ServerID = $serverId");
             $conn->query("DELETE FROM ServerInvite WHERE ServerID = $serverId");
-            
-            // Delete the server
             $query = "DELETE FROM Server WHERE ID = ?";
             $stmt = $conn->prepare($query);
             $stmt->bind_param("i", $serverId);
@@ -47,14 +34,10 @@ if (isset($_POST['action'])) {
         exit();
     }
 }
-
-// Get search parameter
 $search = $_GET['search'] ?? '';
 $page = (int)($_GET['page'] ?? 1);
 $limit = 10;
 $offset = ($page - 1) * $limit;
-
-// Build query based on search
 $database = new Database();
 $conn = $database->getConnection();
 
@@ -68,8 +51,6 @@ if (!empty($search)) {
     $params = [$searchParam, $searchParam, $searchParam];
     $types = "sss";
 }
-
-// Get total count
 $countQuery = "SELECT COUNT(*) as total 
                FROM Server s 
                LEFT JOIN UserServerMemberships usm ON s.ID = usm.ServerID AND usm.Role = 'owner'
@@ -84,8 +65,6 @@ if (!empty($params)) {
 } else {
     $totalServers = $conn->query($countQuery)->fetch_assoc()['total'];
 }
-
-// Get servers with owner info and member count
 $query = "SELECT 
             s.ID,
             s.Name,

@@ -2,12 +2,6 @@
 session_start();
 require_once 'function.php';
 
-// Simple authentication check
-// if (!isset($_SESSION['admin_logged_in'])) {
-//     header('Location: login.php');
-//     exit();
-// }
-
 $stats = new AdminStats();
 $totalUsers = $stats->getTotalUsers();
 $onlineUsers = $stats->getOnlineUsers();
@@ -144,8 +138,6 @@ $serverStats = $stats->getServerStats();
     <script src="admin.js"></script>
     <script src="chart.js"></script>
     <script>
-        // Chart data is now loaded asynchronously through chart.js
-        // with skeleton loading for better user experience
     </script>
 </body>
 </html>
