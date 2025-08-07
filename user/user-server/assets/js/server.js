@@ -1856,7 +1856,7 @@ function navigateToHome() {
 }
 
 function navigateToExplore() {
-    window.location.href = '/user/explore/';
+    window.location.href = '/user/server/user-explore.php';
 }
 
 function openCreateServerModal() {

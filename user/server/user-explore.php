@@ -325,9 +325,9 @@ if (isset($_POST['action'])) {
         <div class="server-sidebar">
             <div class="server-nav">
                 <!-- Home Button -->
-                <div class="server-item home-server" data-tooltip="Home" onclick="navigateToHome()">
-                    <div class="server-icon">
-                        <i class="fas fa-home"></i>
+                <div class="server-item home-server" data-tooltip="Home">
+                    <div class="server-icon" style="color: white">
+                        <a href="../home/index.php"><i class="fas fa-home">Home</i></a>
                     </div>
                 </div>
                 
@@ -335,24 +335,20 @@ if (isset($_POST['action'])) {
                 
                 <!-- User Servers List -->
                 <div class="user-servers" id="userServersList">
-                    <!-- User servers will be loaded here -->
+                    <div class="server-icon">
+                        <a href="../user-server/index.php"><i class="fas fa-home">Server</i></a>
+                    </div>
                 </div>
                 
                 <!-- Add Server Button -->
-                <div class="server-item add-server" data-tooltip="Add a Server" onclick="openCreateServerModal()">
+                <div class="server-item add-server" data-tooltip="Add a Server">
                     <div class="server-icon">
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-plus">Explore</i>
                     </div>
                 </div>
                 
                 <div class="server-separator"></div>
-                
-                <!-- Explore Button -->
-                <div class="server-item explore-server" data-tooltip="Explore Public Servers" onclick="navigateToExplore()">
-                    <div class="server-icon">
-                        <i class="fas fa-compass"></i>
-                    </div>
-                </div>
+            
             </div>
         </div>
 
