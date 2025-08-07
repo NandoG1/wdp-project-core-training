@@ -17,7 +17,6 @@ class ChannelManager {
     }
 
     bindEventListeners() {
-        // Message input
         if (this.messageInput) {
             this.messageInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -25,50 +24,36 @@ class ChannelManager {
                     this.sendMessage();
                 }
             });
-
-            // Auto-resize textarea
             this.messageInput.addEventListener('input', () => {
                 this.autoResizeTextarea(this.messageInput);
             });
         }
-
-        // Send button
         const sendButton = document.querySelector('.send-message');
         if (sendButton) {
             sendButton.addEventListener('click', () => {
                 this.sendMessage();
             });
         }
-
-        // File upload
         const fileInput = document.getElementById('fileInput');
         if (fileInput) {
             fileInput.addEventListener('change', (e) => {
                 this.handleFileUpload(e.target.files);
             });
         }
-
-        // Emoji button
         const emojiButton = document.querySelector('.emoji-button');
         if (emojiButton) {
             emojiButton.addEventListener('click', () => {
                 this.toggleEmojiPicker();
             });
         }
-
-        // Message actions
         this.messageContainer?.addEventListener('click', (e) => {
             this.handleMessageAction(e);
         });
-
-        // Scroll to load more messages
         this.messageContainer?.addEventListener('scroll', () => {
             if (this.messageContainer.scrollTop === 0 && !this.isLoadingMessages) {
                 this.loadMoreMessages();
             }
         });
-
-        // Message search
         const searchInput = document.querySelector('.message-search input');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
@@ -78,7 +63,6 @@ class ChannelManager {
     }
 
     initializeEmojiPicker() {
-        // Simple emoji picker - in a real app you'd use a library like emoji-mart
         const emojiPicker = document.querySelector('.emoji-picker');
         if (emojiPicker) {
             const emojis = ['😀', '😂', '😍', '🤔', '😢', '😡', '👍', '👎', '❤️', '🎉', '🔥', '💯'];
@@ -99,20 +83,14 @@ class ChannelManager {
         if (this.currentChannelId === channelId) return;
 
         this.currentChannelId = channelId;
-        
-        // Update UI
         this.updateChannelHeader(channelId);
         this.updateActiveChannel(channelId);
-        
-        // Show appropriate interface
         if (channelType === 'Text') {
             this.showTextInterface();
             await this.loadMessages(channelId);
         } else if (channelType === 'Voice') {
             this.showVoiceInterface();
         }
-
-        // Join channel room for real-time updates
         if (window.socket) {
             window.socket.emit('join_channel', { channelId });
         }
@@ -137,12 +115,9 @@ class ChannelManager {
     }
 
     updateActiveChannel(channelId) {
-        // Remove active class from all channels
         document.querySelectorAll('.channel-item').forEach(item => {
             item.classList.remove('active');
         });
-
-        // Add active class to current channel
         const activeChannel = document.querySelector(`[data-channel-id="${channelId}"]`);
         if (activeChannel) {
             activeChannel.classList.add('active');
@@ -177,11 +152,9 @@ class ChannelManager {
             
             if (data.success) {
                 if (before) {
-                    // Prepend older messages
                     this.messages = [...data.messages, ...this.messages];
                     this.prependMessages(data.messages);
                 } else {
-                    // Load initial messages
                     this.messages = data.messages;
                     this.renderMessages();
                     this.scrollToBottom();
@@ -209,8 +182,6 @@ class ChannelManager {
         this.messageContainer.innerHTML = this.messages.map(message => 
             this.createMessageElement(message)
         ).join('');
-
-        // Add timestamp separators
         this.addTimestampSeparators();
     }
 
@@ -225,8 +196,6 @@ class ChannelManager {
         ).join('');
 
         this.messageContainer.insertAdjacentHTML('afterbegin', messagesHtml);
-
-        // Maintain scroll position
         this.messageContainer.scrollTop = this.messageContainer.scrollHeight - scrollHeight + scrollTop;
     }
 
@@ -293,19 +262,11 @@ class ChannelManager {
 
     formatMessageContent(content) {
         if (!content) return '';
-
-        // Format mentions
         content = content.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
-        
-        // Format links
         content = content.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-        
-        // Format basic markdown
         content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
         content = content.replace(/`(.*?)`/g, '<code>$1</code>');
-        
-        // Convert line breaks
         content = content.replace(/\n/g, '<br>');
         
         return content;
@@ -403,8 +364,6 @@ class ChannelManager {
                 this.clearReply();
                 this.clearFileSelection();
                 this.autoResizeTextarea(this.messageInput);
-
-                // Message will be added via socket event
             } else {
                 serverApp.showToast(data.error || 'Failed to send message', 'error');
             }
@@ -441,17 +400,11 @@ class ChannelManager {
     showReactionPicker(messageId, button) {
         const picker = document.querySelector('.reaction-picker');
         if (!picker) return;
-
-        // Position picker near the button
         const rect = button.getBoundingClientRect();
         picker.style.top = `${rect.top - picker.offsetHeight - 5}px`;
         picker.style.left = `${rect.left}px`;
         picker.style.display = 'block';
-
-        // Set current message for reactions
         picker.dataset.messageId = messageId;
-
-        // Hide picker when clicking outside
         const hidePickerHandler = (e) => {
             if (!picker.contains(e.target) && !button.contains(e.target)) {
                 picker.style.display = 'none';
@@ -520,23 +473,15 @@ class ChannelManager {
         const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
         const messageText = messageElement.querySelector('.message-text');
         const originalContent = messageText.textContent;
-
-        // Create edit input
         const editInput = document.createElement('textarea');
         editInput.className = 'edit-message-input';
         editInput.value = originalContent;
         editInput.rows = 1;
-
-        // Replace message text with input
         messageText.style.display = 'none';
         messageText.parentNode.insertBefore(editInput, messageText.nextSibling);
-
-        // Auto-resize and focus
         this.autoResizeTextarea(editInput);
         editInput.focus();
         editInput.setSelectionRange(editInput.value.length, editInput.value.length);
-
-        // Handle save/cancel
         const saveEdit = async () => {
             const newContent = editInput.value.trim();
             if (newContent && newContent !== originalContent) {
@@ -698,8 +643,6 @@ class ChannelManager {
             this.messageContainer.scrollTop = this.messageContainer.scrollHeight;
         }
     }
-
-    // Socket event handlers
     onNewMessage(messageData) {
         if (messageData.channelId == this.currentChannelId) {
             this.messages.push(messageData);
@@ -714,15 +657,11 @@ class ChannelManager {
         if (messageElement) {
             const messageText = messageElement.querySelector('.message-text');
             messageText.innerHTML = this.formatMessageContent(messageData.Content);
-            
-            // Add edited indicator
             const header = messageElement.querySelector('.message-header');
             if (!header.querySelector('.message-edited')) {
                 header.insertAdjacentHTML('beforeend', '<span class="message-edited">(edited)</span>');
             }
         }
-
-        // Update in messages array
         const messageIndex = this.messages.findIndex(m => m.ID == messageData.ID);
         if (messageIndex !== -1) {
             this.messages[messageIndex] = { ...this.messages[messageIndex], ...messageData };
@@ -734,8 +673,6 @@ class ChannelManager {
         if (messageElement) {
             messageElement.remove();
         }
-
-        // Remove from messages array
         this.messages = this.messages.filter(m => m.ID != messageId);
     }
 
@@ -749,8 +686,6 @@ class ChannelManager {
                 reactionsContainer.className = 'message-reactions';
                 messageElement.querySelector('.message-content').appendChild(reactionsContainer);
             }
-
-            // Update or add reaction
             const existingReaction = reactionsContainer.querySelector(`[data-emoji="${data.emoji}"]`);
             if (existingReaction) {
                 const count = parseInt(existingReaction.textContent.split(' ')[1]) + 1;
@@ -803,8 +738,6 @@ class ChannelManager {
                 </div>
             </div>
         `).join('');
-
-        // Add click handlers to jump to messages
         resultsContainer.addEventListener('click', (e) => {
             const result = e.target.closest('.search-result');
             if (result) {
@@ -819,12 +752,9 @@ class ChannelManager {
     }
 
     async jumpToMessage(channelId, messageId) {
-        // Switch to channel if different
         if (channelId != this.currentChannelId) {
             await this.switchToChannel(channelId);
         }
-
-        // Find and highlight message
         const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
         if (messageElement) {
             messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -843,8 +773,3 @@ class ChannelManager {
         }
     }
 }
-
-// Export ChannelManager class for manual initialization if needed
-// Note: ServerApp handles most channel functionality, so automatic initialization is disabled
-// const channelManager = new ChannelManager();
-// window.channelManager = channelManager;

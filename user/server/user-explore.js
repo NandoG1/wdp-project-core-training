@@ -1,4 +1,3 @@
-// Global variables
 let currentPage = 1
 let isLoading = false
 let hasMoreServers = true
@@ -10,14 +9,10 @@ let allServersFromDB = [] // Store all servers from database
 let displayedServersCount = 0 // Track how many servers we've displayed
 let endOfDBReached = false // Track if we've reached the end of database servers
 const $ = window.jQuery // Declare the $ variable
-
-// Initialize page
 $(document).ready(() => {
   initializeEventListeners()
   loadCategories()
   loadServers(true)
-  
-  // Add a test button for duplication (temporary for debugging)
   $('body').append('<button id="testDuplication" style="position:fixed;top:10px;right:10px;z-index:9999;background:red;color:white;padding:10px;">TEST DUPLICATION</button>')
   $('#testDuplication').on('click', () => {
     console.log("=== MANUAL DUPLICATION TEST ===")
@@ -28,16 +23,11 @@ $(document).ready(() => {
     duplicateServers()
   })
 })
-
-// Initialize event listeners
 function initializeEventListeners() {
-  // Category selection
   $(document).on("click", ".category-item", function () {
     const category = $(this).data("category")
     selectCategory(category)
   })
-
-  // Search input with better debouncing
   $("#searchInput").on(
     "input",
     debounce(function () {
@@ -49,8 +39,6 @@ function initializeEventListeners() {
       }
     }, 300), // Reduced debounce time for better responsiveness
   )
-
-  // Sort dropdown
   $("#sortBtn").on("click", (e) => {
     e.stopPropagation()
     $("#sortDropdown").toggleClass("active")
@@ -60,21 +48,15 @@ function initializeEventListeners() {
     const sort = $(this).data("sort")
     selectSort(sort)
   })
-
-  // Close sort dropdown when clicking outside
   $(document).on("click", (e) => {
     if (!$(e.target).closest('.sort-container').length) {
       $("#sortDropdown").removeClass("active")
     }
   })
-
-  // Server card clicks
   $(document).on("click", ".server-card", function () {
     const serverId = $(this).data("server-id")
     showServerDetails(serverId)
   })
-
-  // Join server buttons
   $(document).on("click", ".join-btn", function (e) {
     e.stopPropagation()
     const serverId = $(this).closest(".server-card").data("server-id")
@@ -84,8 +66,6 @@ function initializeEventListeners() {
   $("#joinServerBtn").on("click", () => {
     joinServer(currentServerId)
   })
-
-  // Join by invite
   $("#inviteSubmitBtn").on("click", () => {
     joinByInvite()
   })
@@ -95,8 +75,6 @@ function initializeEventListeners() {
       joinByInvite()
     }
   })
-
-  // Modal close events
   $(".modal-close").on("click", () => {
     closeAllModals()
   })
@@ -106,45 +84,33 @@ function initializeEventListeners() {
       closeAllModals()
     }
   })
-
-  // SINGLE scroll handler for infinite scrolling
   $(window).on("scroll", throttle(() => {
     handleInfiniteScroll()
   }, 100)) // Throttle scroll events
-
-  // Keyboard shortcuts
   $(document).on("keydown", (e) => {
     if (e.key === "Escape") {
       closeAllModals()
     }
   })
 }
-
-// Handle infinite scrolling logic
 function handleInfiniteScroll() {
   const scrollTop = $(window).scrollTop()
   const windowHeight = $(window).height()
   const documentHeight = $(document).height()
   const distanceFromBottom = documentHeight - (scrollTop + windowHeight)
-  
-  // Only trigger when user is VERY close to bottom (within 10px) and actually scrolling
   if (distanceFromBottom <= 10 && !isLoading && hasMoreServers && scrollTop > 0) {
     console.log("🎯 User reached bottom - Triggering load...")
     console.log(`Scroll details: scrollTop=${scrollTop}, distanceFromBottom=${distanceFromBottom}`)
     
     if (!endOfDBReached) {
-      // Still have database servers to load
       console.log("📡 Loading more servers from database...")
       loadServers(true)
     } else if (allServersFromDB.length > 0) {
-      // Database is exhausted, start duplicating
       console.log("🔄 Database exhausted - Duplicating servers...")
       duplicateServers()
     }
   }
 }
-
-// Load categories
 function loadCategories() {
   $.ajax({
     url: "user-explore.php",
@@ -162,15 +128,9 @@ function loadCategories() {
     },
   })
 }
-
-// Display categories
 function displayCategories(categories, totalServers) {
   const categoriesList = $("#categoriesList")
-
-  // Update total count
   $("#totalCount").text(totalServers || 0)
-
-  // Add category items
   categories.forEach((category) => {
     const categoryIcon = getCategoryIcon(category.Category)
     const categoryItem = $(`
@@ -184,8 +144,6 @@ function displayCategories(categories, totalServers) {
     categoriesList.append(categoryItem)
   })
 }
-
-// Get category icon
 function getCategoryIcon(category) {
   const icons = {
     Gaming: "🎮",
@@ -201,8 +159,6 @@ function getCategoryIcon(category) {
   }
   return icons[category] || "📁"
 }
-
-// Format category name
 function formatCategoryName(category) {
   if (!category || category === null || category === undefined) {
     return 'General'
@@ -210,31 +166,21 @@ function formatCategoryName(category) {
   const categoryStr = String(category)
   return categoryStr.charAt(0).toUpperCase() + categoryStr.slice(1)
 }
-
-// Select category
 function selectCategory(category) {
   currentCategory = category
-
-  // Update UI
   $(".category-item").removeClass("active")
   $(`.category-item[data-category="${category}"]`).addClass("active")
 
   resetAndLoadServers()
 }
-
-// Select sort
 function selectSort(sort) {
   currentSort = sort
-
-  // Update UI
   $(".sort-option").removeClass("active")
   $(`.sort-option[data-sort="${sort}"]`).addClass("active")
   $("#sortDropdown").removeClass("active")
 
   resetAndLoadServers()
 }
-
-// Reset and load servers
 function resetAndLoadServers() {
   currentPage = 1
   hasMoreServers = true
@@ -245,8 +191,6 @@ function resetAndLoadServers() {
   $("#noMoreServers").hide()
   loadServers(true)
 }
-
-// Load servers with better error handling
 function loadServers(showLoading = false) {
   if (isLoading) {
     console.log("Already loading, skipping...")
@@ -274,8 +218,6 @@ function loadServers(showLoading = false) {
     timeout: 10000, // 10 second timeout
     success: (response) => {
       console.log("AJAX Response:", response) // Debug line
-      
-      // Validate response structure
       if (!response || typeof response !== 'object') {
         console.error('Invalid response format:', response)
         showToast("Invalid server response", "error")
@@ -287,8 +229,6 @@ function loadServers(showLoading = false) {
         showToast("No servers data received", "error")
         return
       }
-      
-      // Store servers from database for future duplication
       if (response.servers.length > 0) {
         allServersFromDB = allServersFromDB.concat(response.servers)
         displayedServersCount += response.servers.length
@@ -296,21 +236,16 @@ function loadServers(showLoading = false) {
       }
       
       displayServers(response.servers)
-
-      // Check if we got fewer servers than requested (indicates end of DB results)
       const serversPerPage = 12
       if (response.servers.length < serversPerPage) {
         console.log("Reached end of database servers (got", response.servers.length, "servers)")
         endOfDBReached = true
       }
-      
-      // Show no results message only on first page with no results
       if (currentPage === 1 && response.servers.length === 0) {
         showNoServersMessage()
         hasMoreServers = false // Don't allow scrolling if no servers at all
         console.log("No servers found, disabling infinite scroll")
       } else {
-        // Keep hasMoreServers = true for infinite scrolling with duplication
         hasMoreServers = true
       }
 
@@ -331,8 +266,6 @@ function loadServers(showLoading = false) {
       }
       
       showToast(errorMessage, "error")
-      
-      // If this was the first page load, show an error message
       if (currentPage === 1) {
         showErrorMessage("Unable to load servers. Please refresh the page.")
         hasMoreServers = false
@@ -341,8 +274,6 @@ function loadServers(showLoading = false) {
     complete: () => {
       isLoading = false
       $("#loadingIndicator").hide()
-      
-      // Only check for more content if this was the initial page load
       if (currentPage === 2) { // currentPage gets incremented before complete()
         setTimeout(() => {
           checkIfPageNeedsMoreContent()
@@ -351,16 +282,12 @@ function loadServers(showLoading = false) {
     },
   })
 }
-
-// Check if page needs more content to enable scrolling (only for initial load)
 function checkIfPageNeedsMoreContent() {
   const documentHeight = $(document).height()
   const windowHeight = $(window).height()
   const canScroll = documentHeight > windowHeight + 100 // More conservative check
   
   console.log(`Document height: ${documentHeight}, Window height: ${windowHeight}, Can scroll: ${canScroll}`)
-  
-  // Only add content if page is significantly too short and this is initial load
   if (!canScroll && allServersFromDB.length > 0 && !isLoading && currentPage <= 3) {
     console.log("Initial page too short for scrolling, adding one more batch...")
     if (!endOfDBReached) {
@@ -370,8 +297,6 @@ function checkIfPageNeedsMoreContent() {
     }
   }
 }
-
-// Create skeleton server card for loading state
 function createSkeletonCard() {
   return $(`
     <div class="skeleton-server-card">
@@ -392,8 +317,6 @@ function createSkeletonCard() {
     </div>
   `)
 }
-
-// New function to duplicate servers for infinite scrolling
 function duplicateServers() {
   if (allServersFromDB.length === 0) {
     console.log("❌ No servers to duplicate - allServersFromDB is empty")
@@ -412,15 +335,9 @@ function duplicateServers() {
   console.log("Current displayed count:", displayedServersCount)
   console.log("Available servers in DB:", allServersFromDB.length)
   console.log("Current page:", currentPage)
-  
-  // Create a batch of servers to display (12 servers per "page")
   const serversPerPage = 12
   const serversGrid = $("#serversGrid")
-  
-  // Show loading indicator
   $("#loadingIndicator").show()
-  
-  // First, show skeleton cards
   console.log("Showing skeleton loading cards...")
   const skeletonCards = []
   for (let i = 0; i < serversPerPage; i++) {
@@ -428,25 +345,16 @@ function duplicateServers() {
     skeletonCards.push(skeletonCard)
     serversGrid.append(skeletonCard)
   }
-  
-  // After 1.5 seconds, replace skeleton cards with actual server cards
   setTimeout(() => {
     console.log("Replacing skeleton cards with actual server cards...")
-    
-    // Remove skeleton cards
     skeletonCards.forEach(card => card.remove())
     
     let serversToShow = []
-    
-    // Create enough servers for this "page" by cycling through available servers
     for (let i = 0; i < serversPerPage; i++) {
-      // Use modulo to cycle through servers
       const cycleIndex = (displayedServersCount + i) % allServersFromDB.length
       const sourceServer = allServersFromDB[cycleIndex]
       
       console.log(`Duplicating server ${cycleIndex}: ${sourceServer.Name}`)
-      
-      // Create a copy of the server with a unique ID for display
       const duplicatedServer = {
         ...sourceServer,
         ID: `${sourceServer.ID}_dup_${displayedServersCount + i}`, // Unique display ID
@@ -455,23 +363,15 @@ function duplicateServers() {
       
       serversToShow.push(duplicatedServer)
     }
-    
-    // Update the displayed count after creating all duplicates
     displayedServersCount += serversPerPage
     
     console.log("✅ Showing duplicated servers:", serversToShow.length)
     console.log("New displayed count:", displayedServersCount)
     displayServers(serversToShow)
-    
-    // Increment page for next duplication
     currentPage++
     updateServerCount()
-    
-    // Reset loading state
     isLoading = false
     $("#loadingIndicator").hide()
-    
-    // Check if we need to add more content immediately
     setTimeout(() => {
       checkIfPageNeedsMoreContent()
     }, 300)
@@ -479,8 +379,6 @@ function duplicateServers() {
     console.log("🔄 === END DUPLICATION DEBUG ===")
   }, 1500) // 1.5 second delay
 }
-
-// Display servers
 function displayServers(servers) {
   const serversGrid = $("#serversGrid")
 
@@ -498,10 +396,7 @@ function displayServers(servers) {
     }
   })
 }
-
-// Create server card with support for duplicated servers
 function createServerCard(server) {
-  // Add safety checks for server properties
   if (!server || !server.ID) {
     console.error('Invalid server data:', server)
     return $('<div></div>') // Return empty div if server data is invalid
@@ -511,14 +406,10 @@ function createServerCard(server) {
   const joinButtonText = (server.is_joined == 1) ? "JOINED" : "JOIN SERVER"
   const joinButtonClass = (server.is_joined == 1) ? "join-btn joined" : "join-btn"
   const joinButtonIcon = (server.is_joined == 1) ? "✓" : "+"
-  
-  // Safe property access with fallbacks
   const serverName = server.Name || 'Unnamed Server'
   const serverDescription = server.Description || "No description available"
   const serverCategory = server.Category || "General"
   const memberCount = server.member_count || 0
-  
-  // Use originalID for join functionality if it exists (for duplicated servers)
   const serverIdForJoin = server.originalID || server.ID
 
   return $(`
@@ -565,8 +456,6 @@ function createServerCard(server) {
         </div>
     `)
 }
-
-// Show no servers message
 function showNoServersMessage() {
   const serversGrid = $("#serversGrid")
   const message = currentSearch 
@@ -581,8 +470,6 @@ function showNoServersMessage() {
     </div>
   `)
 }
-
-// Show error message
 function showErrorMessage(message) {
   const serversGrid = $("#serversGrid")
   serversGrid.html(`
@@ -593,8 +480,6 @@ function showErrorMessage(message) {
     </div>
   `)
 }
-
-// Show server details
 function showServerDetails(serverId) {
   currentServerId = serverId
 
@@ -620,35 +505,25 @@ function showServerDetails(serverId) {
     },
   })
 }
-
-// Display server details
 function displayServerDetails(server) {
   if (!server) {
     console.error('No server data provided to displayServerDetails')
     return
   }
-  
-  // Set banner
   if (server.BannerServer) {
     $("#serverBanner").html(`<img src="${server.BannerServer}" alt="Server Banner">`)
   } else {
     $("#serverBanner").html('<div class="default-banner">No banner available</div>')
   }
-
-  // Set avatar
   if (server.IconServer) {
     $("#serverAvatar").html(`<img src="${server.IconServer}" alt="Server Icon">`)
   } else {
     const serverName = server.Name || 'Server'
     $("#serverAvatar").html(`<div class="default-avatar">${serverName.charAt(0).toUpperCase()}</div>`)
   }
-
-  // Set details with safe access
   $("#serverName").text(server.Name || 'Unnamed Server')
   $("#serverMemberCount").text(`${server.member_count || 0} members`)
   $("#serverDescription").text(server.Description || "No description available")
-
-  // Set join button state
   if (server.is_joined == 1) {
     $("#joinServerBtn").hide()
     $("#joinedBtn").show()
@@ -657,15 +532,11 @@ function displayServerDetails(server) {
     $("#joinedBtn").hide()
   }
 }
-
-// Join server with better error handling
 function joinServer(serverId) {
   if (!serverId) {
     showToast("Invalid server ID", "error")
     return
   }
-
-  // Disable join button to prevent double-clicking
   const joinBtn = $(`.server-card[data-server-id="${serverId}"] .join-btn`)
   const modalJoinBtn = $("#joinServerBtn")
   
@@ -683,11 +554,7 @@ function joinServer(serverId) {
     success: (response) => {
       if (response.success) {
         showToast(response.message, "success")
-
-        // Update UI
         updateServerJoinStatus(serverId, true)
-
-        // Update modal if open
         if (currentServerId == serverId) {
           $("#joinServerBtn").hide()
           $("#joinedBtn").show()
@@ -701,14 +568,11 @@ function joinServer(serverId) {
       showToast("Failed to join server. Please try again.", "error")
     },
     complete: () => {
-      // Re-enable buttons
       joinBtn.prop('disabled', false)
       modalJoinBtn.prop('disabled', false)
     }
   })
 }
-
-// Join by invite
 function joinByInvite() {
   const inviteCode = $("#inviteCodeInput").val().trim()
 
@@ -716,8 +580,6 @@ function joinByInvite() {
     showToast("Please enter an invite code", "error")
     return
   }
-
-  // Disable submit button
   $("#inviteSubmitBtn").prop('disabled', true)
 
   $.ajax({
@@ -733,8 +595,6 @@ function joinByInvite() {
         showToast(response.message, "success")
         closeAllModals()
         $("#inviteCodeInput").val("")
-
-        // Refresh servers to show updated join status
         resetAndLoadServers()
       } else {
         showToast(response.message, "error")
@@ -748,10 +608,7 @@ function joinByInvite() {
     }
   })
 }
-
-// Update server join status with support for duplicated servers
 function updateServerJoinStatus(serverId, isJoined) {
-  // Update all server cards with the same actual server ID (including duplicates)
   const serverCards = $(`.server-card[data-server-id="${serverId}"]`)
   
   serverCards.each(function() {
@@ -767,30 +624,22 @@ function updateServerJoinStatus(serverId, isJoined) {
       joinBtn.find(".btn-text").text("JOIN SERVER")
     }
   })
-  
-  // Also update the stored server data for future duplications
   allServersFromDB.forEach(server => {
     if (server.ID == serverId) {
       server.is_joined = isJoined ? 1 : 0
     }
   })
 }
-
-// Show join server modal
 function showJoinServerModal() {
   $("#joinServerModal").addClass("active")
   $("body").css("overflow", "hidden")
   $("#inviteCodeInput").focus()
 }
-
-// Close all modals
 function closeAllModals() {
   $(".modal").removeClass("active")
   $("body").css("overflow", "")
   currentServerId = null
 }
-
-// Update server count with better counting for duplicates
 function updateServerCount() {
   const totalCards = $(".server-card").length
   const uniqueServers = allServersFromDB.length
@@ -801,10 +650,7 @@ function updateServerCount() {
     $("#serverCount").text(`${totalCards} servers available`)
   }
 }
-
-// Format date
 function formatDate(id) {
-  // Simple date formatting based on ID (newer IDs = more recent)
   const now = new Date()
   const daysAgo = Math.floor(Math.random() * 365) + 1
   const date = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
@@ -813,8 +659,6 @@ function formatDate(id) {
 
   return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
 }
-
-// Escape HTML
 function escapeHtml(text) {
   if (!text || text === null || text === undefined) {
     return ''
@@ -823,23 +667,17 @@ function escapeHtml(text) {
   div.textContent = String(text) // Convert to string to prevent undefined issues
   return div.innerHTML
 }
-
-// Show toast notification
 function showToast(message, type = "info") {
   const toastContainer = $("#toastContainer")
 
   const toast = $(`<div class="toast ${type}">${escapeHtml(message)}</div>`)
   toastContainer.append(toast)
-
-  // Auto remove after 5 seconds
   setTimeout(() => {
     toast.css("animation", "toastSlideOut 0.3s ease forwards")
     setTimeout(() => {
       toast.remove()
     }, 300)
   }, 5000)
-
-  // Click to dismiss
   toast.on("click", function () {
     $(this).css("animation", "toastSlideOut 0.3s ease forwards")
     setTimeout(() => {
@@ -847,8 +685,6 @@ function showToast(message, type = "info") {
     }, 300)
   })
 }
-
-// Improved debounce function
 function debounce(func, wait) {
   let timeout
   return function executedFunction(...args) {
@@ -860,8 +696,6 @@ function debounce(func, wait) {
     timeout = setTimeout(later, wait)
   }
 }
-
-// Throttle function for scroll events
 function throttle(func, limit) {
   let inThrottle
   return function() {
@@ -874,8 +708,6 @@ function throttle(func, limit) {
     }
   }
 }
-
-// Add slide out animation and custom styles
 const style = document.createElement("style")
 style.textContent = `
     @keyframes toastSlideOut {

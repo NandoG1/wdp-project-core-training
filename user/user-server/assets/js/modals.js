@@ -10,34 +10,19 @@ class ModalManager {
     }
 
     bindEventListeners() {
-        // Modal close buttons
         document.addEventListener('click', (e) => {
             if (e.target.matches('.modal-close, .modal-cancel')) {
                 this.closeModal(e.target.closest('.modal'));
             }
-            
-            // Close modal when clicking backdrop
             if (e.target.classList.contains('modal')) {
                 this.closeModal(e.target);
             }
         });
-
-        // Create Server Modal
         this.bindCreateServerEvents();
-        
-        // User Settings Modal
         this.bindUserSettingsEvents();
-        
-        // Server Settings Modal
         this.bindServerSettingsEvents();
-        
-        // Invite People Modal
         this.bindInvitePeopleEvents();
-        
-        // Create Channel Modal
         this.bindCreateChannelEvents();
-        
-        // Leave Server Modal
         this.bindLeaveServerEvents();
     }
 
@@ -50,19 +35,14 @@ class ModalManager {
             e.preventDefault();
             this.handleCreateServer(form);
         });
-
-        // Server name input validation
         const nameInput = modal.querySelector('#serverName');
         nameInput.addEventListener('input', () => {
             this.validateServerName(nameInput);
         });
-        
-        // Bind image upload handlers
         this.bindImageUploadHandlers();
     }
     
     bindImageUploadHandlers() {
-        // Server icon upload
         const iconInput = document.getElementById('serverIconInput');
         const iconPreview = document.getElementById('serverIconPreview');
         
@@ -71,8 +51,6 @@ class ModalManager {
                 this.handleImagePreview(e.target, iconPreview, 'icon');
             });
         }
-        
-        // Server banner upload
         const bannerInput = document.getElementById('serverBannerInput');
         const bannerPreview = document.getElementById('serverBannerPreview');
         
@@ -86,23 +64,17 @@ class ModalManager {
     handleImagePreview(input, preview, type) {
         const file = input.files[0];
         if (!file) return;
-        
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             serverApp.showToast('Please select a valid image file', 'error');
             input.value = '';
             return;
         }
-        
-        // Validate file size (5MB max)
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
             serverApp.showToast('Image file size must be less than 5MB', 'error');
             input.value = '';
             return;
         }
-        
-        // Create preview
         const reader = new FileReader();
         reader.onload = (e) => {
             if (type === 'icon') {
@@ -116,8 +88,6 @@ class ModalManager {
 
     bindUserSettingsEvents() {
         const modal = document.getElementById('userSettingsModal');
-        
-        // Tab switching
         const tabs = modal.querySelectorAll('.settings-tab');
         const contents = modal.querySelectorAll('.tab-content');
         
@@ -127,49 +97,35 @@ class ModalManager {
                 this.switchSettingsTab(targetTab, tabs, contents);
             });
         });
-
-        // Profile form
         const profileForm = modal.querySelector('#profileForm');
         profileForm.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleProfileUpdate(profileForm);
         });
-
-        // Password change
         const passwordForm = modal.querySelector('#passwordForm');
         passwordForm.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handlePasswordChange(passwordForm);
         });
-
-        // Security question verification
         const securityForm = modal.querySelector('#securityForm');
         securityForm.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleSecurityVerification(securityForm);
         });
-
-        // Delete account
         const deleteForm = modal.querySelector('#deleteAccountForm');
         deleteForm.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleDeleteAccount(deleteForm);
         });
-
-        // Email reveal toggle
         const emailToggle = modal.querySelector('.email-reveal');
         emailToggle.addEventListener('click', () => {
             this.toggleEmailReveal(emailToggle);
         });
-
-        // Device testing
         this.bindDeviceTestingEvents(modal);
     }
 
     bindServerSettingsEvents() {
         const modal = document.getElementById('serverSettingsModal');
-        
-        // Tab switching
         const tabs = modal.querySelectorAll('.settings-tab');
         const contents = modal.querySelectorAll('.tab-content');
         
@@ -179,21 +135,13 @@ class ModalManager {
                 this.switchSettingsTab(targetTab, tabs, contents);
             });
         });
-
-        // Server profile form
         const profileForm = modal.querySelector('#serverProfileForm');
         profileForm.addEventListener('submit', (e) => {
             e.preventDefault();
             this.handleServerProfileUpdate(profileForm);
         });
-
-        // Channel management
         this.bindChannelManagementEvents(modal);
-        
-        // Member management
         this.bindMemberManagementEvents(modal);
-        
-        // Server deletion
         const deleteForm = modal.querySelector('#deleteServerForm');
         deleteForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -203,14 +151,10 @@ class ModalManager {
 
     bindInvitePeopleEvents() {
         const modal = document.getElementById('invitePeopleModal');
-        
-        // Generate invite
         const generateBtn = modal.querySelector('.generate-invite');
         generateBtn.addEventListener('click', () => {
             this.generateInvite();
         });
-
-        // Copy invite links
         modal.addEventListener('click', (e) => {
             if (e.target.matches('.copy-invite')) {
                 this.copyInviteLink(e.target);
@@ -220,8 +164,6 @@ class ModalManager {
                 this.deleteInvite(e.target.dataset.inviteId);
             }
         });
-
-        // Invite Titibot
         const titibotBtn = modal.querySelector('.invite-titibot');
         titibotBtn.addEventListener('click', () => {
             this.inviteTitibot();
@@ -237,8 +179,6 @@ class ModalManager {
             e.preventDefault();
             this.handleCreateChannel(form);
         });
-
-        // Channel name formatting
         nameInput.addEventListener('input', () => {
             this.formatChannelName(nameInput);
         });
@@ -255,19 +195,14 @@ class ModalManager {
     }
 
     bindDeviceTestingEvents(modal) {
-        // Microphone test
         const micTest = modal.querySelector('.mic-test');
         micTest.addEventListener('click', () => {
             this.testMicrophone();
         });
-
-        // Camera test
         const cameraTest = modal.querySelector('.camera-test');
         cameraTest.addEventListener('click', () => {
             this.testCamera();
         });
-
-        // Volume sliders
         const volumeSliders = modal.querySelectorAll('input[type="range"]');
         volumeSliders.forEach(slider => {
             slider.addEventListener('input', (e) => {
@@ -287,8 +222,6 @@ class ModalManager {
         channelSearch.addEventListener('input', () => {
             this.searchChannels(channelSearch.value);
         });
-
-        // Channel actions
         modal.addEventListener('click', (e) => {
             if (e.target.matches('.edit-channel')) {
                 this.editChannel(e.target.dataset.channelId);
@@ -311,8 +244,6 @@ class ModalManager {
         memberSearch.addEventListener('input', () => {
             this.searchMembers(memberSearch.value);
         });
-
-        // Member actions
         modal.addEventListener('click', (e) => {
             if (e.target.matches('.promote-member')) {
                 this.promoteMember(e.target.dataset.memberId);
@@ -333,7 +264,6 @@ class ModalManager {
     }
 
     initializeImageCutters() {
-        // Initialize Cropper.js for image cutting
         const imageInputs = document.querySelectorAll('.image-upload-input');
         
         imageInputs.forEach(input => {
@@ -342,15 +272,11 @@ class ModalManager {
             });
         });
     }
-
-    // Modal Management
     openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            
-            // Load modal data if needed
             this.loadModalData(modalId);
         }
     }
@@ -359,14 +285,10 @@ class ModalManager {
         if (modal) {
             modal.style.display = 'none';
             document.body.style.overflow = '';
-            
-            // Cleanup cropper if exists
             if (this.currentCropper) {
                 this.currentCropper.destroy();
                 this.currentCropper = null;
             }
-            
-            // Reset forms
             const forms = modal.querySelectorAll('form');
             forms.forEach(form => form.reset());
         }
@@ -385,8 +307,6 @@ class ModalManager {
                 break;
         }
     }
-
-    // Create Server Modal
     async handleCreateServer(form) {
         const formData = new FormData(form);
         formData.append('action', 'createServer');
@@ -404,7 +324,6 @@ class ModalManager {
                 this.closeModal(form.closest('.modal'));
                 serverApp.loadUserServers();
                 form.reset();
-                // Reset image previews
                 this.resetImagePreviews();
             } else {
                 serverApp.showToast(data.error || 'Failed to create server', 'error');
@@ -449,8 +368,6 @@ class ModalManager {
             feedback.style.color = '#57f287';
         }
     }
-
-    // User Settings Modal
     async loadUserSettings() {
         try {
             const response = await fetch('/user/user-server/api/user.php?action=getCurrentUser');
@@ -466,14 +383,10 @@ class ModalManager {
 
     populateUserSettings(user) {
         const modal = document.getElementById('userSettingsModal');
-        
-        // Populate form fields
         modal.querySelector('#username').value = user.Username || '';
         modal.querySelector('#displayName').value = user.DisplayName || '';
         modal.querySelector('#aboutMe').value = user.Bio || '';
         modal.querySelector('.masked-email').textContent = user.MaskedEmail || '';
-        
-        // Update avatar and banner previews
         if (user.ProfilePictureUrl) {
             modal.querySelector('.avatar-preview').src = user.ProfilePictureUrl;
         }
@@ -548,19 +461,15 @@ class ModalManager {
         const isRevealed = toggle.dataset.revealed === 'true';
         
         if (isRevealed) {
-            // Hide email
             emailElement.textContent = emailElement.dataset.masked;
             toggle.textContent = 'Reveal';
             toggle.dataset.revealed = 'false';
         } else {
-            // Show email
             emailElement.textContent = emailElement.dataset.full;
             toggle.textContent = 'Hide';
             toggle.dataset.revealed = 'true';
         }
     }
-
-    // Image Upload and Cropping
     handleImageUpload(input) {
         const file = input.files[0];
         if (!file) return;
@@ -578,13 +487,9 @@ class ModalManager {
         
         cropperImage.src = imageSrc;
         this.openModal('cropperModal');
-        
-        // Destroy existing cropper
         if (this.currentCropper) {
             this.currentCropper.destroy();
         }
-        
-        // Initialize new cropper
         const aspectRatio = type === 'banner' ? 16/9 : 1;
         
         this.currentCropper = new Cropper(cropperImage, {
@@ -600,8 +505,6 @@ class ModalManager {
             cropBoxResizable: true,
             toggleDragModeOnDblclick: false
         });
-        
-        // Bind cropper buttons
         const saveBtn = cropperModal.querySelector('.save-crop');
         const cancelBtn = cropperModal.querySelector('.cancel-crop');
         
@@ -631,10 +534,7 @@ class ModalManager {
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Update preview
                     this.updateImagePreview(type, data.url);
-                    
-                    // Save to profile
                     await this.saveImageToProfile(type, data.url);
                     
                     serverApp.showToast('Image updated successfully!', 'success');
@@ -666,8 +566,6 @@ class ModalManager {
             body: formData
         });
     }
-
-    // Channel Management
     formatChannelName(input) {
         let value = input.value.toLowerCase();
         value = value.replace(/\s+/g, '-');
@@ -700,8 +598,6 @@ class ModalManager {
             serverApp.showToast('Failed to create channel', 'error');
         }
     }
-
-    // Device Testing
     async testMicrophone() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -730,8 +626,6 @@ class ModalManager {
             };
             
             updateVolume();
-            
-            // Stop after 5 seconds
             setTimeout(() => {
                 stream.getTracks().forEach(track => track.stop());
                 volumeBar.style.width = '0%';
@@ -750,8 +644,6 @@ class ModalManager {
             
             videoPreview.srcObject = stream;
             videoPreview.style.display = 'block';
-            
-            // Stop after 10 seconds
             setTimeout(() => {
                 stream.getTracks().forEach(track => track.stop());
                 videoPreview.style.display = 'none';
@@ -769,8 +661,6 @@ class ModalManager {
             display.textContent = `${slider.value}%`;
         }
     }
-
-    // Invite Management
     async loadInvites() {
         if (!serverApp.currentServerId) return;
         
@@ -898,9 +788,5 @@ class ModalManager {
         }
     }
 }
-
-// Initialize modal manager
 const modalManager = new ModalManager();
-
-// Export for global access
 window.modalManager = modalManager;

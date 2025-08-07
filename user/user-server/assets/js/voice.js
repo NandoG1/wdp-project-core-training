@@ -28,23 +28,18 @@ class VoiceManager {
     }
 
     bindEventListeners() {
-        // Voice control buttons - using correct IDs from HTML
         const leaveVoiceBtn = document.getElementById('leaveVoiceBtn');
         const toggleMicBtn = document.getElementById('toggleMicBtn');
         const toggleDeafenBtn = document.getElementById('toggleDeafenBtn');
         const toggleVideoBtn = document.getElementById('toggleVideoBtn');
         const toggleScreenShareBtn = document.getElementById('toggleScreenShareBtn');
         const activitiesBtn = document.getElementById('activitiesBtn');
-
-        // Bind click events
         leaveVoiceBtn?.addEventListener('click', () => this.leaveVoiceChannel());
         toggleMicBtn?.addEventListener('click', () => this.toggleMute());
         toggleDeafenBtn?.addEventListener('click', () => this.toggleDeafen());
         toggleVideoBtn?.addEventListener('click', () => this.toggleVideo());
         toggleScreenShareBtn?.addEventListener('click', () => this.toggleScreenShare());
         activitiesBtn?.addEventListener('click', () => this.showActivities());
-
-        // Socket events for WebRTC signaling
         if (window.socket) {
             window.socket.on('user_joined_voice', (data) => this.onUserJoinedVoice(data));
             window.socket.on('user_left_voice', (data) => this.onUserLeftVoice(data));
@@ -53,8 +48,6 @@ class VoiceManager {
             window.socket.on('webrtc_answer', (data) => this.onWebRTCAnswer(data));
             window.socket.on('webrtc_ice_candidate', (data) => this.onWebRTCIceCandidate(data));
         }
-
-        // Double-click for fullscreen
         document.addEventListener('dblclick', (e) => {
             if (e.target.matches('.participant-video, .screen-share-video')) {
                 this.toggleFullscreen(e.target);
@@ -64,8 +57,6 @@ class VoiceManager {
 
     async joinVoiceChannel(channelId = null) {
         if (this.isInVoice) return;
-
-        // Get the target channel ID - use parameter or current channel
         const targetChannelId = channelId || (window.serverApp?.currentChannel?.ID);
         if (!targetChannelId) {
             console.error('No channel ID provided for voice join');
@@ -73,7 +64,6 @@ class VoiceManager {
         }
 
         try {
-            // Get user media
             this.localStream = await navigator.mediaDevices.getUserMedia({
                 audio: true,
                 video: false
@@ -81,13 +71,9 @@ class VoiceManager {
 
             this.currentChannelId = targetChannelId;
             this.isInVoice = true;
-
-            // Join voice channel via socket
             if (window.socket) {
                 window.socket.emit('join_voice', { channelId: targetChannelId });
             }
-
-            // Update UI
             this.updateVoiceUI();
             this.showVoiceControls();
             this.addLocalParticipant();
@@ -107,19 +93,14 @@ class VoiceManager {
         if (!this.isInVoice) return;
 
         try {
-            // Stop local stream
             if (this.localStream) {
                 this.localStream.getTracks().forEach(track => track.stop());
                 this.localStream = null;
             }
-
-            // Close all peer connections
             this.peerConnections.forEach((pc, userId) => {
                 pc.close();
             });
             this.peerConnections.clear();
-
-            // Leave voice channel via socket
             if (window.socket) {
                 window.socket.emit('leave_voice', { channelId: this.currentChannelId });
             }
@@ -129,8 +110,6 @@ class VoiceManager {
             this.isVideoEnabled = false;
             this.isScreenSharing = false;
             this.participants.clear();
-
-            // Update UI
             this.updateVoiceUI();
             this.hideVoiceControls();
             this.clearParticipants();
@@ -147,17 +126,11 @@ class VoiceManager {
         const { channelId, participants } = data;
         
         if (channelId !== this.currentChannelId) return;
-
-        // Add all existing participants
         for (const userId of participants) {
             if (userId !== window.currentUser?.id) {
                 this.participants.add(userId);
                 this.addParticipant(userId);
-                
-                // Create peer connection for existing user
                 await this.createPeerConnection(userId);
-                
-                // Create and send offer to existing participant
                 const offer = await this.peerConnections.get(userId).createOffer();
                 await this.peerConnections.get(userId).setLocalDescription(offer);
                 
@@ -177,11 +150,7 @@ class VoiceManager {
 
         this.participants.add(userId);
         this.addParticipant(userId);
-
-        // Create peer connection for new user
         await this.createPeerConnection(userId);
-        
-        // Create and send offer
         const offer = await this.peerConnections.get(userId).createOffer();
         await this.peerConnections.get(userId).setLocalDescription(offer);
         
@@ -199,8 +168,6 @@ class VoiceManager {
 
         this.participants.delete(userId);
         this.removeParticipant(userId);
-
-        // Close peer connection
         const pc = this.peerConnections.get(userId);
         if (pc) {
             pc.close();
@@ -212,16 +179,12 @@ class VoiceManager {
         const { from, offer } = data;
         
         if (!this.isInVoice) return;
-
-        // Create peer connection if doesn't exist
         if (!this.peerConnections.has(from)) {
             await this.createPeerConnection(from);
         }
 
         const pc = this.peerConnections.get(from);
         await pc.setRemoteDescription(new RTCSessionDescription(offer));
-
-        // Create and send answer
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
 
@@ -252,21 +215,15 @@ class VoiceManager {
 
     async createPeerConnection(userId) {
         const pc = new RTCPeerConnection(this.rtcConfig);
-        
-        // Add local stream tracks
         if (this.localStream) {
             this.localStream.getTracks().forEach(track => {
                 pc.addTrack(track, this.localStream);
             });
         }
-
-        // Handle remote stream
         pc.ontrack = (event) => {
             const [remoteStream] = event.streams;
             this.handleRemoteStream(userId, remoteStream);
         };
-
-        // Handle ICE candidates
         pc.onicecandidate = (event) => {
             if (event.candidate) {
                 window.socket.emit('webrtc_ice_candidate', {
@@ -276,8 +233,6 @@ class VoiceManager {
                 });
             }
         };
-
-        // Handle connection state changes
         pc.onconnectionstatechange = () => {
             console.log(`Connection state with ${userId}:`, pc.connectionState);
             if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
@@ -299,8 +254,6 @@ class VoiceManager {
                 audioElement.srcObject = stream;
                 audioElement.play();
             }
-            
-            // Handle video tracks
             const videoTracks = stream.getVideoTracks();
             if (videoTracks.length > 0 && videoElement) {
                 videoElement.srcObject = stream;
@@ -311,8 +264,6 @@ class VoiceManager {
 
     handleConnectionFailure(userId) {
         console.warn(`Connection failed with user ${userId}, attempting to reconnect...`);
-        
-        // Attempt to reconnect
         setTimeout(async () => {
             if (this.isInVoice && this.participants.has(userId)) {
                 const pc = this.peerConnections.get(userId);
@@ -320,8 +271,6 @@ class VoiceManager {
                     pc.close();
                     this.peerConnections.delete(userId);
                 }
-                
-                // Recreate connection
                 await this.createPeerConnection(userId);
             }
         }, 2000);
@@ -347,13 +296,9 @@ class VoiceManager {
 
     toggleDeafen() {
         this.isDeafened = !this.isDeafened;
-        
-        // Mute when deafened
         if (this.isDeafened && !this.isMuted) {
             this.toggleMute();
         }
-
-        // Mute/unmute all remote audio
         document.querySelectorAll('.participant-audio').forEach(audio => {
             audio.muted = this.isDeafened;
         });
@@ -371,11 +316,8 @@ class VoiceManager {
 
         try {
             if (!this.isVideoEnabled) {
-                // Enable video
                 const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
                 const videoTrack = videoStream.getVideoTracks()[0];
-                
-                // Add video track to all peer connections
                 this.peerConnections.forEach(pc => {
                     const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
                     if (sender) {
@@ -384,16 +326,11 @@ class VoiceManager {
                         pc.addTrack(videoTrack, this.localStream);
                     }
                 });
-
-                // Add to local stream
                 this.localStream.addTrack(videoTrack);
                 this.isVideoEnabled = true;
-                
-                // Show local video
                 this.showLocalVideo();
                 
             } else {
-                // Disable video
                 const videoTracks = this.localStream.getVideoTracks();
                 videoTracks.forEach(track => {
                     track.stop();
@@ -419,15 +356,12 @@ class VoiceManager {
 
         try {
             if (!this.isScreenSharing) {
-                // Start screen sharing
                 const screenStream = await navigator.mediaDevices.getDisplayMedia({ 
                     video: true, 
                     audio: true 
                 });
                 
                 const videoTrack = screenStream.getVideoTracks()[0];
-                
-                // Replace video track in all peer connections
                 this.peerConnections.forEach(pc => {
                     const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
                     if (sender) {
@@ -436,8 +370,6 @@ class VoiceManager {
                         pc.addTrack(videoTrack, screenStream);
                     }
                 });
-
-                // Handle screen share end
                 videoTrack.onended = () => {
                     this.stopScreenShare();
                 };
@@ -461,8 +393,6 @@ class VoiceManager {
 
     stopScreenShare() {
         if (!this.isScreenSharing) return;
-
-        // Stop screen sharing tracks
         this.localStream.getVideoTracks().forEach(track => {
             if (track.label.includes('screen')) {
                 track.stop();
@@ -481,8 +411,6 @@ class VoiceManager {
             modalManager.openModal('activitiesModal');
         }
     }
-
-    // UI Update Methods
     updateVoiceUI() {
         const voiceInterface = document.getElementById('voiceInterface');
         const chatInterface = document.querySelector('.chat-interface');
@@ -582,8 +510,6 @@ class VoiceManager {
     addParticipant(userId) {
         const participantsContainer = document.getElementById('voiceParticipants');
         if (!participantsContainer) return;
-
-        // Get user info (you'd typically fetch this from your user data)
         const participant = document.createElement('div');
         participant.className = 'participant';
         participant.dataset.userId = userId;
@@ -656,8 +582,6 @@ class VoiceManager {
             element.requestFullscreen();
         }
     }
-
-    // Utility Methods
     async getDevices() {
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
@@ -682,16 +606,12 @@ class VoiceManager {
             });
 
             const audioTrack = newStream.getAudioTracks()[0];
-            
-            // Replace audio track in all peer connections
             this.peerConnections.forEach(pc => {
                 const sender = pc.getSenders().find(s => s.track && s.track.kind === 'audio');
                 if (sender) {
                     sender.replaceTrack(audioTrack);
                 }
             });
-
-            // Replace in local stream
             const oldAudioTrack = this.localStream.getAudioTracks()[0];
             if (oldAudioTrack) {
                 this.localStream.removeTrack(oldAudioTrack);
@@ -717,24 +637,18 @@ class VoiceManager {
             });
 
             const videoTrack = newStream.getVideoTracks()[0];
-            
-            // Replace video track in all peer connections
             this.peerConnections.forEach(pc => {
                 const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
                 if (sender) {
                     sender.replaceTrack(videoTrack);
                 }
             });
-
-            // Replace in local stream
             const oldVideoTrack = this.localStream.getVideoTracks()[0];
             if (oldVideoTrack) {
                 this.localStream.removeTrack(oldVideoTrack);
                 oldVideoTrack.stop();
             }
             this.localStream.addTrack(videoTrack);
-
-            // Update local video
             this.showLocalVideo();
 
         } catch (error) {
@@ -745,9 +659,5 @@ class VoiceManager {
         }
     }
 }
-
-// Initialize voice manager
 const voiceManager = new VoiceManager();
-
-// Export for global access
 window.voiceManager = voiceManager;

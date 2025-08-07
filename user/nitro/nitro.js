@@ -1,60 +1,40 @@
-// Global variables
 let isRedeeming = false;
-
-// Initialize page
 $(document).ready(function() {
     initializeEventListeners();
     formatCodeInput();
 });
-
-// Initialize event listeners
 function initializeEventListeners() {
-    // Code input formatting
     $('#nitroCode').on('input', function() {
         formatCodeInput();
     });
-
-    // Redeem button
     $('#redeemBtn').on('click', function() {
         redeemCode();
     });
-
-    // Enter key on code input
     $('#nitroCode').on('keypress', function(e) {
         if (e.which === 13) {
             redeemCode();
         }
     });
-
-    // Modal close events
     $('.modal').on('click', function(e) {
         if (e.target === this) {
             closeAllModals();
         }
     });
-
-    // Keyboard shortcuts
     $(document).on('keydown', function(e) {
         if (e.key === 'Escape') {
             closeAllModals();
         }
     });
 }
-
-// Format code input
 function formatCodeInput() {
     const input = $('#nitroCode');
     let value = input.val().replace(/[^A-Z0-9]/g, '').toUpperCase();
-    
-    // Limit to 16 characters
     if (value.length > 16) {
         value = value.substring(0, 16);
     }
     
     input.val(value);
 }
-
-// Redeem code
 function redeemCode() {
     if (isRedeeming) return;
     
@@ -86,11 +66,8 @@ function redeemCode() {
         dataType: 'json',
         success: function(response) {
             if (response.success) {
-                // Show success modal with confetti
                 showSuccessModal();
                 triggerConfetti();
-                
-                // Clear the input
                 $('#nitroCode').val('');
                 
                 showToast(response.message, 'success');
@@ -107,40 +84,27 @@ function redeemCode() {
         }
     });
 }
-
-// Show success modal
 function showSuccessModal() {
     $('#successModal').addClass('active');
     $('body').css('overflow', 'hidden');
 }
-
-// Close success modal
 function closeSuccessModal() {
     $('#successModal').removeClass('active');
     $('body').css('overflow', '');
 }
-
-// Show subscription modal
 function showSubscriptionModal() {
     $('#subscriptionModal').addClass('active');
     $('body').css('overflow', 'hidden');
 }
-
-// Close subscription modal
 function closeSubscriptionModal() {
     $('#subscriptionModal').removeClass('active');
     $('body').css('overflow', '');
 }
-
-// Close all modals
 function closeAllModals() {
     $('.modal').removeClass('active');
     $('body').css('overflow', '');
 }
-
-// Trigger confetti animation
 function triggerConfetti() {
-    // Multiple confetti bursts for better effect
     const duration = 3000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 2000 };
@@ -157,21 +121,15 @@ function triggerConfetti() {
         }
 
         const particleCount = 50 * (timeLeft / duration);
-
-        // Left side
         confetti(Object.assign({}, defaults, {
             particleCount,
             origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
         }));
-
-        // Right side
         confetti(Object.assign({}, defaults, {
             particleCount,
             origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
         }));
     }, 250);
-
-    // Additional burst from center
     setTimeout(() => {
         confetti({
             particleCount: 100,
@@ -180,8 +138,6 @@ function triggerConfetti() {
             colors: ['#7c3aed', '#a855f7', '#00d26a', '#ff6b9d', '#3498db']
         });
     }, 500);
-
-    // Final burst
     setTimeout(() => {
         confetti({
             particleCount: 150,
@@ -191,23 +147,17 @@ function triggerConfetti() {
         });
     }, 1500);
 }
-
-// Show toast notification
 function showToast(message, type = 'info') {
     const toastContainer = $('#toastContainer');
     
     const toast = $(`<div class="toast ${type}">${message}</div>`);
     toastContainer.append(toast);
-    
-    // Auto remove after 5 seconds
     setTimeout(() => {
         toast.css('animation', 'toastSlideOut 0.3s ease forwards');
         setTimeout(() => {
             toast.remove();
         }, 300);
     }, 5000);
-    
-    // Click to dismiss
     toast.on('click', function() {
         $(this).css('animation', 'toastSlideOut 0.3s ease forwards');
         setTimeout(() => {
@@ -215,8 +165,6 @@ function showToast(message, type = 'info') {
         }, 300);
     });
 }
-
-// Add slide out animation
 const style = document.createElement('style');
 style.textContent = `
     @keyframes toastSlideOut {

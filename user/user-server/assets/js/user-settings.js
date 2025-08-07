@@ -1,4 +1,3 @@
-// User Settings Modal Functionality
 class UserSettingsManager {
     constructor() {
         this.currentUser = null;
@@ -19,11 +18,8 @@ class UserSettingsManager {
 
     async initializeVoiceVideo() {
         try {
-            // Request microphone and camera permissions
             await this.requestMediaPermissions();
-            // Load available devices
             await this.loadMediaDevices();
-            // Initialize volume controls
             this.initializeVolumeControls();
         } catch (error) {
             console.error('Error initializing voice/video:', error);
@@ -32,18 +28,14 @@ class UserSettingsManager {
 
     async requestMediaPermissions() {
         try {
-            // Request both audio and video permissions
             this.mediaPermissions = await navigator.mediaDevices.getUserMedia({
                 audio: true,
                 video: true
             });
-            
-            // Stop the streams immediately - we just needed permissions
             this.mediaPermissions.getTracks().forEach(track => track.stop());
             this.mediaPermissions = null;
         } catch (error) {
             console.warn('Media permissions not granted:', error);
-            // Try audio only
             try {
                 const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 audioStream.getTracks().forEach(track => track.stop());
@@ -54,21 +46,16 @@ class UserSettingsManager {
     }
 
     bindEventListeners() {
-        // Settings navigation
         document.addEventListener('click', (e) => {
             if (e.target.closest('.settings-nav-item')) {
                 this.switchTab(e.target.closest('.settings-nav-item'));
             }
         });
-
-        // Form change detection
         document.addEventListener('input', (e) => {
             if (e.target.closest('#accountForm')) {
                 this.detectFormChanges();
             }
         });
-
-        // Avatar and banner editing
         document.addEventListener('click', (e) => {
             if (e.target.closest('.avatar-edit-btn')) {
                 this.editAvatar();
@@ -77,27 +64,19 @@ class UserSettingsManager {
                 this.editBanner();
             }
         });
-
-        // Email reveal
         const revealBtn = document.getElementById('revealEmailBtn');
         if (revealBtn) {
             revealBtn.addEventListener('click', () => this.toggleEmailReveal());
         }
-
-        // About me character count
         const aboutMeField = document.getElementById('aboutMeField');
         if (aboutMeField) {
             aboutMeField.addEventListener('input', () => this.updateCharacterCount());
         }
-
-        // Volume sliders
         document.addEventListener('input', (e) => {
             if (e.target.type === 'range' && e.target.id.includes('Volume')) {
                 this.updateVolumeDisplay(e.target);
             }
         });
-
-        // Device testing
         const micTestBtn = document.getElementById('micTestBtn');
         if (micTestBtn) {
             micTestBtn.addEventListener('click', () => this.startMicTest());
@@ -112,15 +91,11 @@ class UserSettingsManager {
         if (stopCameraBtn) {
             stopCameraBtn.addEventListener('click', () => this.stopCamera());
         }
-
-        // Voice/Video subtabs
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('tab-btn')) {
                 this.switchSubTab(e.target);
             }
         });
-
-        // Volume slider controls
         document.addEventListener('input', (e) => {
             if (e.target.id === 'inputVolumeSlider') {
                 this.updateInputVolume(e.target.value);
@@ -129,8 +104,6 @@ class UserSettingsManager {
                 this.updateOutputVolume(e.target.value);
             }
         });
-
-        // Device selection changes
         document.addEventListener('change', (e) => {
             if (e.target.id === 'inputDeviceSelect') {
                 this.changeInputDevice(e.target.value);
@@ -142,8 +115,6 @@ class UserSettingsManager {
                 this.changeCameraDevice(e.target.value);
             }
         });
-
-        // File inputs
         const avatarInput = document.getElementById('avatarInput');
         const bannerInput = document.getElementById('bannerInput');
         
@@ -174,38 +145,24 @@ class UserSettingsManager {
 
     populateUserForm() {
         if (!this.currentUser) return;
-
-        // Basic info
         document.getElementById('usernameField').value = this.currentUser.Username || '';
         document.getElementById('displayNameField').value = this.currentUser.DisplayName || '';
         document.getElementById('aboutMeField').value = this.currentUser.Bio || '';
-        
-        // Update character count
         this.updateCharacterCount();
-
-        // User tag
         document.getElementById('userTag').textContent = `#${this.currentUser.Discriminator || '0000'}`;
-
-        // Account preview
         document.getElementById('accountDisplayName').textContent = this.currentUser.DisplayName || this.currentUser.Username;
         document.getElementById('accountUsername').textContent = `${this.currentUser.Username}#${this.currentUser.Discriminator || '0000'}`;
-
-        // Email (masked)
         const emailMasked = document.getElementById('emailMasked');
         if (emailMasked && this.currentUser.Email) {
             const maskedEmail = this.maskEmail(this.currentUser.Email);
             emailMasked.textContent = maskedEmail;
         }
-
-        // Avatar
         const avatarPreview = document.getElementById('userAvatarPreview');
         if (avatarPreview && this.currentUser.ProfilePictureUrl) {
             avatarPreview.style.backgroundImage = `url(${this.currentUser.ProfilePictureUrl})`;
             avatarPreview.style.backgroundSize = 'cover';
             avatarPreview.style.backgroundPosition = 'center';
         }
-
-        // Banner
         const bannerPreview = document.getElementById('userBannerPreview');
         if (bannerPreview && this.currentUser.BannerProfile) {
             bannerPreview.style.backgroundImage = `url(${this.currentUser.BannerProfile})`;
@@ -221,45 +178,29 @@ class UserSettingsManager {
     }
 
     switchTab(navItem) {
-        // Remove active from all nav items
         document.querySelectorAll('.settings-nav-item').forEach(item => {
             item.classList.remove('active');
         });
-
-        // Hide all tabs
         document.querySelectorAll('.settings-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-
-        // Activate clicked nav item
         navItem.classList.add('active');
-
-        // Show corresponding tab
         const tabId = navItem.dataset.tab;
         const tab = document.getElementById(tabId + 'Tab');
         if (tab) {
             tab.classList.add('active');
         }
-
-        // Load tab-specific data
         this.loadTabData(tabId);
     }
 
     switchSubTab(tabBtn) {
-        // Remove active from all subtab buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-
-        // Hide all subtabs
         document.querySelectorAll('.settings-subtab').forEach(subtab => {
             subtab.classList.remove('active');
         });
-
-        // Activate clicked button
         tabBtn.classList.add('active');
-
-        // Show corresponding subtab
         const subtabId = tabBtn.dataset.subtab + 'Settings';
         const subtab = document.getElementById(subtabId);
         if (subtab) {
@@ -309,7 +250,6 @@ class UserSettingsManager {
     }
 
     async uploadImage(file, type) {
-        // Validate file
         if (!file.type.startsWith('image/')) {
             this.showToast('Please select a valid image file', 'error');
             return;
@@ -335,8 +275,6 @@ class UserSettingsManager {
 
             if (data.success) {
                 this.showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully!`, 'success');
-                
-                // Update preview
                 const previewElement = type === 'avatar' 
                     ? document.getElementById('userAvatarPreview')
                     : document.getElementById('userBannerPreview');
@@ -344,8 +282,6 @@ class UserSettingsManager {
                 if (previewElement) {
                     previewElement.style.backgroundImage = `url(${data.url})`;
                 }
-
-                // Reload user data
                 this.loadUserData();
             } else {
                 this.showToast(data.error || `Failed to upload ${type}`, 'error');
@@ -396,14 +332,10 @@ class UserSettingsManager {
     validateUsername() {
         const usernameField = document.getElementById('usernameField');
         const value = usernameField.value.trim();
-
-        // Remove invalid characters
         const cleanValue = value.replace(/[^a-zA-Z0-9_]/g, '');
         if (cleanValue !== value) {
             usernameField.value = cleanValue;
         }
-
-        // Show validation feedback
         this.showFieldValidation(usernameField, 
             cleanValue.length >= 2 && cleanValue.length <= 32,
             'Username must be 2-32 characters and contain only letters, numbers, and underscores'
@@ -421,7 +353,6 @@ class UserSettingsManager {
     }
 
     showFieldValidation(field, isValid, message) {
-        // Remove existing validation elements
         const existingValidation = field.parentNode.querySelector('.validation-message');
         if (existingValidation) {
             existingValidation.remove();
@@ -471,8 +402,6 @@ class UserSettingsManager {
         document.getElementById('saveAccountBtn').classList.add('hidden');
         this.showToast('Form reset to original values', 'info');
     }
-
-    // Audio/Video functionality
     async loadAudioDevices() {
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
@@ -507,8 +436,6 @@ class UserSettingsManager {
         if (valueDisplay) {
             valueDisplay.textContent = `${slider.value}%`;
         }
-
-        // Update volume indicator
         const indicator = document.getElementById(slider.id.replace('Slider', 'Indicator'));
         if (indicator) {
             const bar = indicator.querySelector('.volume-bar');
@@ -517,8 +444,6 @@ class UserSettingsManager {
             }
         }
     }
-
-    // Media Device Management
     async loadMediaDevices() {
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
@@ -528,8 +453,6 @@ class UserSettingsManager {
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
             
             this.populateDeviceSelects(audioInputDevices, audioOutputDevices, videoDevices);
-            
-            // Listen for device changes
             navigator.mediaDevices.addEventListener('devicechange', () => {
                 this.loadMediaDevices();
             });
@@ -540,7 +463,6 @@ class UserSettingsManager {
     }
 
     populateDeviceSelects(audioInputs, audioOutputs, videoInputs) {
-        // Populate input devices
         const inputSelect = document.getElementById('inputDeviceSelect');
         if (inputSelect) {
             const currentValue = inputSelect.value;
@@ -552,14 +474,10 @@ class UserSettingsManager {
                 option.textContent = device.label || `Microphone ${inputSelect.options.length + 1}`;
                 inputSelect.appendChild(option);
             });
-            
-            // Restore selection if device still exists
             if (currentValue && audioInputs.find(d => d.deviceId === currentValue)) {
                 inputSelect.value = currentValue;
             }
         }
-
-        // Populate output devices
         const outputSelect = document.getElementById('outputDeviceSelect');
         if (outputSelect) {
             const currentValue = outputSelect.value;
@@ -576,8 +494,6 @@ class UserSettingsManager {
                 outputSelect.value = currentValue;
             }
         }
-
-        // Populate camera devices
         const cameraSelect = document.getElementById('cameraDeviceSelect');
         if (cameraSelect) {
             const currentValue = cameraSelect.value;
@@ -606,7 +522,6 @@ class UserSettingsManager {
     }
 
     initializeVolumeControls() {
-        // Set initial volume values and indicators
         const inputSlider = document.getElementById('inputVolumeSlider');
         const outputSlider = document.getElementById('outputVolumeSlider');
         
@@ -624,8 +539,6 @@ class UserSettingsManager {
         
         if (volumeValue) volumeValue.textContent = `${value}%`;
         if (volumeBar) volumeBar.style.width = `${value}%`;
-        
-        // Store the volume setting
         this.inputVolume = value / 100;
     }
 
@@ -635,8 +548,6 @@ class UserSettingsManager {
         
         if (volumeValue) volumeValue.textContent = `${value}%`;
         if (volumeBar) volumeBar.style.width = `${value}%`;
-        
-        // Apply volume to audio elements
         document.querySelectorAll('audio, video').forEach(media => {
             media.volume = value / 100;
         });
@@ -646,13 +557,10 @@ class UserSettingsManager {
 
     async changeInputDevice(deviceId) {
         try {
-            // Stop current microphone stream
             if (this.deviceStreams.microphone) {
                 this.deviceStreams.microphone.getTracks().forEach(track => track.stop());
                 this.deviceStreams.microphone = null;
             }
-
-            // Store the selected device
             this.selectedInputDevice = deviceId;
             this.showToast('Input device selected', 'success');
         } catch (error) {
@@ -663,10 +571,7 @@ class UserSettingsManager {
 
     async changeOutputDevice(deviceId) {
         try {
-            // Store the selected device
             this.selectedOutputDevice = deviceId;
-            
-            // Apply to existing audio/video elements if browser supports setSinkId
             const audioElements = document.querySelectorAll('audio, video');
             
             for (const element of audioElements) {
@@ -688,16 +593,11 @@ class UserSettingsManager {
 
     async changeCameraDevice(deviceId) {
         try {
-            // Stop current camera stream
             if (this.deviceStreams.camera) {
                 this.deviceStreams.camera.getTracks().forEach(track => track.stop());
                 this.deviceStreams.camera = null;
             }
-
-            // Store the selected device
             this.selectedCameraDevice = deviceId;
-            
-            // If camera preview is active, restart with new device
             const cameraVideo = document.getElementById('cameraVideo');
             if (cameraVideo && cameraVideo.style.display !== 'none' && !cameraVideo.srcObject) {
                 await this.testCamera();
@@ -748,8 +648,6 @@ class UserSettingsManager {
             };
             
             updateBars();
-
-            // Change button to stop
             micTestBtn.onclick = () => this.stopMicTest();
             
         } catch (error) {
@@ -771,8 +669,6 @@ class UserSettingsManager {
         micTestBtn.innerHTML = '<i class="fas fa-play"></i> Start Test';
         micTestIndicator.classList.add('hidden');
         micTestBtn.onclick = () => this.startMicTest();
-
-        // Clear test bars
         const testBars = micTestIndicator.querySelectorAll('.test-bar');
         testBars.forEach(bar => bar.classList.remove('active'));
     }
@@ -785,7 +681,6 @@ class UserSettingsManager {
         const cameraPlaceholder = document.getElementById('cameraPlaceholder');
 
         try {
-            // Use selected camera device or default
             const constraints = {
                 video: this.selectedCameraDevice 
                     ? { deviceId: { exact: this.selectedCameraDevice } }
@@ -848,8 +743,6 @@ class UserSettingsManager {
 
         this.showToast('Camera test stopped', 'info');
     }
-
-    // Password change functionality
     async loadSecurityQuestion() {
         try {
             const response = await fetch('api/user.php?action=getSecurityQuestion');
@@ -881,7 +774,6 @@ class UserSettingsManager {
             const data = await response.json();
 
             if (data.success) {
-                // Move to password step
                 document.getElementById('securityStep').classList.remove('active');
                 document.getElementById('passwordStep').classList.add('active');
             } else {
@@ -930,8 +822,6 @@ class UserSettingsManager {
             this.showToast('Failed to change password', 'error');
         }
     }
-
-    // Account deletion
     async checkServerOwnership() {
         try {
             const response = await fetch('api/user.php?action=checkOwnedServers');
@@ -986,29 +876,19 @@ class UserSettingsManager {
     }
 
     showToast(message, type = 'info') {
-        // Create toast notification
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
         toast.textContent = message;
-        
-        // Add to page
         document.body.appendChild(toast);
-        
-        // Show toast
         setTimeout(() => toast.classList.add('show'), 100);
-        
-        // Remove toast
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => document.body.removeChild(toast), 300);
         }, 3000);
     }
 }
-
-// Global functions for the modal
 function openUserSettingsModal() {
     document.getElementById('userSettingsModal').classList.remove('hidden');
-    // Switch to default tab (My Account)
     if (window.userSettingsManager) {
         window.userSettingsManager.switchTab('my-account');
     }
@@ -1016,8 +896,6 @@ function openUserSettingsModal() {
 
 function closeUserSettingsModal() {
     document.getElementById('userSettingsModal').classList.add('hidden');
-    
-    // Stop any active streams
     if (window.userSettingsManager) {
         window.userSettingsManager.stopMicTest();
         window.userSettingsManager.stopCamera();
@@ -1030,8 +908,6 @@ function openPasswordChangeModal() {
 
 function closePasswordChangeModal() {
     document.getElementById('passwordChangeModal').classList.add('hidden');
-    
-    // Reset form
     document.getElementById('securityStep').classList.add('active');
     document.getElementById('passwordStep').classList.remove('active');
     document.getElementById('securityAnswerInput').value = '';
@@ -1096,8 +972,6 @@ function stopCamera() {
         window.userSettingsManager.stopCamera();
     }
 }
-
-// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.userSettingsManager = new UserSettingsManager();
 });

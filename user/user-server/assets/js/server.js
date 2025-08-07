@@ -1,4 +1,3 @@
-// Main Server Application Logic
 class ServerApp {
     constructor() {
         this.currentServer = null;
@@ -23,7 +22,6 @@ class ServerApp {
     }
 
     initializeSocket() {
-        // Initialize Socket.IO connection with better error handling
         try {
             console.log('Initializing WebSocket connection to localhost:8010');
             this.socket = io('http://localhost:8010', {
@@ -38,8 +36,6 @@ class ServerApp {
             this.socket.on('connect', () => {
                 console.log('Connected to WebSocket server');
                 this.updateUserStatus('online');
-                
-                // Authenticate user
                 if (window.currentUser) {
                     console.log('Authenticating user:', window.currentUser);
                     this.socket.emit('authenticate', {
@@ -67,8 +63,6 @@ class ServerApp {
             this.socket.on('reconnect_error', (error) => {
                 console.warn('WebSocket reconnection failed:', error.message);
             });
-
-            // Authentication events
             this.socket.on('authenticated', (data) => {
                 console.log('Successfully authenticated:', data);
             });
@@ -76,8 +70,6 @@ class ServerApp {
             this.socket.on('authentication_failed', (data) => {
                 console.error('Authentication failed:', data.message);
             });
-
-            // Message-related socket events
             this.socket.on('message_received', (data) => {
                 if (data.channelId === this.currentChannel?.ID) {
                     console.log('Real-time message received:', data);
@@ -114,8 +106,6 @@ class ServerApp {
                     this.updateTypingIndicator(data.username, data.isTyping);
                 }
             });
-
-            // Server-related socket events
             this.socket.on('server_updated', (data) => {
                 this.handleServerUpdate(data);
             });
@@ -152,8 +142,6 @@ class ServerApp {
 
     fallbackToPolling() {
         console.log('Using HTTP polling fallback for updates');
-        
-        // Set up periodic message refresh instead of real-time
         if (this.messageRefreshInterval) {
             clearInterval(this.messageRefreshInterval);
         }
@@ -166,18 +154,13 @@ class ServerApp {
     }
 
     bindEvents() {
-        // Server dropdown
         $('#serverDropdown').on('click', (e) => {
             e.stopPropagation();
             this.toggleServerDropdown();
         });
-
-        // Close dropdown when clicking outside
         $(document).on('click', () => {
             this.closeServerDropdown();
         });
-
-        // Dropdown menu items
         $('#invitePeopleDropdown').on('click', () => {
             this.openInvitePeopleModal();
         });
@@ -193,8 +176,6 @@ class ServerApp {
         $('#leaveServerDropdown').on('click', () => {
             this.openLeaveServerModal();
         });
-
-        // User controls
         $('#settingsBtn').on('click', () => {
             this.openUserSettingsModal();
         });
@@ -206,36 +187,24 @@ class ServerApp {
         $('#deafenBtn').on('click', () => {
             this.toggleDeafen();
         });
-
-        // Server search
         $('#serverSearchInput').on('input', (e) => {
             this.searchMessages(e.target.value);
         });
-
-        // Members search
         $('#membersSearch').on('input', (e) => {
             this.searchMembers(e.target.value);
         });
-
-        // Window resize
         $(window).on('resize', () => {
             this.handleResize();
         });
-
-        // Message input handling
         $('#messageInput').on('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.sendMessage();
             }
         });
-
-        // Send button handling
         $('#sendButton').on('click', () => {
             this.sendMessage();
         });
-
-        // File upload handling
         $('#attachmentBtn').on('click', () => {
             $('#fileInput').click();
         });
@@ -246,7 +215,6 @@ class ServerApp {
     }
 
     initializeTooltips() {
-        // Initialize tooltips for server items
         $('.server-item[data-tooltip]').each(function() {
             const tooltip = $(this).attr('data-tooltip');
             $(this).on('mouseenter', function() {
@@ -298,10 +266,7 @@ class ServerApp {
 
     async selectServer(serverId) {
         try {
-            // Remove active class from all server items
             $('.server-item').removeClass('active');
-            
-            // Add active class to selected server
             $(`.server-item[data-server-id="${serverId}"]`).addClass('active');
 
             const response = await fetch(`/user/user-server/api/servers.php?action=getServer&id=${serverId}`);
@@ -327,8 +292,6 @@ class ServerApp {
 
         $('#serverName').text(this.currentServer.Name);
         $('#serverNameDisplay').text(this.currentServer.Name);
-        
-        // Update server actions based on user role
         this.updateServerActions();
     }
 
@@ -368,12 +331,8 @@ class ServerApp {
     renderChannels(channels) {
         const container = $('#channelsList');
         container.empty();
-
-        // Group channels by type
         const textChannels = channels.filter(c => c.Type === 'Text');
         const voiceChannels = channels.filter(c => c.Type === 'Voice');
-
-        // Render text channels
         if (textChannels.length > 0) {
             container.append(`
                 <div class="channel-category">
@@ -400,8 +359,6 @@ class ServerApp {
                 container.append(channelItem);
             });
         }
-
-        // Render voice channels
         if (voiceChannels.length > 0) {
             container.append(`
                 <div class="channel-category">
@@ -429,8 +386,6 @@ class ServerApp {
                 container.append(channelItem);
             });
         }
-
-        // Select first channel by default
         if (channels.length > 0 && !this.currentChannel) {
             this.selectChannel(channels[0].ID, channels[0].Type);
         }
@@ -438,10 +393,7 @@ class ServerApp {
 
     async selectChannel(channelId, channelType) {
         try {
-            // Remove active class from all channel items
             $('.channel-item').removeClass('active');
-            
-            // Add active class to selected channel
             $(`.channel-item[data-channel-id="${channelId}"]`).addClass('active');
 
             const response = await fetch(`api/channels.php?action=getChannel&id=${channelId}`);
@@ -475,8 +427,6 @@ class ServerApp {
         
         $('#channelIcon').html(`<i class="${icon}"></i>`);
         $('#channelName').text(this.currentChannel.Name);
-        
-        // Update message input placeholder
         $('#messageInput').attr('placeholder', `Message #${this.currentChannel.Name}...`);
     }
 
@@ -514,8 +464,6 @@ class ServerApp {
             `);
             return;
         }
-
-        // Group messages by user and time
         const groupedMessages = this.groupMessages(messages);
         
         container.html(groupedMessages.map(group => {
@@ -525,20 +473,13 @@ class ServerApp {
                 return this.renderSingleMessage(group.message);
             }
         }).join(''));
-
-        // Add event listeners for message actions
         this.setupMessageActionListeners(container);
-
-        // Scroll to bottom
         container.scrollTop(container[0].scrollHeight);
     }
 
     setupMessageActionListeners(container) {
-        // Remove existing listeners to prevent duplicates
         container.off('click', '.message-action-btn');
         container.off('click', '.clickable-reaction');
-        
-        // Add click listeners for message actions
         container.on('click', '.message-action-btn', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -565,8 +506,6 @@ class ServerApp {
                     break;
             }
         });
-        
-        // Add click listeners for reactions
         container.on('click', '.clickable-reaction', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -580,10 +519,7 @@ class ServerApp {
     }
 
     showReactionPicker(messageId, button) {
-        // Remove any existing reaction picker
         $('.reaction-picker').remove();
-        
-        // Simple reaction picker - can be expanded
         const reactions = ['👍', '👎', '❤️', '😂', '😢', '😡', '🎉', '🔥'];
         const picker = $(`
             <div class="reaction-picker">
@@ -592,8 +528,6 @@ class ServerApp {
                 `).join('')}
             </div>
         `);
-        
-        // Position picker near button
         const buttonOffset = button.offset();
         picker.css({
             position: 'fixed',
@@ -603,28 +537,21 @@ class ServerApp {
         });
         
         $('body').append(picker);
-        
-        // Handle reaction selection
         picker.on('click', '.reaction-option', (e) => {
             e.stopPropagation();
             const emoji = $(e.target).data('emoji');
             this.toggleReaction(messageId, emoji);
             picker.remove();
         });
-        
-        // Close picker when clicking outside
         setTimeout(() => {
             $(document).one('click', () => picker.remove());
         }, 100);
     }
 
     replyToMessage(messageId) {
-        // Find the message content for preview
         const messageElement = $(`.message-item[data-message-id="${messageId}"]`);
         const messageContent = messageElement.find('.message-content').text().trim();
         const messageAuthor = messageElement.closest('.message-group').find('.message-author').text();
-        
-        // Show reply context
         const replyContext = $(`
             <div class="reply-context">
                 <div class="reply-info">
@@ -634,17 +561,9 @@ class ServerApp {
                 <button class="cancel-reply">×</button>
             </div>
         `);
-        
-        // Insert before message input
         $('#messageInputContainer').prepend(replyContext);
-        
-        // Focus message input
         $('#messageInput').focus();
-        
-        // Store reply data
         this.replyingTo = messageId;
-        
-        // Handle cancel reply
         replyContext.find('.cancel-reply').on('click', () => {
             replyContext.remove();
             this.replyingTo = null;
@@ -654,8 +573,6 @@ class ServerApp {
     copyMessage(messageId) {
         const messageElement = $(`.message-item[data-message-id="${messageId}"]`);
         const messageContent = messageElement.find('.message-content').text().trim();
-        
-        // Copy to clipboard
         if (navigator.clipboard) {
             navigator.clipboard.writeText(messageContent).then(() => {
                 this.showToast('Message copied to clipboard', 'success');
@@ -683,7 +600,6 @@ class ServerApp {
 
     async toggleReaction(messageId, emoji) {
         try {
-            // Check if user already reacted with this emoji
             const messageElement = $(`.message-item[data-message-id="${messageId}"]`);
             const existingReaction = messageElement.find(`.reaction-item[data-emoji="${emoji}"]`);
             const hasUserReaction = existingReaction.hasClass('user-reacted');
@@ -702,7 +618,6 @@ class ServerApp {
             const data = await response.json();
 
             if (data.success) {
-                // Reload messages to show the updated reactions
                 this.loadChannelMessages();
             } else {
                 this.showToast(data.message || `Failed to ${action.replace('R', ' r')}`, 'error');
@@ -716,12 +631,8 @@ class ServerApp {
     async editMessage(messageId) {
         const messageElement = $(`.message-item[data-message-id="${messageId}"]`);
         const messageContent = messageElement.find('.message-content').clone();
-        
-        // Remove edited indicator and attachments for editing
         messageContent.find('.edited-indicator, .message-attachment').remove();
         const currentText = messageContent.text().trim();
-        
-        // Create edit interface
         const editForm = $(`
             <div class="message-edit-form">
                 <textarea class="edit-textarea" rows="1">${currentText}</textarea>
@@ -731,25 +642,17 @@ class ServerApp {
                 </div>
             </div>
         `);
-        
-        // Replace message content with edit form
         messageElement.find('.message-content').hide();
         messageElement.find('.message-actions').hide();
         messageElement.append(editForm);
-        
-        // Focus and select text
         const textarea = editForm.find('.edit-textarea');
         textarea.focus().select();
-        
-        // Auto resize textarea
         const autoResize = () => {
             textarea.css('height', 'auto');
             textarea.css('height', textarea[0].scrollHeight + 'px');
         };
         textarea.on('input', autoResize);
         autoResize();
-        
-        // Handle save
         editForm.find('.save-edit-btn').on('click', async () => {
             const newContent = textarea.val().trim();
             if (!newContent) {
@@ -781,14 +684,10 @@ class ServerApp {
                 this.showToast('Failed to edit message', 'error');
             }
         });
-        
-        // Handle cancel
         editForm.find('.cancel-edit-btn').on('click', () => {
             editForm.remove();
             messageElement.find('.message-content, .message-actions').show();
         });
-        
-        // Handle Enter to save, Escape to cancel
         textarea.on('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -800,12 +699,10 @@ class ServerApp {
     }
 
     async deleteMessage(messageId) {
-        // Show custom confirmation modal instead of browser alert
         this.showDeleteConfirmation(messageId);
     }
 
     showDeleteConfirmation(messageId) {
-        // Create custom modal
         const modal = $(`
             <div class="delete-modal-overlay">
                 <div class="delete-modal">
@@ -823,29 +720,19 @@ class ServerApp {
                 </div>
             </div>
         `);
-
-        // Add to body
         $('body').append(modal);
-
-        // Handle cancel
         modal.find('.cancel-delete-btn').on('click', () => {
             modal.remove();
         });
-
-        // Handle confirm delete
         modal.find('.confirm-delete-btn').on('click', async () => {
             modal.remove();
             await this.performDeleteMessage(messageId);
         });
-
-        // Close on overlay click
         modal.on('click', (e) => {
             if (e.target === modal[0]) {
                 modal.remove();
             }
         });
-
-        // Close on Escape key
         $(document).on('keydown.deleteModal', (e) => {
             if (e.key === 'Escape') {
                 modal.remove();
@@ -894,7 +781,6 @@ class ServerApp {
             const data = await response.json();
 
             if (data.success) {
-                // Reload messages to show the new reaction
                 this.loadChannelMessages();
             } else {
                 this.showToast(data.message || 'Failed to add reaction', 'error');
@@ -935,8 +821,6 @@ class ServerApp {
                 };
             }
         });
-        
-        // Don't forget the last group
         if (currentGroup) {
             groups.push(currentGroup.messages.length > 1 ? 
                        { type: 'group', ...currentGroup } : 
@@ -988,7 +872,6 @@ class ServerApp {
     }
 
     renderMessageContent(message) {
-        // Check if current user owns this message (convert both to numbers for comparison)
         const isOwner = this.currentUser && parseInt(message.UserID) === parseInt(this.currentUser.ID);
         return `
             <div class="message-item" data-message-id="${message.ID}">
@@ -1027,8 +910,6 @@ class ServerApp {
         
         const fileName = attachmentUrl.split('/').pop();
         const fileExtension = fileName.split('.').pop().toLowerCase();
-        
-        // Check if it's an image
         if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension)) {
             return `
                 <div class="message-attachment image-attachment">
@@ -1041,7 +922,6 @@ class ServerApp {
                 </div>
             `;
         } 
-        // Check if it's a video
         else if (['mp4', 'webm', 'mov'].includes(fileExtension)) {
             return `
                 <div class="message-attachment video-attachment">
@@ -1055,7 +935,6 @@ class ServerApp {
                 </div>
             `;
         }
-        // Check if it's audio
         else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
             return `
                 <div class="message-attachment audio-attachment">
@@ -1069,7 +948,6 @@ class ServerApp {
                 </div>
             `;
         } 
-        // For other file types
         else {
             return `
                 <div class="message-attachment file-attachment">
@@ -1090,19 +968,15 @@ class ServerApp {
         const messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         
         if (messageDate.getTime() === today.getTime()) {
-            // Today - show time only
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         } else if (messageDate.getTime() === today.getTime() - 86400000) {
-            // Yesterday
             return 'Yesterday at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         } else {
-            // Other days - show date
             return date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
     }
 
     formatMessageContent(content) {
-        // Basic formatting - can be expanded
         return content
             .replace(/\n/g, '<br>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -1140,8 +1014,6 @@ class ServerApp {
         $('#voiceInterface').removeClass('hidden');
         $('#messageInputContainer').addClass('hidden');
         $('#messagesList').addClass('hidden');
-        
-        // Automatically join the voice channel
         if (window.voiceManager && this.currentChannel) {
             window.voiceManager.joinVoiceChannel(this.currentChannel.ID);
         }
@@ -1168,8 +1040,6 @@ class ServerApp {
     renderMembers(members) {
         const container = $('#membersList');
         container.empty();
-
-        // Group members by role
         const groupedMembers = {
             'Owner': members.filter(m => m.Role === 'Owner'),
             'Admin': members.filter(m => m.Role === 'Admin'),
@@ -1222,8 +1092,6 @@ class ServerApp {
     openServerDropdown() {
         const dropdown = $('#serverDropdownMenu');
         const serverDropdown = $('#serverDropdown');
-        
-        // Position dropdown
         const rect = serverDropdown[0].getBoundingClientRect();
         dropdown.css({
             top: rect.bottom + 8,
@@ -1238,10 +1106,7 @@ class ServerApp {
     }
 
     searchMessages(query) {
-        // Implement server-wide message search
         if (!query.trim()) return;
-        
-        // This would search across all channels in the server
         console.log('Searching for:', query);
     }
 
@@ -1321,11 +1186,9 @@ class ServerApp {
     }
 
     handleResize() {
-        // Handle responsive behavior
         const width = $(window).width();
         
         if (width < 768) {
-            // Mobile view adjustments
             $('.members-sidebar').addClass('hidden');
         } else {
             $('.members-sidebar').removeClass('hidden');
@@ -1334,8 +1197,6 @@ class ServerApp {
 
     handleFileSelection(files) {
         if (!files || files.length === 0) return;
-
-        // Validate file sizes and types
         const maxSize = 10 * 1024 * 1024; // 10MB
         const allowedTypes = [
             'image/jpeg', 'image/png', 'image/gif', 'image/webp',
@@ -1346,39 +1207,28 @@ class ServerApp {
         ];
 
         for (let file of files) {
-            // Check file size
             if (file.size > maxSize) {
                 this.showToast(`File "${file.name}" is too large. Maximum size is 10MB.`, 'error');
                 continue;
             }
-
-            // Check file type
             if (!allowedTypes.includes(file.type)) {
                 this.showToast(`File type "${file.type}" is not supported.`, 'error');
                 continue;
             }
-
-            // Add to selected files
             this.selectedFiles.push(file);
         }
 
         if (this.selectedFiles.length > 0) {
             this.showFilePreview();
         }
-
-        // Reset file input
         $('#fileInput').val('');
     }
 
     showFilePreview() {
         const container = $('#filePreviewContainer');
         const previews = $('#filePreviews');
-        
-        // Show the container
         container.removeClass('hidden').show();
         previews.empty();
-
-        // Create preview grid
         const grid = $('<div class="file-preview-grid"></div>');
         
         this.selectedFiles.forEach((file, index) => {
@@ -1387,8 +1237,6 @@ class ServerApp {
         });
         
         previews.append(grid);
-        
-        // Add upload info
         const info = $('<div class="file-upload-info">You can add more files or send your message</div>');
         previews.append(info);
     }
@@ -1399,8 +1247,6 @@ class ServerApp {
         const fileType = file.type;
 
         let previewContent = '';
-        
-        // Create different previews based on file type
         if (fileType.startsWith('image/')) {
             const url = URL.createObjectURL(file);
             previewContent = `
@@ -1465,8 +1311,6 @@ class ServerApp {
 
         const formData = new FormData();
         formData.append('action', 'uploadFiles');
-        
-        // Add all selected files
         this.selectedFiles.forEach((file, index) => {
             formData.append(`files[${index}]`, file);
         });
@@ -1499,16 +1343,12 @@ class ServerApp {
 
         const messageInput = $('#messageInput');
         const content = messageInput.val().trim();
-        
-        // Allow sending if there's either content or files
         if (!content && this.selectedFiles.length === 0) {
             return;
         }
 
         try {
             let attachmentUrls = null;
-
-            // Upload files first if any are selected
             if (this.selectedFiles.length > 0) {
                 attachmentUrls = await this.uploadFiles();
                 if (!attachmentUrls) {
@@ -1520,13 +1360,9 @@ class ServerApp {
             formData.append('action', 'sendMessage');
             formData.append('channelId', this.currentChannel.ID);
             formData.append('content', content || ''); // Allow empty content if there are attachments
-            
-            // Add attachment URLs if any
             if (attachmentUrls && attachmentUrls.length > 0) {
                 formData.append('attachmentUrls', JSON.stringify(attachmentUrls));
             }
-            
-            // Add reply information if replying
             if (this.replyingTo) {
                 formData.append('replyTo', this.replyingTo);
             }
@@ -1540,18 +1376,12 @@ class ServerApp {
 
             if (data.success) {
                 messageInput.val('');
-                
-                // Clear file selection
                 this.selectedFiles = [];
                 $('#filePreviewContainer').addClass('hidden').hide();
-                
-                // Clear reply context if it exists
                 if (this.replyingTo) {
                     $('.reply-context').remove();
                     this.replyingTo = null;
                 }
-                
-                // Emit new message via socket for real-time updates
                 if (data.messageData) {
                     this.emitNewMessage(data.messageData);
                 }
@@ -1565,63 +1395,51 @@ class ServerApp {
             this.showToast('Failed to send message', 'error');
         }
     }
-
-    // Socket event handlers
     handleServerUpdate(data) {
-        // Refresh server data if it's the current server
         if (this.currentServer && this.currentServer.ID === data.serverId) {
             this.loadServerData(data.serverId);
         }
     }
 
     handleChannelCreated(data) {
-        // Refresh channels if it's in the current server
         if (this.currentServer && this.currentServer.ID === data.serverId) {
             this.loadServerChannels(data.serverId);
         }
     }
 
     handleChannelUpdated(data) {
-        // Update channel info if it's the current channel
         if (this.currentChannel && this.currentChannel.ID === data.channelId) {
             this.loadChannelMessages();
         }
     }
 
     handleChannelDeleted(data) {
-        // If current channel was deleted, clear it
         if (this.currentChannel && this.currentChannel.ID === data.channelId) {
             this.currentChannel = null;
             $('#messagesList').html('<div class="no-messages">Channel no longer exists</div>');
         }
-        // Refresh channels list
         if (this.currentServer) {
             this.loadServerChannels(this.currentServer.ID);
         }
     }
 
     handleMemberJoined(data) {
-        // Refresh members list if it's the current server
         if (this.currentServer && this.currentServer.ID === data.serverId) {
             this.loadServerMembers(data.serverId);
         }
     }
 
     handleMemberLeft(data) {
-        // Refresh members list if it's the current server
         if (this.currentServer && this.currentServer.ID === data.serverId) {
             this.loadServerMembers(data.serverId);
         }
     }
 
     handleMemberUpdated(data) {
-        // Refresh members list if it's the current server
         if (this.currentServer && this.currentServer.ID === data.serverId) {
             this.loadServerMembers(data.serverId);
         }
     }
-
-    // Real-time message handling
     addMessageToUI(message) {
         const messageElement = this.renderMessageContent(message);
         $('#messagesList').append(`
@@ -1653,12 +1471,10 @@ class ServerApp {
     }
 
     addReactionToUI(messageId, emoji, userId) {
-        // Implementation for adding reactions in real-time
         this.loadChannelMessages(); // For now, just refresh messages
     }
 
     removeReactionFromUI(messageId, emoji, userId) {
-        // Implementation for removing reactions in real-time
         this.loadChannelMessages(); // For now, just refresh messages
     }
 
@@ -1673,8 +1489,6 @@ class ServerApp {
             indicator.addClass('hidden').hide();
         }
     }
-
-    // Emit socket events for real-time communication
     emitNewMessage(messageData) {
         if (this.socket && this.socket.connected && this.currentChannel) {
             console.log('Emitting new message via WebSocket:', messageData);
@@ -1709,8 +1523,6 @@ class ServerApp {
             this.currentServer = { ...this.currentServer, ...data.updates };
             this.updateServerHeader();
         }
-        
-        // Update server in sidebar
         const serverItem = $(`.server-item[data-server-id="${data.serverId}"]`);
         if (data.updates.Name) {
             serverItem.attr('data-tooltip', data.updates.Name);
@@ -1783,14 +1595,10 @@ class ServerApp {
         });
 
         $('#toastContainer').append(toast);
-
-        // Auto remove after 5 seconds
         setTimeout(() => {
             toast.remove();
         }, 5000);
     }
-
-    // Modal functions (will be called by modal.js)
     openCreateServerModal() {
         $('#createServerModal').removeClass('hidden');
     }
@@ -1802,19 +1610,15 @@ class ServerApp {
     openServerSettingsModal() {
         if (this.currentServer) {
             $('#serverSettingsModal').removeClass('hidden');
-            // Initialize server settings with current server data
             window.serverSettings.loadServerData(this.currentServer);
         }
     }
 
     openInvitePeopleModal() {
         let serverId = null;
-        
-        // Try to get server ID from currentServer
         if (this.currentServer && this.currentServer.ID) {
             serverId = this.currentServer.ID;
         } else {
-            // Try alternative methods to get server ID
             const urlParams = new URLSearchParams(window.location.search);
             serverId = urlParams.get('serverId') || urlParams.get('server') || urlParams.get('id');
             
@@ -1828,7 +1632,6 @@ class ServerApp {
         
         if (serverId) {
             $('#invitePeopleModal').removeClass('hidden');
-            // Initialize invite modal with server ID
             window.inviteSystem.loadServerInvites(serverId);
         } else {
             alert('Please select a server first');
@@ -1844,13 +1647,10 @@ class ServerApp {
     openLeaveServerModal() {
         if (this.currentServer) {
             $('#leaveServerModal').removeClass('hidden');
-            // Initialize leave server modal
             window.serverSettings.initializeLeaveServerModal(this.currentServer);
         }
     }
 }
-
-// Navigation functions
 function navigateToHome() {
     window.location.href = '/user/home/';
 }
@@ -1858,8 +1658,6 @@ function navigateToHome() {
 function navigateToExplore() {
     window.location.href = '/user/server/user-explore.php';
 }
-
-// Helper function for safe showToast calls
 function safeShowToast(message, type = 'info') {
     if (window.serverApp && typeof window.serverApp.showToast === 'function') {
         window.serverApp.showToast(message, type);
@@ -1867,8 +1665,6 @@ function safeShowToast(message, type = 'info') {
         alert(message);
     }
 }
-
-// Helper function for safe loadUserServers calls
 function safeLoadUserServers() {
     if (window.serverApp && typeof window.serverApp.loadUserServers === 'function') {
         window.serverApp.loadUserServers();
@@ -1876,11 +1672,9 @@ function safeLoadUserServers() {
 }
 
 function openCreateServerModal() {
-    // Safety check: ensure serverApp is initialized
     if (window.serverApp && typeof window.serverApp.openCreateServerModal === 'function') {
         window.serverApp.openCreateServerModal();
     } else {
-        // Fallback: directly open the modal
         console.warn('serverApp not initialized, opening modal directly');
         document.getElementById('createServerModal').classList.remove('hidden');
     }
@@ -1891,11 +1685,8 @@ function closeCreateServerModal() {
 }
 
 function createServer() {
-    // Get form data and submit
     const form = document.getElementById('createServerForm');
     const formData = new FormData(form);
-    
-    // Add action
     formData.append('action', 'createServer');
     
     fetch('/user/user-server/api/servers.php', {
@@ -1924,36 +1715,25 @@ function closeCropperModal() {
 }
 
 function applyCrop() {
-    // Apply crop functionality would go here
-    // For now, just close the modal
     closeCropperModal();
 }
-
-// Modal functions for confirmation modal
 function closeConfirmationModal() {
     $('#confirmationModal').addClass('hidden');
 }
 
 function executeConfirmationAction() {
-    // Execute the pending confirmation action if it exists
     if (window.pendingConfirmationAction && typeof window.pendingConfirmationAction === 'function') {
         window.pendingConfirmationAction();
         window.pendingConfirmationAction = null; // Clear after execution
     }
-    
-    // Close the modal
     closeConfirmationModal();
 }
-
-// Modal functions for leave server modal
 function closeLeaveServerModal() {
     $('#leaveServerModal').addClass('hidden');
 }
 
 function leaveServer() {
     if (!serverApp.currentServer) return;
-    
-    // Call the server API to leave the server
     fetch('/user/user-server/api/servers.php', {
         method: 'POST',
         headers: {
@@ -1967,7 +1747,6 @@ function leaveServer() {
             serverApp.showToast('Left server successfully', 'success');
             closeLeaveServerModal();
             serverApp.loadUserServers();
-            // Redirect to home or select another server
             window.location.href = '/user/home/';
         } else {
             serverApp.showToast(data.error || 'Failed to leave server', 'error');
@@ -1981,8 +1760,6 @@ function leaveServer() {
 
 function deleteServerFromLeave() {
     if (!serverApp.currentServer) return;
-    
-    // Call the server API to delete the server
     fetch('/user/user-server/api/servers.php', {
         method: 'POST',
         headers: {
@@ -1996,7 +1773,6 @@ function deleteServerFromLeave() {
             serverApp.showToast('Server deleted successfully', 'success');
             closeLeaveServerModal();
             serverApp.loadUserServers();
-            // Redirect to home
             window.location.href = '/user/home/';
         } else {
             serverApp.showToast(data.error || 'Failed to delete server', 'error');
@@ -2007,32 +1783,21 @@ function deleteServerFromLeave() {
         serverApp.showToast('Failed to delete server', 'error');
     });
 }
-
-// Initialize the application
 let serverApp;
 
 $(document).ready(() => {
     window.serverApp = new ServerApp();
 });
-
-// Additional Modal Functions
-
-// Close user settings modal
 function closeUserSettingsModal() {
     document.getElementById('userSettingsModal').classList.add('hidden');
 }
-
-// Channel Management Functions
 function closeCreateChannelModal() {
     document.getElementById('createChannelModal').classList.add('hidden');
 }
 
 function createChannel() {
-    // Get form elements with proper validation
     const channelNameInput = document.getElementById('channelNameInput');
     const channelTypeInput = document.querySelector('input[name="channelType"]:checked');
-    
-    // Validate elements exist
     if (!channelNameInput) {
         console.error('Channel name input not found');
         safeShowToast('Channel name input not found', 'error');
@@ -2044,14 +1809,10 @@ function createChannel() {
         safeShowToast('Please select a channel type', 'error');
         return;
     }
-    
-    // Check if serverApp exists and has currentServer
     if (!window.serverApp || !window.serverApp.currentServer) {
         safeShowToast('No server selected', 'error');
         return;
     }
-    
-    // Get values
     const channelName = channelNameInput.value.trim();
     const channelType = channelTypeInput.value;
     
@@ -2059,8 +1820,6 @@ function createChannel() {
         safeShowToast('Channel name is required', 'error');
         return;
     }
-    
-    // Create FormData
     const formData = new FormData();
     formData.append('action', 'createChannel');
     formData.append('name', channelName);
@@ -2093,8 +1852,6 @@ function createChannel() {
         safeShowToast('Failed to create channel', 'error');
     });
 }
-
-// Invite People Functions
 function closeInvitePeopleModal() {
     document.getElementById('invitePeopleModal').classList.add('hidden');
 }
@@ -2105,12 +1862,8 @@ function copyInviteLink() {
         alert('No invite link to copy');
         return;
     }
-    
-    // Extract just the invite code from the URL
     const fullUrl = inviteLinkText.textContent;
     const inviteCode = fullUrl.split('/invite/')[1] || fullUrl; // Extract code or use full text as fallback
-    
-    // Copy just the invite code
     navigator.clipboard.writeText(inviteCode).then(() => {
         const copyBtn = document.getElementById('copyInviteBtn');
         const originalHtml = copyBtn.innerHTML;
@@ -2120,7 +1873,6 @@ function copyInviteLink() {
         }, 2000);
     }).catch(error => {
         console.error('Error copying to clipboard:', error);
-        // Fallback to old method
         const textarea = document.createElement('textarea');
         textarea.value = inviteCode;
         document.body.appendChild(textarea);
@@ -2143,16 +1895,11 @@ function regenerateInviteLink() {
     console.log('window.serverApp.currentServer:', window.serverApp?.currentServer);
     
     let serverId = null;
-    
-    // Try to get server ID from serverApp
     if (window.serverApp && window.serverApp.currentServer && window.serverApp.currentServer.ID) {
         serverId = window.serverApp.currentServer.ID;
     } else {
-        // Try to get server ID from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         serverId = urlParams.get('serverId') || urlParams.get('server') || urlParams.get('id');
-        
-        // Try to get from DOM data attribute
         if (!serverId) {
             const activeServer = document.querySelector('.server-item.active');
             if (activeServer) {
@@ -2188,7 +1935,6 @@ function regenerateInviteLink() {
     .then(data => {
         console.log('Response data:', data);
         if (data.success && data.invite) {
-            // Display just the invite code, not the full URL
             document.getElementById('inviteLinkText').textContent = data.invite.InviteLink;
         } else {
             alert(data.message || 'Failed to regenerate invite link');
@@ -2206,16 +1952,11 @@ function inviteTitibot() {
     console.log('window.serverApp.currentServer:', window.serverApp?.currentServer);
     
     let serverId = null;
-    
-    // Try to get server ID from serverApp
     if (window.serverApp && window.serverApp.currentServer && window.serverApp.currentServer.ID) {
         serverId = window.serverApp.currentServer.ID;
     } else {
-        // Try to get server ID from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         serverId = urlParams.get('serverId') || urlParams.get('server') || urlParams.get('id');
-        
-        // Try to get from DOM data attribute
         if (!serverId) {
             const activeServer = document.querySelector('.server-item.active');
             if (activeServer) {
@@ -2287,8 +2028,6 @@ function acceptInvite() {
 function declineInvite() {
     window.location.href = 'dashboard.php';
 }
-
-// Server Settings Functions
 function closeServerSettingsModal() {
     document.getElementById('serverSettingsModal').classList.add('hidden');
 }
@@ -2433,8 +2172,6 @@ function deleteServer() {
         alert('Failed to delete server');
     });
 }
-
-// Channel Edit Functions
 function closeEditChannelModal() {
     document.getElementById('editChannelModal').classList.add('hidden');
 }
@@ -2473,8 +2210,6 @@ function saveChannelEdit() {
         alert('Failed to update channel');
     });
 }
-
-// Transfer Ownership Functions
 function closeTransferOwnershipModal() {
     document.getElementById('transferOwnershipModal').classList.add('hidden');
 }
@@ -2514,8 +2249,6 @@ function confirmOwnershipTransfer() {
         alert('Failed to transfer ownership');
     });
 }
-
-// User Settings Functions
 function logout() {
     window.location.href = '../auth/logout.php';
 }
@@ -2533,15 +2266,12 @@ function openPasswordChangeModal() {
 }
 
 function resetAccountForm() {
-    // Reset the account form to original values
     location.reload();
 }
 
 function saveAccountChanges() {
     const formData = new FormData();
     const form = document.getElementById('accountForm');
-    
-    // Get all form data
     const formDataObj = new FormData(form);
     formDataObj.append('action', 'update_account');
     
@@ -2565,11 +2295,9 @@ function saveAccountChanges() {
 }
 
 function startMicTest() {
-    // Microphone test functionality
     navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
         alert('Microphone test started');
-        // Stop the stream after test
         stream.getTracks().forEach(track => track.stop());
     })
     .catch(error => {
@@ -2579,7 +2307,6 @@ function startMicTest() {
 }
 
 function testCamera() {
-    // Camera test functionality
     navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         const video = document.getElementById('cameraPreview');
@@ -2697,8 +2424,6 @@ function changePassword() {
         alert('Failed to change password');
     });
 }
-
-// Invite System
 class InviteSystem {
     constructor() {
         this.currentServerInvites = [];
@@ -2712,11 +2437,7 @@ class InviteSystem {
             document.getElementById('inviteLinkText').textContent = 'Error: No server selected';
             return;
         }
-        
-        // Generate initial invite link when modal opens
         this.generateInviteLink(serverId);
-        
-        // Load existing invites
         fetch(`api/invites.php?action=getInvites&serverId=${serverId}`)
             .then(response => {
                 console.log('getInvites response status:', response.status);
@@ -2764,7 +2485,6 @@ class InviteSystem {
         .then(data => {
             console.log('createInvite response data:', data);
             if (data.success && data.invite) {
-                // Display just the invite code, not the full URL
                 document.getElementById('inviteLinkText').textContent = data.invite.InviteLink;
                 this.currentServerInvites.unshift(data.invite);
                 this.displayRecentInvites();
@@ -2818,9 +2538,7 @@ class InviteSystem {
     }
 
     copyInviteCode(inviteCode, buttonElement = null) {
-        // Copy just the invite code, not the full URL
         navigator.clipboard.writeText(inviteCode).then(() => {
-            // Show temporary success message on the button if provided
             if (buttonElement) {
                 const originalIcon = buttonElement.innerHTML;
                 buttonElement.innerHTML = '<i class="fas fa-check"></i>';
@@ -2835,23 +2553,14 @@ class InviteSystem {
     }
 
     deleteInvite(inviteId) {
-        // Store invite ID for later use
         this.pendingDeleteInviteId = inviteId;
-        
-        // Find the invite to show its code in the confirmation
         const invite = this.currentServerInvites.find(inv => inv.ID == inviteId);
         const inviteCode = invite ? invite.InviteLink : 'this invite';
-        
-        // Set up confirmation modal
         document.getElementById('confirmationTitle').textContent = 'Delete Invite';
         document.getElementById('confirmationIcon').innerHTML = '<i class="fas fa-trash-alt"></i>';
         document.getElementById('confirmationMessage').textContent = `Are you sure you want to delete invite "${inviteCode}"?`;
         document.getElementById('confirmationSubmessage').textContent = 'This action cannot be undone.';
-        
-        // Show modal
         document.getElementById('confirmationModal').classList.remove('hidden');
-        
-        // Store the action for executeConfirmationAction
         window.pendingConfirmationAction = () => this.performDeleteInvite(inviteId);
     }
 
@@ -2867,7 +2576,6 @@ class InviteSystem {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Remove from local array and update display
                 this.currentServerInvites = this.currentServerInvites.filter(inv => inv.ID != inviteId);
                 this.displayRecentInvites();
                 serverApp.showToast('Invite deleted successfully', 'success');
@@ -2881,6 +2589,4 @@ class InviteSystem {
         });
     }
 }
-
-// Initialize invite system
 window.inviteSystem = new InviteSystem();

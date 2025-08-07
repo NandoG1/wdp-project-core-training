@@ -1,12 +1,9 @@
-// Server Settings Modal Functionality
 class ServerSettingsManager {
     constructor() {
         this.currentServer = null;
         this.apiBaseUrl = 'api'; // Use relative path instead of absolute URL
         this.init();
     }
-
-    // Helper method for API calls
     apiUrl(endpoint) {
         return `${this.apiBaseUrl}/${endpoint}`;
     }
@@ -17,15 +14,12 @@ class ServerSettingsManager {
     }
 
     bindEventListeners() {
-        // Tab switching
         const settingsNavItems = document.querySelectorAll('#serverSettingsModal .settings-nav-item');
         settingsNavItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 this.switchTab(e.target.closest('.settings-nav-item').dataset.tab);
             });
         });
-
-        // File upload handlers
         const serverIconInput = document.getElementById('serverIconSettingsInput');
         const serverBannerInput = document.getElementById('serverBannerSettingsInput');
         
@@ -35,8 +29,6 @@ class ServerSettingsManager {
         if (serverBannerInput) {
             serverBannerInput.addEventListener('change', (e) => this.handleServerBannerUpload(e));
         }
-
-        // Form change handlers
         const serverNameInput = document.getElementById('serverNameSettings');
         const serverDescriptionInput = document.getElementById('serverDescriptionSettings');
         const serverCategorySelect = document.getElementById('serverCategorySettings');
@@ -53,14 +45,10 @@ class ServerSettingsManager {
         if (serverCategorySelect) {
             serverCategorySelect.addEventListener('change', () => this.showSaveButton('saveServerCategoryBtn'));
         }
-
-        // Delete server confirmation
         const deleteServerInput = document.getElementById('deleteServerConfirmation');
         if (deleteServerInput) {
             deleteServerInput.addEventListener('input', () => this.validateDeleteInput());
         }
-
-        // Channel management controls
         const channelSearchInput = document.getElementById('channelSearchInput');
         const channelTypeFilter = document.getElementById('channelTypeFilter');
         
@@ -70,8 +58,6 @@ class ServerSettingsManager {
         if (channelTypeFilter) {
             channelTypeFilter.addEventListener('change', () => this.filterChannels());
         }
-
-        // Member management controls
         const memberSearchInput = document.getElementById('memberSearchInput');
         const memberRoleFilter = document.getElementById('memberRoleFilter');
         
@@ -85,16 +71,12 @@ class ServerSettingsManager {
 
     switchTab(tabName) {
         console.log('switchTab called with:', tabName);
-        
-        // Remove active class from all nav items and tabs
         document.querySelectorAll('#serverSettingsModal .settings-nav-item').forEach(item => {
             item.classList.remove('active');
         });
         document.querySelectorAll('#serverSettingsModal .settings-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-
-        // Add active class to selected nav item and tab
         const navItem = document.querySelector(`#serverSettingsModal .settings-nav-item[data-tab="${tabName}"]`);
         const tabContent = document.getElementById(`${tabName}Tab`);
         
@@ -109,8 +91,6 @@ class ServerSettingsManager {
         } else {
             console.error('Tab content not found for:', `${tabName}Tab`);
         }
-
-        // Load tab-specific data
         this.loadTabData(tabName);
     }
 
@@ -146,14 +126,10 @@ class ServerSettingsManager {
         }
 
         console.log('Setting currentServer to:', this.currentServer);
-
-        // Update modal title
         const titleElement = document.getElementById('serverSettingsTitle');
         if (titleElement) {
             titleElement.textContent = `${server.Name} Settings`;
         }
-
-        // Load the current tab data
         const activeTab = document.querySelector('#serverSettingsModal .settings-nav-item.active')?.dataset.tab || 'server-profile';
         this.loadTabData(activeTab);
     }
@@ -162,7 +138,6 @@ class ServerSettingsManager {
         if (!this.currentServer) return;
 
         try {
-            // Update preview elements
             const serverNamePreview = document.getElementById('serverNamePreview');
             const serverDescriptionPreview = document.getElementById('serverDescriptionPreview');
             const serverIconPreview = document.getElementById('serverIconSettingsPreview');
@@ -170,8 +145,6 @@ class ServerSettingsManager {
 
             if (serverNamePreview) serverNamePreview.textContent = this.currentServer.Name || 'Unnamed Server';
             if (serverDescriptionPreview) serverDescriptionPreview.textContent = this.currentServer.Description || 'No description';
-
-            // Update form inputs
             const serverNameInput = document.getElementById('serverNameSettings');
             const serverDescriptionInput = document.getElementById('serverDescriptionSettings');
             const serverCategorySelect = document.getElementById('serverCategorySettings');
@@ -182,8 +155,6 @@ class ServerSettingsManager {
                 this.updateDescriptionCount();
             }
             if (serverCategorySelect) serverCategorySelect.value = this.currentServer.Category || 'Gaming';
-
-            // Update preview images
             if (serverIconPreview && this.currentServer.IconServer) {
                 serverIconPreview.style.backgroundImage = `url(${this.currentServer.IconServer})`;
             }
@@ -275,8 +246,6 @@ class ServerSettingsManager {
 
     async uploadServerImage(file, type) {
         console.log(`Starting ${type} upload for file:`, file.name, 'Size:', file.size);
-        
-        // Check if current server is available
         if (!this.currentServer || !this.currentServer.ID) {
             console.error('Current server not available for upload:', this.currentServer);
             this.showToast('Error: No server selected. Please try opening the settings again.', 'error');
@@ -325,8 +294,6 @@ class ServerSettingsManager {
 
             if (data.success) {
                 this.showToast(`${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} updated successfully!`, 'success');
-                
-                // Update preview
                 const previewElement = type === 'server_icon' 
                     ? document.getElementById('serverIconSettingsPreview')
                     : document.getElementById('serverBannerSettingsPreview');
@@ -334,8 +301,6 @@ class ServerSettingsManager {
                 if (previewElement && data.image_url) {
                     previewElement.style.backgroundImage = `url(${data.image_url})`;
                 }
-
-                // Update current server data
                 if (type === 'server_icon') {
                     this.currentServer.IconServer = data.image_url;
                 } else {
@@ -490,7 +455,6 @@ class ServerSettingsManager {
 
             if (data.success) {
                 this.showToast('Server deleted successfully', 'success');
-                // Redirect to dashboard after successful deletion
                 setTimeout(() => {
                     window.location.href = '../home/index.php';
                 }, 2000);
@@ -502,22 +466,14 @@ class ServerSettingsManager {
             this.showToast('Failed to delete server', 'error');
         }
     }
-
-    // Channel Management Methods
     editChannel(channelId, channelName, channelType) {
         console.log('editChannel called:', { channelId, channelName, channelType });
-        
-        // Populate the edit modal
         document.getElementById('editChannelName').value = channelName;
         document.getElementById('editChannelId').value = channelId;
-        
-        // Set the channel prefix based on type
         const prefix = document.getElementById('editChannelPrefix');
         if (prefix) {
             prefix.textContent = channelType === 'voice' ? '🔊' : '#';
         }
-        
-        // Show the modal
         document.getElementById('editChannelModal').classList.remove('hidden');
     }
 
@@ -546,7 +502,6 @@ class ServerSettingsManager {
 
             if (data.success) {
                 this.showToast(`Channel "${channelName}" deleted successfully`, 'success');
-                // Reload channels
                 this.loadChannelManagement();
             } else {
                 this.showToast(data.error || 'Failed to delete channel', 'error');
@@ -582,7 +537,6 @@ class ServerSettingsManager {
             if (data.success) {
                 this.showToast('Channel updated successfully', 'success');
                 document.getElementById('editChannelModal').classList.add('hidden');
-                // Reload channels
                 this.loadChannelManagement();
             } else {
                 this.showToast(data.error || 'Failed to update channel', 'error');
@@ -592,8 +546,6 @@ class ServerSettingsManager {
             this.showToast('Failed to update channel', 'error');
         }
     }
-
-    // Filter and Search Methods
     filterChannels() {
         const searchTerm = document.getElementById('channelSearchInput').value.toLowerCase();
         const typeFilter = document.getElementById('channelTypeFilter').value;
@@ -630,8 +582,6 @@ class ServerSettingsManager {
             row.style.display = (matchesSearch && matchesRole) ? 'flex' : 'none';
         });
     }
-
-    // Member Management Methods
     changeMemberRole(userId, newRole) {
         console.log('changeMemberRole called:', { userId, newRole });
         
@@ -659,7 +609,6 @@ class ServerSettingsManager {
 
             if (data.success) {
                 this.showToast(`Member role changed to ${newRole} successfully`, 'success');
-                // Reload members
                 this.loadMemberManagement();
             } else {
                 this.showToast(data.error || 'Failed to change member role', 'error');
@@ -696,7 +645,6 @@ class ServerSettingsManager {
 
             if (data.success) {
                 this.showToast(`${username} has been kicked from the server`, 'success');
-                // Reload members
                 this.loadMemberManagement();
             } else {
                 this.showToast(data.error || 'Failed to kick member', 'error');
@@ -781,15 +729,12 @@ class ServerSettingsManager {
     }
 
     getMemberActionButtons(member) {
-        // Only show actions if current user is owner or admin
         const currentUserRole = this.getCurrentUserRole();
         if (currentUserRole !== 'Owner' && currentUserRole !== 'Admin') {
             return '';
         }
 
         let buttons = '';
-
-        // Role management (only owners can change roles)
         if (currentUserRole === 'Owner' && member.Role !== 'Owner') {
             if (member.Role === 'Admin') {
                 buttons += `<button class="btn-sm btn-secondary" onclick="serverSettingsManager.changeMemberRole(${member.UserID}, 'Member')" title="Demote to Member">Demote</button>`;
@@ -797,8 +742,6 @@ class ServerSettingsManager {
                 buttons += `<button class="btn-sm btn-primary" onclick="serverSettingsManager.changeMemberRole(${member.UserID}, 'Admin')" title="Promote to Admin">Promote</button>`;
             }
         }
-
-        // Kick member (owners and admins can kick members, but not other owners/admins)
         if (member.Role === 'Member' || (currentUserRole === 'Owner' && member.Role === 'Admin')) {
             buttons += `<button class="btn-sm btn-danger" onclick="serverSettingsManager.kickMember(${member.UserID}, '${member.Username}')" title="Kick Member">Kick</button>`;
         }
@@ -807,8 +750,6 @@ class ServerSettingsManager {
     }
 
     getCurrentUserRole() {
-        // This should be implemented to get the current user's role in the server
-        // For now, we'll assume they have access to the settings (Owner or Admin)
         return 'Owner'; // Placeholder
     }
 
@@ -851,21 +792,16 @@ class ServerSettingsManager {
     }
 
     showToast(message, type = 'info') {
-        // Use the existing toast system from serverApp if available
         if (window.serverApp && window.serverApp.showToast) {
             window.serverApp.showToast(message, type);
         } else {
-            // Fallback to alert
             alert(message);
         }
     }
 
     initializeFormValidation() {
-        // Add any form validation logic here
     }
 }
-
-// Global functions called by the modal
 function editServerBanner() {
     document.getElementById('serverBannerSettingsInput').click();
 }
@@ -917,13 +853,9 @@ function confirmOwnershipTransfer() {
         window.serverSettingsManager.confirmOwnershipTransfer();
     }
 }
-
-// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.serverSettingsManager = new ServerSettingsManager();
 });
-
-// Create the serverSettings object for backward compatibility
 window.serverSettings = {
     loadServerData: (server) => {
         console.log('loadServerData called with server:', server);
@@ -931,13 +863,11 @@ window.serverSettings = {
             window.serverSettingsManager.loadServerData(server);
         } else {
             console.error('serverSettingsManager not initialized yet');
-            // Try to initialize if not already done
             window.serverSettingsManager = new ServerSettingsManager();
             window.serverSettingsManager.loadServerData(server);
         }
     },
     initializeLeaveServerModal: (server) => {
-        // This can be implemented if needed
         console.log('Initialize leave server modal for:', server);
     }
 };
