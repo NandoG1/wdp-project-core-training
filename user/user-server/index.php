@@ -282,6 +282,7 @@ $username = $_SESSION['username'] ?? 'User';
     <script src="assets/js/voice.js"></script>
     <script src="assets/js/modals.js"></script>
     <script src="assets/js/user-settings.js"></script>
+    <script src="assets/js/server-settings.js"></script>
     <script>
         // Initialize with user data
         window.currentUser = {

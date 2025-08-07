@@ -81,6 +81,21 @@ switch ($action) {
     case 'updateServer':
         updateServer($user_id);
         break;
+    case 'updateServerName':
+        updateServerName($user_id);
+        break;
+    case 'updateServerDescription':
+        updateServerDescription($user_id);
+        break;
+    case 'updateServerCategory':
+        updateServerCategory($user_id);
+        break;
+    case 'uploadServerImage':
+        uploadServerImage($user_id);
+        break;
+    case 'getServerMembers':
+        getServerMembers($user_id);
+        break;
     case 'deleteServer':
         deleteServer($user_id);
         break;
@@ -691,6 +706,204 @@ function getPublicServers() {
     } catch (Exception $e) {
         error_log("Error getting public servers: " . $e->getMessage());
         send_response(['error' => 'Failed to load public servers'], 500);
+    }
+}
+
+function updateServerName($user_id) {
+    global $mysqli;
+    
+    $server_id = $_POST['server_id'] ?? '';
+    $name = sanitize_input($_POST['name'] ?? '');
+    
+    if (empty($server_id) || empty($name)) {
+        send_response(['error' => 'Server ID and name are required'], 400);
+    }
+    
+    // Check if user is owner or admin
+    if (!is_server_admin($user_id, $server_id)) {
+        send_response(['error' => 'Access denied'], 403);
+    }
+    
+    try {
+        $stmt = $mysqli->prepare("UPDATE Server SET Name = ? WHERE ID = ?");
+        $stmt->bind_param("si", $name, $server_id);
+        $stmt->execute();
+        
+        if ($stmt->affected_rows > 0) {
+            send_response(['success' => true, 'message' => 'Server name updated successfully']);
+        } else {
+            send_response(['error' => 'No changes made'], 400);
+        }
+    } catch (Exception $e) {
+        error_log("Error updating server name: " . $e->getMessage());
+        send_response(['error' => 'Failed to update server name'], 500);
+    }
+}
+
+function updateServerDescription($user_id) {
+    global $mysqli;
+    
+    $server_id = $_POST['server_id'] ?? '';
+    $description = sanitize_input($_POST['description'] ?? '');
+    
+    if (empty($server_id)) {
+        send_response(['error' => 'Server ID is required'], 400);
+    }
+    
+    // Check if user is owner or admin
+    if (!is_server_admin($user_id, $server_id)) {
+        send_response(['error' => 'Access denied'], 403);
+    }
+    
+    try {
+        $stmt = $mysqli->prepare("UPDATE Server SET Description = ? WHERE ID = ?");
+        $stmt->bind_param("si", $description, $server_id);
+        $stmt->execute();
+        
+        if ($stmt->affected_rows > 0) {
+            send_response(['success' => true, 'message' => 'Server description updated successfully']);
+        } else {
+            send_response(['error' => 'No changes made'], 400);
+        }
+    } catch (Exception $e) {
+        error_log("Error updating server description: " . $e->getMessage());
+        send_response(['error' => 'Failed to update server description'], 500);
+    }
+}
+
+function updateServerCategory($user_id) {
+    global $mysqli, $server_categories;
+    
+    $server_id = $_POST['server_id'] ?? '';
+    $category = sanitize_input($_POST['category'] ?? '');
+    
+    if (empty($server_id) || empty($category)) {
+        send_response(['error' => 'Server ID and category are required'], 400);
+    }
+    
+    if (!in_array($category, $server_categories)) {
+        send_response(['error' => 'Invalid category'], 400);
+    }
+    
+    // Check if user is owner or admin
+    if (!is_server_admin($user_id, $server_id)) {
+        send_response(['error' => 'Access denied'], 403);
+    }
+    
+    try {
+        $stmt = $mysqli->prepare("UPDATE Server SET Category = ? WHERE ID = ?");
+        $stmt->bind_param("si", $category, $server_id);
+        $stmt->execute();
+        
+        if ($stmt->affected_rows > 0) {
+            send_response(['success' => true, 'message' => 'Server category updated successfully']);
+        } else {
+            send_response(['error' => 'No changes made'], 400);
+        }
+    } catch (Exception $e) {
+        error_log("Error updating server category: " . $e->getMessage());
+        send_response(['error' => 'Failed to update server category'], 500);
+    }
+}
+
+function uploadServerImage($user_id) {
+    global $mysqli;
+    
+    $server_id = $_POST['server_id'] ?? '';
+    $image_type = $_POST['image_type'] ?? '';
+    
+    if (empty($server_id) || empty($image_type)) {
+        send_response(['error' => 'Server ID and image type are required'], 400);
+    }
+    
+    if (!in_array($image_type, ['server_icon', 'server_banner'])) {
+        send_response(['error' => 'Invalid image type'], 400);
+    }
+    
+    // Check if user is owner or admin
+    if (!is_server_admin($user_id, $server_id)) {
+        send_response(['error' => 'Access denied'], 403);
+    }
+    
+    if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+        send_response(['error' => 'No file uploaded or upload error'], 400);
+    }
+    
+    $file = $_FILES['file'];
+    
+    // Use the existing handleImageUpload function
+    $upload_dir = $image_type === 'server_icon' ? 'server-icons' : 'server-banners';
+    $image_path = handleImageUpload($file, $upload_dir);
+    
+    if ($image_path === false) {
+        send_response(['error' => 'Failed to upload image'], 500);
+    }
+    
+    try {
+        // Update the server with the new image path
+        $field = $image_type === 'server_icon' ? 'IconServer' : 'BannerServer';
+        $stmt = $mysqli->prepare("UPDATE Server SET $field = ? WHERE ID = ?");
+        $stmt->bind_param("si", $image_path, $server_id);
+        $stmt->execute();
+        
+        if ($stmt->affected_rows > 0) {
+            send_response([
+                'success' => true, 
+                'message' => 'Image uploaded successfully',
+                'image_url' => $image_path
+            ]);
+        } else {
+            send_response(['error' => 'Failed to update server image'], 500);
+        }
+    } catch (Exception $e) {
+        error_log("Error updating server image: " . $e->getMessage());
+        send_response(['error' => 'Failed to update server image'], 500);
+    }
+}
+
+function getServerMembers($user_id) {
+    global $mysqli;
+    
+    $server_id = $_GET['serverId'] ?? '';
+    
+    if (empty($server_id)) {
+        send_response(['error' => 'Server ID is required'], 400);
+    }
+    
+    // Check if user is member of server
+    if (!is_server_member($user_id, $server_id)) {
+        send_response(['error' => 'Access denied'], 403);
+    }
+    
+    try {
+        $stmt = $mysqli->prepare("
+            SELECT usm.*, u.Username, u.Avatar, u.Status,
+                   usm.Role, usm.JoinedAt
+            FROM UserServerMemberships usm
+            JOIN User u ON usm.UserID = u.ID
+            WHERE usm.ServerID = ?
+            ORDER BY 
+                CASE usm.Role 
+                    WHEN 'Owner' THEN 1 
+                    WHEN 'Admin' THEN 2 
+                    WHEN 'Member' THEN 3 
+                    ELSE 4 
+                END,
+                usm.JoinedAt ASC
+        ");
+        $stmt->bind_param("i", $server_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $members = [];
+        while ($row = $result->fetch_assoc()) {
+            $members[] = $row;
+        }
+        
+        send_response(['success' => true, 'members' => $members]);
+    } catch (Exception $e) {
+        error_log("Error getting server members: " . $e->getMessage());
+        send_response(['error' => 'Failed to load server members'], 500);
     }
 }
 ?>
