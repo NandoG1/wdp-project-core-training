@@ -1,20 +1,13 @@
-// Global variables
 let currentCodeId = null;
 let currentCodeValue = null;
 let selectedUserId = null;
 let searchTimeout = null;
-
-// Initialize page
 $(document).ready(function() {
     initializeEventListeners();
-    
-    // Simulate initial loading
     setTimeout(() => {
         hideSkeletonLoading();
     }, 2000);
 });
-
-// Show skeleton loading
 function showSkeletonLoading() {
     $('.codes-section').removeClass('loaded');
     $('.skeleton-table').show();
@@ -22,8 +15,6 @@ function showSkeletonLoading() {
     $('.skeleton-pagination').show();
     $('.pagination-container').hide();
 }
-
-// Hide skeleton loading
 function hideSkeletonLoading() {
     $('.codes-section').addClass('loaded');
     $('.skeleton-table').hide();
@@ -31,10 +22,7 @@ function hideSkeletonLoading() {
     $('.skeleton-pagination').hide();
     $('.pagination-container').show();
 }
-
-// Initialize event listeners
 function initializeEventListeners() {
-    // User search with AJAX and Jaro-Winkler
     $('#userSearch').on('input', function() {
         const searchTerm = $(this).val().trim();
         
@@ -49,15 +37,11 @@ function initializeEventListeners() {
             searchUsers(searchTerm);
         }, 300);
     });
-
-    // Hide dropdown when clicking outside
     $(document).on('click', function(e) {
         if (!$(e.target).closest('.user-search-container').length) {
             hideSearchDropdown();
         }
     });
-
-    // User selection from dropdown
     $(document).on('click', '.user-option:not(.disabled)', function() {
         const userId = $(this).data('user-id');
         const username = $(this).data('username');
@@ -67,49 +51,33 @@ function initializeEventListeners() {
         $('#userSearch').val(`${username}#${discriminator}`);
         hideSearchDropdown();
     });
-
-    // Generate code button
     $('#generateBtn').on('click', function() {
         generateCode();
     });
-
-    // Code search
     $('#codeSearch').on('input', debounce(function() {
         applySearchWithLoading();
     }, 500));
-
-    // Copy code buttons
     $(document).on('click', '.copy-btn', function() {
         const code = $(this).data('code');
         copyToClipboard(code);
     });
-
-    // Delete buttons
     $(document).on('click', '.delete-btn', function() {
         const codeId = $(this).data('code-id');
         const code = $(this).data('code');
         showDeleteModal(codeId, code);
     });
-
-    // Modal close buttons
     $('.modal-close').on('click', function() {
         const modal = $(this).closest('.modal');
         closeModal(modal.attr('id'));
     });
-
-    // Modal background click
     $('.modal').on('click', function(e) {
         if (e.target === this) {
             closeModal($(this).attr('id'));
         }
     });
-
-    // Confirm delete button
     $('#confirmDelete').on('click', function() {
         deleteCode(currentCodeId);
     });
-
-    // Keyboard shortcuts
     $(document).on('keydown', function(e) {
         if (e.key === 'Escape') {
             closeAllModals();
@@ -117,8 +85,6 @@ function initializeEventListeners() {
         }
     });
 }
-
-// Search users with Jaro-Winkler algorithm
 function searchUsers(searchTerm) {
     $.ajax({
         url: 'nitro.php',
@@ -137,8 +103,6 @@ function searchUsers(searchTerm) {
         }
     });
 }
-
-// Display search results
 function displaySearchResults(users) {
     const dropdown = $('#searchDropdown');
     dropdown.empty();
@@ -177,8 +141,6 @@ function displaySearchResults(users) {
     
     showSearchDropdown();
 }
-
-// Show/hide search dropdown
 function showSearchDropdown() {
     $('#searchDropdown').addClass('active');
 }
@@ -186,8 +148,6 @@ function showSearchDropdown() {
 function hideSearchDropdown() {
     $('#searchDropdown').removeClass('active');
 }
-
-// Generate code
 function generateCode() {
     const btn = $('#generateBtn');
     btn.prop('disabled', true).text('Generating...');
@@ -203,13 +163,9 @@ function generateCode() {
         success: function(response) {
             if (response.success) {
                 showToast(response.message, 'success');
-                
-                // Reset form
                 $('#userSearch').val('');
                 selectedUserId = null;
                 hideSearchDropdown();
-                
-                // Refresh page to show new code
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
@@ -225,20 +181,14 @@ function generateCode() {
         }
     });
 }
-
-// Apply search with loading
 function applySearchWithLoading() {
     showSkeletonLoading();
-    
-    // Prevent user interaction during loading
     $('#codeSearch').prop('disabled', true);
     
     setTimeout(() => {
         applySearch();
     }, 800);
 }
-
-// Apply search
 function applySearch() {
     const search = $('#codeSearch').val();
     
@@ -249,8 +199,6 @@ function applySearch() {
     const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
     window.location.href = newUrl;
 }
-
-// Change page with loading
 function changePageWithLoading(page) {
     showSkeletonLoading();
     
@@ -258,15 +206,11 @@ function changePageWithLoading(page) {
         changePage(page);
     }, 500);
 }
-
-// Change page
 function changePage(page) {
     const params = new URLSearchParams(window.location.search);
     params.set('page', page);
     window.location.href = window.location.pathname + '?' + params.toString();
 }
-
-// Copy to clipboard
 function copyToClipboard(text) {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
@@ -298,8 +242,6 @@ function fallbackCopyToClipboard(text) {
     
     document.body.removeChild(textArea);
 }
-
-// Show delete modal
 function showDeleteModal(codeId, code) {
     currentCodeId = codeId;
     currentCodeValue = code;
@@ -307,14 +249,10 @@ function showDeleteModal(codeId, code) {
     $('#deleteCodeValue').text(code);
     showModal('deleteModal');
 }
-
-// Show modal
 function showModal(modalId) {
     $(`#${modalId}`).addClass('active');
     $('body').css('overflow', 'hidden');
 }
-
-// Close modal
 function closeModal(modalId) {
     $(`#${modalId}`).removeClass('active');
     $('body').css('overflow', '');
@@ -322,20 +260,14 @@ function closeModal(modalId) {
     currentCodeId = null;
     currentCodeValue = null;
 }
-
-// Close all modals
 function closeAllModals() {
     $('.modal').removeClass('active');
     $('body').css('overflow', '');
     currentCodeId = null;
     currentCodeValue = null;
 }
-
-// Delete code
 function deleteCode(codeId) {
     if (!codeId) return;
-    
-    // Show loading state on the delete button
     const deleteBtn = $('#confirmDelete');
     deleteBtn.prop('disabled', true).text('Deleting...');
     
@@ -351,8 +283,6 @@ function deleteCode(codeId) {
             if (response.success) {
                 showToast(response.message, 'success');
                 closeModal('deleteModal');
-                
-                // Remove the code row from the table
                 removeCodeFromTable(codeId);
             } else {
                 showToast(response.message, 'error');
@@ -366,18 +296,12 @@ function deleteCode(codeId) {
         }
     });
 }
-
-// Remove code from table
 function removeCodeFromTable(codeId) {
     const row = $(`.delete-btn[data-code-id="${codeId}"]`).closest('tr');
     if (row.length) {
         row.fadeOut(300, function() {
             $(this).remove();
-            
-            // Update pagination info
             updatePaginationInfo();
-            
-            // If no codes left on current page, go to previous page
             const remainingRows = $('.codes-table tbody tr').length;
             if (remainingRows === 0 && window.location.search.includes('page=')) {
                 const params = new URLSearchParams(window.location.search);
@@ -391,8 +315,6 @@ function removeCodeFromTable(codeId) {
         });
     }
 }
-
-// Update pagination info
 function updatePaginationInfo() {
     const paginationInfo = $('.pagination-info');
     const remainingRows = $('.codes-table tbody tr').length;
@@ -406,23 +328,17 @@ function updatePaginationInfo() {
         }
     }
 }
-
-// Show toast notification
 function showToast(message, type = 'info') {
     const toastContainer = $('#toastContainer');
     
     const toast = $(`<div class="toast ${type}">${message}</div>`);
     toastContainer.append(toast);
-    
-    // Auto remove after 5 seconds
     setTimeout(() => {
         toast.css('animation', 'toastSlideOut 0.3s ease forwards');
         setTimeout(() => {
             toast.remove();
         }, 300);
     }, 5000);
-    
-    // Click to dismiss
     toast.on('click', function() {
         $(this).css('animation', 'toastSlideOut 0.3s ease forwards');
         setTimeout(() => {
@@ -430,8 +346,6 @@ function showToast(message, type = 'info') {
         }, 300);
     });
 }
-
-// Debounce function
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {

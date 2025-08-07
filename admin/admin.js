@@ -1,5 +1,4 @@
 function initializeCharts(channelData, messageData, serverData) {
-    // Channel Statistics Chart
     const channelCtx = document.getElementById('channelChart').getContext('2d');
     new Chart(channelCtx, {
         type: 'bar',
@@ -47,8 +46,6 @@ function initializeCharts(channelData, messageData, serverData) {
             }
         }
     });
-
-    // Message Statistics Chart
     const messageCtx = document.getElementById('messageChart').getContext('2d');
     new Chart(messageCtx, {
         type: 'bar',
@@ -96,8 +93,6 @@ function initializeCharts(channelData, messageData, serverData) {
             }
         }
     });
-
-    // Server Statistics Chart
     const serverCtx = document.getElementById('serverChart').getContext('2d');
     new Chart(serverCtx, {
         type: 'bar',
@@ -145,14 +140,10 @@ function initializeCharts(channelData, messageData, serverData) {
         }
     });
 }
-
-// Mobile sidebar toggle
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.classList.toggle('active');
 }
-
-// Add mobile menu button if needed
 if (window.innerWidth <= 768) {
     const mainContent = document.querySelector('.main-content');
     const menuButton = document.createElement('button');

@@ -1,8 +1,6 @@
 const { Server } = require('socket.io');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
-
-// Create Socket.IO server
 const io = new Server(8010, {
     cors: {
         origin: ["http://localhost", "http://localhost:80", "http://localhost:8080", "http://127.0.0.1"],
@@ -11,8 +9,6 @@ const io = new Server(8010, {
     },
     transports: ['websocket', 'polling']
 });
-
-// Database connection
 const dbConfig = {
     host: 'localhost',
     user: 'root',
@@ -21,8 +17,6 @@ const dbConfig = {
 };
 
 let db = null;
-
-// Initialize database connection
 async function initDB() {
     try {
         db = await mysql.createConnection(dbConfig);
@@ -31,18 +25,12 @@ async function initDB() {
         console.error('Database connection failed:', error);
     }
 }
-
-// Initialize database
 initDB();
-
-// Store active users and their channels
 const activeUsers = new Map();
 const channelUsers = new Map();
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
-
-    // Handle user authentication/join
     socket.on('authenticate', (data) => {
         const { userId, username } = data;
         socket.userId = userId;
@@ -55,33 +43,23 @@ io.on('connection', (socket) => {
         });
         
         console.log(`User ${username} (${userId}) authenticated`);
-        
-        // Notify others that user is online
         socket.broadcast.emit('user_status_update', {
             userId: userId,
             username: username,
             status: 'online'
         });
     });
-
-    // Handle joining a server
     socket.on('join_server', (data) => {
         const { serverId } = data;
         socket.join(`server_${serverId}`);
         console.log(`User ${socket.username} joined server ${serverId}`);
     });
-
-    // Handle joining a channel
     socket.on('join_channel', (data) => {
         const { channelId, serverId } = data;
-        
-        // Leave previous channel if any
         if (socket.currentChannelId) {
             socket.leave(`channel_${socket.currentChannelId}`);
             removeUserFromChannel(socket.currentChannelId, socket.userId);
         }
-        
-        // Join new channel
         socket.join(`channel_${channelId}`);
         socket.currentChannelId = channelId;
         socket.currentServerId = serverId;
@@ -89,40 +67,28 @@ io.on('connection', (socket) => {
         addUserToChannel(channelId, socket.userId, socket.username);
         
         console.log(`User ${socket.username} joined channel ${channelId}`);
-        
-        // Notify channel members
         socket.to(`channel_${channelId}`).emit('user_joined_channel', {
             userId: socket.userId,
             username: socket.username,
             channelId: channelId
         });
-        
-        // Send current channel members to the user
         const channelMembers = getChannelMembers(channelId);
         socket.emit('channel_members', {
             channelId: channelId,
             members: channelMembers
         });
     });
-
-    // Handle new message
     socket.on('new_message', (data) => {
         const { channelId, messageData } = data;
         
         console.log(`New message in channel ${channelId}:`, messageData);
-        
-        // Broadcast message to all users in the channel except sender
         socket.to(`channel_${channelId}`).emit('message_received', {
             channelId: channelId,
             message: messageData
         });
     });
-
-    // Handle message editing
     socket.on('edit_message', (data) => {
         const { channelId, messageId, newContent } = data;
-        
-        // Broadcast edit to channel members
         socket.to(`channel_${channelId}`).emit('message_edited', {
             channelId: channelId,
             messageId: messageId,
@@ -130,23 +96,15 @@ io.on('connection', (socket) => {
             editedAt: new Date().toISOString()
         });
     });
-
-    // Handle message deletion
     socket.on('delete_message', (data) => {
         const { channelId, messageId } = data;
-        
-        // Broadcast deletion to channel members
         socket.to(`channel_${channelId}`).emit('message_deleted', {
             channelId: channelId,
             messageId: messageId
         });
     });
-
-    // Handle reactions
     socket.on('add_reaction', (data) => {
         const { channelId, messageId, emoji, userId } = data;
-        
-        // Broadcast reaction to channel members
         socket.to(`channel_${channelId}`).emit('reaction_added', {
             channelId: channelId,
             messageId: messageId,
@@ -157,8 +115,6 @@ io.on('connection', (socket) => {
 
     socket.on('remove_reaction', (data) => {
         const { channelId, messageId, emoji, userId } = data;
-        
-        // Broadcast reaction removal to channel members
         socket.to(`channel_${channelId}`).emit('reaction_removed', {
             channelId: channelId,
             messageId: messageId,
@@ -166,8 +122,6 @@ io.on('connection', (socket) => {
             userId: userId
         });
     });
-
-    // Handle typing indicators
     socket.on('typing_start', (data) => {
         const { channelId, username } = data;
         socket.to(`channel_${channelId}`).emit('user_typing', {
@@ -185,8 +139,6 @@ io.on('connection', (socket) => {
             isTyping: false
         });
     });
-
-    // Handle voice channel events
     socket.on('join_voice', (data) => {
         const { channelId, userId, username } = data;
         socket.join(`voice_${channelId}`);
@@ -208,16 +160,11 @@ io.on('connection', (socket) => {
             username: username
         });
     });
-
-    // Handle disconnection
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
         
         if (socket.userId) {
-            // Remove user from active users
             activeUsers.delete(socket.userId);
-            
-            // Remove user from current channel
             if (socket.currentChannelId) {
                 removeUserFromChannel(socket.currentChannelId, socket.userId);
                 socket.to(`channel_${socket.currentChannelId}`).emit('user_left_channel', {
@@ -226,8 +173,6 @@ io.on('connection', (socket) => {
                     channelId: socket.currentChannelId
                 });
             }
-            
-            // Notify others that user is offline
             socket.broadcast.emit('user_status_update', {
                 userId: socket.userId,
                 username: socket.username,
@@ -236,8 +181,6 @@ io.on('connection', (socket) => {
         }
     });
 });
-
-// Helper functions
 function addUserToChannel(channelId, userId, username) {
     if (!channelUsers.has(channelId)) {
         channelUsers.set(channelId, new Map());
@@ -252,8 +195,6 @@ function addUserToChannel(channelId, userId, username) {
 function removeUserFromChannel(channelId, userId) {
     if (channelUsers.has(channelId)) {
         channelUsers.get(channelId).delete(userId);
-        
-        // Clean up empty channels
         if (channelUsers.get(channelId).size === 0) {
             channelUsers.delete(channelId);
         }

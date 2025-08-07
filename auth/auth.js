@@ -1,20 +1,12 @@
-// Page navigation
 function showPage(pageId) {
-    // Hide all pages
     const pages = document.querySelectorAll('.page');
     pages.forEach(page => {
         page.classList.remove('active');
     });
-    
-    // Show selected page
     document.getElementById(pageId).classList.add('active');
-    
-    // Clear form errors
     const errorMessages = document.querySelectorAll('.error-message, .success-message');
     errorMessages.forEach(msg => msg.remove());
 }
-
-// Password toggle functionality
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
     const button = input.nextElementSibling;
@@ -35,8 +27,6 @@ function togglePassword(inputId) {
         `;
     }
 }
-
-// Refresh CAPTCHA
 function refreshCaptcha() {
     fetch('refresh-captcha.php')
         .then(response => response.text())
@@ -47,36 +37,22 @@ function refreshCaptcha() {
             console.error('Error refreshing CAPTCHA:', error);
         });
 }
-
-// Password strength calculation based on requirements
 function calculatePasswordStrength(password) {
     let score = 0;
-    
-    // Length: 4 points per character (max 40 points)
     const lengthScore = Math.min(password.length * 4, 40);
     score += lengthScore;
-    
-    // Uppercase Letter: +15 points (if at least one exists)
     if (/[A-Z]/.test(password)) {
         score += 15;
     }
-    
-    // Lowercase Letter: +10 points (if at least one exists)
     if (/[a-z]/.test(password)) {
         score += 10;
     }
-    
-    // Digit (0-9): +15 points (if at least one exists)
     if (/[0-9]/.test(password)) {
         score += 15;
     }
-    
-    // Special Character (non-alphanumeric): +20 points (if at least one exists)
     if (/[^a-zA-Z0-9]/.test(password)) {
         score += 20;
     }
-    
-    // Cap at 100%
     return Math.min(score, 100);
 }
 
@@ -86,14 +62,8 @@ function updatePasswordStrength(password) {
     const strengthText = document.getElementById('strength-text');
     
     if (!strengthBar || !strengthText) return;
-    
-    // Update percentage text
     strengthText.textContent = strength + '%';
-    
-    // Update bar width and color
     strengthBar.style.width = strength + '%';
-    
-    // Color coding based on strength
     if (strength < 30) {
         strengthBar.style.background = '#ef4444'; // Red
         strengthText.style.color = '#ef4444';
@@ -111,18 +81,13 @@ function updatePasswordStrength(password) {
         strengthText.style.color = '#16a34a';
     }
 }
-
-// Form validation and enhancement
 document.addEventListener('DOMContentLoaded', function() {
-    // Password strength monitoring
     const registerPassword = document.getElementById('register-password');
     if (registerPassword) {
         registerPassword.addEventListener('input', function() {
             updatePasswordStrength(this.value);
         });
     }
-    
-    // Form submission handling
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -132,8 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitButton.classList.add('loading');
                 const originalText = submitButton.textContent;
                 submitButton.textContent = 'Please wait...';
-                
-                // Re-enable button after 5 seconds in case of error
                 setTimeout(() => {
                     submitButton.disabled = false;
                     submitButton.classList.remove('loading');
@@ -142,8 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Real-time password confirmation validation
     const confirmPassword = document.getElementById('confirm-password');
     const registerPasswordField = document.getElementById('register-password');
     
@@ -163,8 +124,6 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmPassword.addEventListener('input', validatePasswordMatch);
         registerPasswordField.addEventListener('input', validatePasswordMatch);
     }
-    
-    // Email validation
     const emailInputs = document.querySelectorAll('input[type="email"]');
     emailInputs.forEach(input => {
         input.addEventListener('blur', function() {
@@ -176,8 +135,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Auto-focus first input on page change
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -196,8 +153,6 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(page, { attributes: true });
     });
 });
-
-// Clear registration data function
 function clearRegistrationData() {
     fetch('clear-registration.php', {
         method: 'POST'
@@ -208,15 +163,10 @@ function clearRegistrationData() {
         window.location.reload();
     });
 }
-
-// Keyboard navigation
 document.addEventListener('keydown', function(e) {
-    // ESC key to go back to login
     if (e.key === 'Escape') {
         showPage('login-page');
     }
-    
-    // Enter key to submit forms
     if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
         const form = e.target.closest('form');
         if (form) {
@@ -227,8 +177,6 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
-
-// Prevent form resubmission on page refresh
 if (window.history.replaceState) {
     window.history.replaceState(null, null, window.location.href);
 }
