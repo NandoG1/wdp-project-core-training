@@ -1,21 +1,17 @@
 <?php
-// Ensure we always output JSON, even for errors
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-// Start session first, before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 require_once 'config.php';
 
-// Set content type to JSON from the start
 if (!headers_sent()) {
     header('Content-Type: application/json');
 }
 
-// Global error handler to ensure all errors are returned as JSON
 set_error_handler(function($severity, $message, $file, $line) {
     if (!(error_reporting() & $severity)) {
         return false;
@@ -23,7 +19,6 @@ set_error_handler(function($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
-// Global exception handler
 set_exception_handler(function($exception) {
     error_log("Unhandled exception: " . $exception->getMessage());
     if (!headers_sent()) {
@@ -108,12 +103,10 @@ function get_conversations($user_id) {
     global $mysqli;
     
     try {
-        // Validate user_id
         if (!$user_id || !is_numeric($user_id)) {
             throw new Exception("Invalid user ID: " . $user_id);
         }
         
-        // Check database connection
         if ($mysqli->connect_error) {
             throw new Exception("Database connection failed: " . $mysqli->connect_error);
         }
@@ -174,7 +167,6 @@ function get_conversations($user_id) {
         
         $conversations = [];
         while ($row = $result->fetch_assoc()) {
-            // Get participants for each conversation
             $participants_query = "SELECT u.ID, u.Username, u.ProfilePictureUrl, u.Status, u.DisplayName, u.Discriminator
                                    FROM Users u
                                    INNER JOIN ChatParticipants cp ON u.ID = cp.UserID
@@ -209,7 +201,6 @@ function get_conversations($user_id) {
                 ];
             }
             
-            // Determine display name and avatar for the conversation
             $display_name = $row['Name'];
             $avatar = $row['ImageUrl'];
             
@@ -241,7 +232,6 @@ function get_conversations($user_id) {
 function get_messages($user_id, $room_id) {
     global $mysqli;
     
-    // Verify user is participant in this room
     $access_query = "SELECT 1 FROM ChatParticipants WHERE ChatRoomID = ? AND UserID = ?";
     $stmt = $mysqli->prepare($access_query);
     $stmt->bind_param("ii", $room_id, $user_id);
@@ -269,7 +259,6 @@ function get_messages($user_id, $room_id) {
     
     $messages = [];
     while ($row = $result->fetch_assoc()) {
-        // Get reactions for this message
         $reactions_query = "SELECT Emoji, COUNT(*) as count, 
                            GROUP_CONCAT(u.Username) as users,
                            GROUP_CONCAT(mr.UserID) as user_ids
@@ -284,7 +273,6 @@ function get_messages($user_id, $room_id) {
         
         $reactions = [];
         while ($reaction = $reactions_result->fetch_assoc()) {
-            // Handle null values from GROUP_CONCAT
             $user_ids = $reaction['user_ids'] ? explode(',', $reaction['user_ids']) : [];
             $users = $reaction['users'] ? explode(',', $reaction['users']) : [];
             
@@ -322,7 +310,6 @@ function get_messages($user_id, $room_id) {
         ];
     }
     
-    // Update last seen for this user in this room
     $update_seen_query = "INSERT INTO UserLastSeen (user_id, room_id, last_seen) 
                           VALUES (?, ?, NOW()) 
                           ON DUPLICATE KEY UPDATE last_seen = NOW()";
@@ -370,13 +357,12 @@ function create_direct_message($user_id, $user_ids, $group_name = null, $group_i
         send_response(['error' => 'User IDs required'], 400);
     }
     
-    // Add the current user to the list
     $all_user_ids = array_unique(array_merge([$user_id], $user_ids));
     
-    // Determine chat type
+
     $chat_type = count($all_user_ids) > 2 ? 'group' : 'direct';
     
-    // For direct messages, check if conversation already exists
+
     if ($chat_type === 'direct') {
         $other_user_id = $user_ids[0];
         $existing_query = "SELECT cr.ID FROM ChatRoom cr
@@ -395,7 +381,6 @@ function create_direct_message($user_id, $user_ids, $group_name = null, $group_i
         }
     }
     
-    // Verify all users are friends with the current user (STRICT CHECK)
     foreach ($user_ids as $target_user_id) {
         $friend_query = "SELECT 1 FROM FriendsList WHERE 
                          ((UserID1 = ? AND UserID2 = ?) OR (UserID1 = ? AND UserID2 = ?)) 
@@ -414,7 +399,6 @@ function create_direct_message($user_id, $user_ids, $group_name = null, $group_i
     $mysqli->begin_transaction();
     
     try {
-        // Create chat room with group image URL
         $insert_room_query = "INSERT INTO ChatRoom (Type, Name, ImageUrl) VALUES (?, ?, ?)";
         $stmt = $mysqli->prepare($insert_room_query);
         
@@ -434,7 +418,6 @@ function create_direct_message($user_id, $user_ids, $group_name = null, $group_i
             throw new Exception("Failed to get room ID after insert");
         }
         
-        // Add participants
         $insert_participant_query = "INSERT INTO ChatParticipants (ChatRoomID, UserID) VALUES (?, ?)";
         $stmt = $mysqli->prepare($insert_participant_query);
         
@@ -463,7 +446,6 @@ function send_message($user_id, $room_id, $content, $reply_to = null, $attachmen
     
     error_log("send_message called with user_id=$user_id, room_id=$room_id, content=$content, reply_to=$reply_to, attachment_url=$attachment_url");
     
-    // Verify user is participant in this room
     $access_query = "SELECT 1 FROM ChatParticipants WHERE ChatRoomID = ? AND UserID = ?";
     $stmt = $mysqli->prepare($access_query);
     $stmt->bind_param("ii", $room_id, $user_id);
@@ -481,7 +463,6 @@ function send_message($user_id, $room_id, $content, $reply_to = null, $attachmen
     $mysqli->begin_transaction();
     
     try {
-        // Create message
         $insert_message_query = "INSERT INTO Message (UserID, Content, SentAt, MessageType, ReplyMessageID, AttachmentURL) 
                                 VALUES (?, ?, NOW(), 'text', ?, ?)";
         $stmt = $mysqli->prepare($insert_message_query);
@@ -491,15 +472,13 @@ function send_message($user_id, $room_id, $content, $reply_to = null, $attachmen
         
         error_log("Created message with ID: $message_id");
         
-        // Link message to chat room
         $insert_room_message_query = "INSERT INTO ChatRoomMessage (RoomID, MessageID) VALUES (?, ?)";
         $stmt = $mysqli->prepare($insert_room_message_query);
         $stmt->bind_param("ii", $room_id, $message_id);
         $stmt->execute();
         
         $mysqli->commit();
-        
-        // Get the complete message data to return
+
         $message_query = "SELECT m.ID, m.UserID, m.Content, m.SentAt, m.EditedAt, m.MessageType, m.AttachmentURL, m.ReplyMessageID,
                                  u.Username, u.ProfilePictureUrl, u.DisplayName, u.Discriminator
                           FROM Message m
@@ -545,7 +524,6 @@ function edit_message($user_id, $message_id, $content) {
         send_response(['error' => 'Message content required'], 400);
     }
     
-    // Verify user owns this message
     $verify_query = "SELECT UserID FROM Message WHERE ID = ?";
     $stmt = $mysqli->prepare($verify_query);
     $stmt->bind_param("i", $message_id);
@@ -556,7 +534,6 @@ function edit_message($user_id, $message_id, $content) {
         send_response(['error' => 'Message not found or access denied'], 403);
     }
     
-    // Update message
     $update_query = "UPDATE Message SET Content = ?, EditedAt = NOW() WHERE ID = ?";
     $stmt = $mysqli->prepare($update_query);
     $stmt->bind_param("si", $content, $message_id);
@@ -571,7 +548,6 @@ function edit_message($user_id, $message_id, $content) {
 function delete_message($user_id, $message_id) {
     global $mysqli;
     
-    // Verify user owns this message
     $verify_query = "SELECT UserID FROM Message WHERE ID = ?";
     $stmt = $mysqli->prepare($verify_query);
     $stmt->bind_param("i", $message_id);
@@ -585,19 +561,16 @@ function delete_message($user_id, $message_id) {
     $mysqli->begin_transaction();
     
     try {
-        // Delete reactions first
         $delete_reactions_query = "DELETE FROM MessageReaction WHERE MessageID = ?";
         $stmt = $mysqli->prepare($delete_reactions_query);
         $stmt->bind_param("i", $message_id);
         $stmt->execute();
         
-        // Delete chat room message links
         $delete_room_message_query = "DELETE FROM ChatRoomMessage WHERE MessageID = ?";
         $stmt = $mysqli->prepare($delete_room_message_query);
         $stmt->bind_param("i", $message_id);
         $stmt->execute();
         
-        // Delete the message
         $delete_message_query = "DELETE FROM Message WHERE ID = ?";
         $stmt = $mysqli->prepare($delete_message_query);
         $stmt->bind_param("i", $message_id);
@@ -619,7 +592,6 @@ function react_to_message($user_id, $message_id, $emoji) {
         send_response(['error' => 'Emoji required'], 400);
     }
     
-    // Check if user already reacted with this emoji
     $existing_query = "SELECT ID FROM MessageReaction WHERE MessageID = ? AND UserID = ? AND Emoji COLLATE utf8mb4_general_ci = ?";
     $stmt = $mysqli->prepare($existing_query);
     $stmt->bind_param("iis", $message_id, $user_id, $emoji);
@@ -627,14 +599,12 @@ function react_to_message($user_id, $message_id, $emoji) {
     $existing = $stmt->get_result()->fetch_assoc();
     
     if ($existing) {
-        // Remove reaction
         $delete_query = "DELETE FROM MessageReaction WHERE ID = ?";
         $stmt = $mysqli->prepare($delete_query);
         $stmt->bind_param("i", $existing['ID']);
         $stmt->execute();
         $action = 'removed';
     } else {
-        // Add reaction
         $insert_query = "INSERT INTO MessageReaction (MessageID, UserID, Emoji) VALUES (?, ?, ?)";
         $stmt = $mysqli->prepare($insert_query);
         $stmt->bind_param("iis", $message_id, $user_id, $emoji);
@@ -642,7 +612,6 @@ function react_to_message($user_id, $message_id, $emoji) {
         $action = 'added';
     }
     
-    // Get updated reactions for this message
     $reactions = get_message_reactions($message_id);
     
     send_response([
@@ -655,7 +624,6 @@ function react_to_message($user_id, $message_id, $emoji) {
 function get_message_reactions($message_id) {
     global $mysqli;
     
-    // Get current user ID from session
     $current_user_id = $_SESSION['user_id'] ?? 0;
     
     $query = "SELECT mr.Emoji, COUNT(*) as count, 
