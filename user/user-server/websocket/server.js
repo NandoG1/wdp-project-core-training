@@ -4,12 +4,8 @@ const socketIo = require('socket.io');
 const mysql = require('mysql2/promise');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-
-// Create Express app
 const app = express();
 const server = http.createServer(app);
-
-// Configure Socket.IO with CORS
 const io = socketIo(server, {
     cors: {
         origin: [
@@ -26,8 +22,6 @@ const io = socketIo(server, {
     },
     allowEIO3: true
 });
-
-// Database configuration
 const dbConfig = {
     host: 'localhost',
     user: 'root',
@@ -35,11 +29,7 @@ const dbConfig = {
     database: 'misvord',
     charset: 'utf8mb4'
 };
-
-// Create MySQL connection pool
 const pool = mysql.createPool(dbConfig);
-
-// Session store
 const sessionStore = new MySQLStore({
     host: dbConfig.host,
     port: 3307,
@@ -47,8 +37,6 @@ const sessionStore = new MySQLStore({
     password: dbConfig.password,
     database: dbConfig.database
 });
-
-// Session middleware
 const sessionMiddleware = session({
     key: 'session_cookie_name',
     secret: 'your_session_secret_here',
@@ -61,24 +49,16 @@ const sessionMiddleware = session({
 });
 
 app.use(sessionMiddleware);
-
-// Share session with Socket.IO
 io.use((socket, next) => {
     sessionMiddleware(socket.request, {}, next);
 });
-
-// Store active connections
 const activeUsers = new Map();
 const serverRooms = new Map();
 const channelRooms = new Map();
-
-// Socket.IO connection handling
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
     
     let userId = null;
-    
-    // Try to get user ID from session first
     const session = socket.request.session;
     if (session && session.user_id) {
         userId = session.user_id;
@@ -87,8 +67,6 @@ io.on('connection', (socket) => {
     } else {
         console.log('User not authenticated via session, waiting for manual authentication...');
     }
-    
-    // Handle manual authentication (for clients that don't use sessions)
     socket.on('authenticate', (data) => {
         if (data.userId) {
             userId = data.userId;
@@ -104,20 +82,14 @@ io.on('connection', (socket) => {
     
     function handleUserConnect(socket, userId) {
         socket.userId = userId;
-        
-        // Store user connection
         activeUsers.set(userId, {
             socketId: socket.id,
             userId: userId,
             status: 'online',
             lastSeen: new Date()
         });
-        
-        // Update user status in database
         updateUserStatus(userId, 'online');
     }
-    
-    // Handle joining server room
     socket.on('join_server', async (data) => {
         if (!socket.userId) {
             socket.emit('error', { message: 'Not authenticated' });
@@ -126,24 +98,16 @@ io.on('connection', (socket) => {
         
         const { serverId } = data;
         const userId = socket.userId;
-        
-        // Verify user is member of server
         const isMember = await isServerMember(userId, serverId);
         if (!isMember) {
             socket.emit('error', { message: 'Access denied' });
             return;
         }
-        
-        // Join server room
         socket.join(`server_${serverId}`);
-        
-        // Track server room
         if (!serverRooms.has(serverId)) {
             serverRooms.set(serverId, new Set());
         }
         serverRooms.get(serverId).add(socket.id);
-        
-        // Notify other server members
         socket.to(`server_${serverId}`).emit('member_joined', {
             userId: userId,
             serverId: serverId
@@ -151,8 +115,6 @@ io.on('connection', (socket) => {
         
         console.log(`User ${userId} joined server ${serverId}`);
     });
-    
-    // Handle leaving server room
     socket.on('leave_server', (data) => {
         if (!socket.userId) return;
         
@@ -160,16 +122,12 @@ io.on('connection', (socket) => {
         const userId = socket.userId;
         
         socket.leave(`server_${serverId}`);
-        
-        // Remove from server room tracking
         if (serverRooms.has(serverId)) {
             serverRooms.get(serverId).delete(socket.id);
             if (serverRooms.get(serverId).size === 0) {
                 serverRooms.delete(serverId);
             }
         }
-        
-        // Notify other server members
         socket.to(`server_${serverId}`).emit('member_left', {
             userId: userId,
             serverId: serverId
@@ -177,8 +135,6 @@ io.on('connection', (socket) => {
         
         console.log(`User ${userId} left server ${serverId}`);
     });
-    
-    // Handle joining channel room
     socket.on('join_channel', async (data) => {
         if (!socket.userId) {
             socket.emit('error', { message: 'Not authenticated' });
@@ -187,8 +143,6 @@ io.on('connection', (socket) => {
         
         const { channelId } = data;
         const userId = socket.userId;
-        
-        // Get channel info and verify access
         const channel = await getChannelInfo(channelId);
         if (!channel) {
             socket.emit('error', { message: 'Channel not found' });
@@ -200,11 +154,7 @@ io.on('connection', (socket) => {
             socket.emit('error', { message: 'Access denied' });
             return;
         }
-        
-        // Join channel room
         socket.join(`channel_${channelId}`);
-        
-        // Track channel room
         if (!channelRooms.has(channelId)) {
             channelRooms.set(channelId, new Set());
         }
@@ -212,8 +162,6 @@ io.on('connection', (socket) => {
         
         console.log(`User ${userId} joined channel ${channelId}`);
     });
-    
-    // Handle leaving channel room
     socket.on('leave_channel', (data) => {
         if (!socket.userId) return;
         
@@ -221,8 +169,6 @@ io.on('connection', (socket) => {
         const userId = socket.userId;
         
         socket.leave(`channel_${channelId}`);
-        
-        // Remove from channel room tracking
         if (channelRooms.has(channelId)) {
             channelRooms.get(channelId).delete(socket.id);
             if (channelRooms.get(channelId).size === 0) {
@@ -232,21 +178,15 @@ io.on('connection', (socket) => {
         
         console.log(`User ${userId} left channel ${channelId}`);
     });
-    
-    // Handle new message
     socket.on('new_message', async (data) => {
         if (!socket.userId) return;
         
         const { channelId, messageData } = data;
         const userId = socket.userId;
-        
-        // Verify user can access channel
         const channel = await getChannelInfo(channelId);
         if (!channel || !await isServerMember(userId, channel.ServerID)) {
             return;
         }
-        
-        // Broadcast message to channel members
         socket.to(`channel_${channelId}`).emit('message_received', {
             channelId: channelId,
             message: messageData
@@ -254,85 +194,53 @@ io.on('connection', (socket) => {
         
         console.log(`New message in channel ${channelId} from user ${userId}`);
     });
-    
-    // Handle message update
     socket.on('message_updated', async (data) => {
         const { channelId, messageId, content } = data;
-        
-        // Verify user can access channel
         const channel = await getChannelInfo(channelId);
         if (!channel || !await isServerMember(userId, channel.ServerID)) {
             return;
         }
-        
-        // Broadcast update to channel members
         socket.to(`channel_${channelId}`).emit('message_updated', {
             messageId: messageId,
             content: content,
             editedAt: new Date()
         });
     });
-    
-    // Handle message deletion
     socket.on('message_deleted', async (data) => {
         const { channelId, messageId } = data;
-        
-        // Verify user can access channel
         const channel = await getChannelInfo(channelId);
         if (!channel || !await isServerMember(userId, channel.ServerID)) {
             return;
         }
-        
-        // Broadcast deletion to channel members
         socket.to(`channel_${channelId}`).emit('message_deleted', {
             messageId: messageId
         });
     });
-    
-    // Handle reaction added
     socket.on('reaction_added', async (data) => {
         const { channelId, messageId, emoji, userId: reactorId } = data;
-        
-        // Verify user can access channel
         const channel = await getChannelInfo(channelId);
         if (!channel || !await isServerMember(userId, channel.ServerID)) {
             return;
         }
-        
-        // Broadcast reaction to channel members
         socket.to(`channel_${channelId}`).emit('reaction_added', {
             messageId: messageId,
             emoji: emoji,
             userId: reactorId
         });
     });
-    
-    // Handle voice channel events
     socket.on('join_voice', async (data) => {
         const { channelId } = data;
-        
-        // Verify voice channel access
         const channel = await getChannelInfo(channelId);
         if (!channel || channel.Type !== 'Voice' || !await isServerMember(userId, channel.ServerID)) {
             return;
         }
-        
-        // Get existing participants before joining
         const existingParticipants = await getVoiceChannelParticipants(channelId);
-        
-        // Join voice room
         socket.join(`voice_${channelId}`);
-        
-        // Add to voice channel participants
         await addVoiceParticipant(channelId, userId);
-        
-        // Send existing participants to the new user
         socket.emit('voice_channel_participants', {
             channelId: channelId,
             participants: existingParticipants
         });
-        
-        // Notify other voice participants about new user
         socket.to(`voice_${channelId}`).emit('user_joined_voice', {
             userId: userId,
             channelId: channelId
@@ -345,24 +253,16 @@ io.on('connection', (socket) => {
         const { channelId } = data;
         
         socket.leave(`voice_${channelId}`);
-        
-        // Notify other voice participants
         socket.to(`voice_${channelId}`).emit('user_left_voice', {
             userId: userId,
             channelId: channelId
         });
-        
-        // Remove from voice channel participants
         await removeVoiceParticipant(channelId, userId);
         
         console.log(`User ${userId} left voice channel ${channelId}`);
     });
-    
-    // Handle WebRTC signaling
     socket.on('webrtc_offer', (data) => {
         const { channelId, to, offer } = data;
-        
-        // Send offer to specific user
         const targetUser = Array.from(io.sockets.sockets.values())
             .find(s => s.userId == to && s.rooms.has(`voice_${channelId}`));
             
@@ -377,8 +277,6 @@ io.on('connection', (socket) => {
     
     socket.on('webrtc_answer', (data) => {
         const { channelId, to, answer } = data;
-        
-        // Send answer to specific user
         const targetUser = Array.from(io.sockets.sockets.values())
             .find(s => s.userId == to && s.rooms.has(`voice_${channelId}`));
             
@@ -393,8 +291,6 @@ io.on('connection', (socket) => {
     
     socket.on('webrtc_ice_candidate', (data) => {
         const { channelId, to, candidate } = data;
-        
-        // Send ICE candidate to specific user
         const targetUser = Array.from(io.sockets.sockets.values())
             .find(s => s.userId == to && s.rooms.has(`voice_${channelId}`));
             
@@ -406,83 +302,51 @@ io.on('connection', (socket) => {
             });
         }
     });
-    
-    // Handle server events
     socket.on('server_updated', async (data) => {
         const { serverId } = data;
-        
-        // Verify user is admin/owner
         if (!await isServerAdmin(userId, serverId)) {
             return;
         }
-        
-        // Broadcast server update to all server members
         socket.to(`server_${serverId}`).emit('server_updated', data);
     });
     
     socket.on('channel_created', async (data) => {
         const { serverId, channelData } = data;
-        
-        // Verify user is admin/owner
         if (!await isServerAdmin(userId, serverId)) {
             return;
         }
-        
-        // Broadcast new channel to all server members
         socket.to(`server_${serverId}`).emit('channel_created', channelData);
     });
     
     socket.on('channel_updated', async (data) => {
         const { serverId, channelData } = data;
-        
-        // Verify user is admin/owner
         if (!await isServerAdmin(userId, serverId)) {
             return;
         }
-        
-        // Broadcast channel update to all server members
         socket.to(`server_${serverId}`).emit('channel_updated', channelData);
     });
     
     socket.on('channel_deleted', async (data) => {
         const { serverId, channelId } = data;
-        
-        // Verify user is admin/owner
         if (!await isServerAdmin(userId, serverId)) {
             return;
         }
-        
-        // Broadcast channel deletion to all server members
         socket.to(`server_${serverId}`).emit('channel_deleted', { channelId });
     });
-    
-    // Handle member events
     socket.on('member_updated', async (data) => {
         const { serverId, memberData } = data;
-        
-        // Verify user is admin/owner
         if (!await isServerAdmin(userId, serverId)) {
             return;
         }
-        
-        // Broadcast member update to all server members
         socket.to(`server_${serverId}`).emit('member_updated', memberData);
     });
-    
-    // Handle status updates
     socket.on('status_update', async (data) => {
         const { status } = data;
-        
-        // Update user status
         await updateUserStatus(userId, status);
-        
-        // Update active users map
         if (activeUsers.has(userId)) {
             activeUsers.get(userId).status = status;
             activeUsers.get(userId).lastSeen = new Date();
         }
-        
-        // Broadcast status update to all servers user is in
         const userServers = await getUserServers(userId);
         userServers.forEach(serverId => {
             socket.to(`server_${serverId}`).emit('user_status_updated', {
@@ -491,12 +355,8 @@ io.on('connection', (socket) => {
             });
         });
     });
-    
-    // Handle typing indicators
     socket.on('typing_start', async (data) => {
         const { channelId } = data;
-        
-        // Verify channel access
         const channel = await getChannelInfo(channelId);
         if (!channel || !await isServerMember(userId, channel.ServerID)) {
             return;
@@ -516,21 +376,13 @@ io.on('connection', (socket) => {
             channelId: channelId
         });
     });
-    
-    // Handle disconnect
     socket.on('disconnect', async () => {
         console.log('User disconnected:', socket.id);
         
         const userId = socket.userId;
         if (!userId) return;
-        
-        // Remove from active users
         activeUsers.delete(userId);
-        
-        // Update user status to offline
         await updateUserStatus(userId, 'offline');
-        
-        // Remove from all room tracking
         serverRooms.forEach((users, serverId) => {
             if (users.has(socket.id)) {
                 users.delete(socket.id);
@@ -546,11 +398,7 @@ io.on('connection', (socket) => {
                 users.delete(socket.id);
             }
         });
-        
-        // Remove from voice channels
         await removeUserFromAllVoiceChannels(userId);
-        
-        // Broadcast offline status to all servers user is in
         const userServers = await getUserServers(userId);
         userServers.forEach(serverId => {
             socket.to(`server_${serverId}`).emit('user_status_updated', {
@@ -560,8 +408,6 @@ io.on('connection', (socket) => {
         });
     });
 });
-
-// Database helper functions
 async function isServerMember(userId, serverId) {
     try {
         const [rows] = await pool.execute(
@@ -670,8 +516,6 @@ async function removeUserFromAllVoiceChannels(userId) {
         console.error('Error removing user from voice channels:', error);
     }
 }
-
-// API endpoint to get server statistics
 app.get('/api/stats', async (req, res) => {
     try {
         const stats = {
@@ -685,21 +529,15 @@ app.get('/api/stats', async (req, res) => {
         res.status(500).json({ error: 'Failed to get stats' });
     }
 });
-
-// Health check endpoint
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
-
-// Start server
 const PORT = process.env.PORT || 8010;
 server.listen(PORT, () => {
     console.log(`WebSocket server running on port ${PORT}`);
     console.log(`Health check: http://localhost:${PORT}/health`);
     console.log(`Stats endpoint: http://localhost:${PORT}/api/stats`);
 });
-
-// Graceful shutdown
 process.on('SIGTERM', () => {
     console.log('SIGTERM received, shutting down gracefully');
     server.close(() => {
