@@ -4,6 +4,7 @@ require_once 'database.php';
 
 // Get current user ID (assuming user is logged in)
 $currentUserId = $_SESSION['user_id'] ?? 1; // Default to user 1 for demo
+$username = $_SESSION['username'] ?? 'Guest';
 
 // Handle AJAX requests
 if (isset($_POST['action'])) {
@@ -369,11 +370,11 @@ if (isset($_POST['action'])) {
             <div class="user-info-section">
                 <div class="user-info">
                     <div class="user-avatar">
-                        <img src="https://via.placeholder.com/32/36393f/ffffff?text=L" alt="litiyo">
+                        <img src="https://via.placeholder.com/32/36393f/ffffff?text=<?php echo strtoupper(substr($username, 0, 1)); ?>" alt="<?php echo htmlspecialchars($username); ?>">
                     </div>
                     <div class="user-details">
-                        <div class="username">litiyo</div>
-                        <div class="user-id">litiyo#9013</div>
+                        <div class="username"><?php echo htmlspecialchars($username); ?></div>
+                        <div class="user-id"><?php echo htmlspecialchars($username); ?>#<?php echo str_pad($currentUserId, 4, '0', STR_PAD_LEFT); ?></div>
                     </div>
                 </div>
                 <div class="user-controls">

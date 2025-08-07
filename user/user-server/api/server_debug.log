@@ -270,3 +270,843 @@ Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../up
 Generated filename: 689456ba61b7e_1754551994.jpg
 Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/689456ba61b7e_1754551994.jpg
 SUCCESS: File uploaded to /uploads/server-banners/689456ba61b7e_1754551994.jpg
+
+=== Server Creation Debug - 2025-08-07 14:30:54 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php5FC8.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c7ee91ef_1754569854.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c7ee91ef_1754569854.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c7ee91ef_1754569854.jpeg
+Icon uploaded: /uploads/server-icons/68949c7ee91ef_1754569854.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php5FD9.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c7ee97db_1754569854.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c7ee97db_1754569854.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c7ee97db_1754569854.jpeg
+Banner uploaded: /uploads/server-banners/68949c7ee97db_1754569854.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1003, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1002
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1003, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1002
+=== Checking table: Channel ===
+Channel auto-increment: 115, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 114
+
+=== Server Creation Debug - 2025-08-07 14:30:56 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6558.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c805c292_1754569856.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c805c292_1754569856.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c805c292_1754569856.jpeg
+Icon uploaded: /uploads/server-icons/68949c805c292_1754569856.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6559.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c805ca76_1754569856.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c805ca76_1754569856.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c805ca76_1754569856.jpeg
+Banner uploaded: /uploads/server-banners/68949c805ca76_1754569856.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1004, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1003
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1004, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1003
+=== Checking table: Channel ===
+Channel auto-increment: 117, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 116
+
+=== Server Creation Debug - 2025-08-07 14:30:56 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6664.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c80987f6_1754569856.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c80987f6_1754569856.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c80987f6_1754569856.jpeg
+Icon uploaded: /uploads/server-icons/68949c80987f6_1754569856.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6665.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c80990cc_1754569856.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c80990cc_1754569856.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c80990cc_1754569856.jpeg
+Banner uploaded: /uploads/server-banners/68949c80990cc_1754569856.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1005, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1004
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1005, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1004
+=== Checking table: Channel ===
+Channel auto-increment: 119, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 118
+
+=== Server Creation Debug - 2025-08-07 14:30:56 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6731.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c80ccfcc_1754569856.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c80ccfcc_1754569856.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c80ccfcc_1754569856.jpeg
+Icon uploaded: /uploads/server-icons/68949c80ccfcc_1754569856.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6732.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c80cdc2c_1754569856.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c80cdc2c_1754569856.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c80cdc2c_1754569856.jpeg
+Banner uploaded: /uploads/server-banners/68949c80cdc2c_1754569856.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1006, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1005
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1006, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1005
+=== Checking table: Channel ===
+Channel auto-increment: 121, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 120
+
+=== Server Creation Debug - 2025-08-07 14:30:57 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php680E.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c8109c94_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c8109c94_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c8109c94_1754569857.jpeg
+Icon uploaded: /uploads/server-icons/68949c8109c94_1754569857.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php680F.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c810acab_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c810acab_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c810acab_1754569857.jpeg
+Banner uploaded: /uploads/server-banners/68949c810acab_1754569857.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1007, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1006
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1007, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1006
+=== Checking table: Channel ===
+Channel auto-increment: 123, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 122
+
+=== Server Creation Debug - 2025-08-07 14:30:57 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php68FA.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c8146406_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c8146406_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c8146406_1754569857.jpeg
+Icon uploaded: /uploads/server-icons/68949c8146406_1754569857.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php68FB.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c81470dc_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c81470dc_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c81470dc_1754569857.jpeg
+Banner uploaded: /uploads/server-banners/68949c81470dc_1754569857.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1008, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1007
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1008, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1007
+=== Checking table: Channel ===
+Channel auto-increment: 125, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 124
+
+=== Server Creation Debug - 2025-08-07 14:30:57 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php69E7.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c817e92b_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c817e92b_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c817e92b_1754569857.jpeg
+Icon uploaded: /uploads/server-icons/68949c817e92b_1754569857.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php69E8.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c817f43d_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c817f43d_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c817f43d_1754569857.jpeg
+Banner uploaded: /uploads/server-banners/68949c817f43d_1754569857.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1009, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1008
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1009, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1008
+=== Checking table: Channel ===
+Channel auto-increment: 127, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 126
+
+=== Server Creation Debug - 2025-08-07 14:30:57 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6AC3.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c81b75d2_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c81b75d2_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c81b75d2_1754569857.jpeg
+Icon uploaded: /uploads/server-icons/68949c81b75d2_1754569857.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6AC4.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c81b7f19_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c81b7f19_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c81b7f19_1754569857.jpeg
+Banner uploaded: /uploads/server-banners/68949c81b7f19_1754569857.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1010, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1009
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1010, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1009
+=== Checking table: Channel ===
+Channel auto-increment: 129, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 128
+
+=== Server Creation Debug - 2025-08-07 14:30:57 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6BBF.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c81efee8_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c81efee8_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c81efee8_1754569857.jpeg
+Icon uploaded: /uploads/server-icons/68949c81efee8_1754569857.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6BC0.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c81f07b7_1754569857.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c81f07b7_1754569857.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c81f07b7_1754569857.jpeg
+Banner uploaded: /uploads/server-banners/68949c81f07b7_1754569857.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1011, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1010
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1011, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1010
+=== Checking table: Channel ===
+Channel auto-increment: 131, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 130
+
+=== Server Creation Debug - 2025-08-07 14:30:58 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6C9C.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c8235202_1754569858.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c8235202_1754569858.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c8235202_1754569858.jpeg
+Icon uploaded: /uploads/server-icons/68949c8235202_1754569858.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6C9D.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c8235bd1_1754569858.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c8235bd1_1754569858.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c8235bd1_1754569858.jpeg
+Banner uploaded: /uploads/server-banners/68949c8235bd1_1754569858.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1012, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1011
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1012, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1011
+=== Checking table: Channel ===
+Channel auto-increment: 133, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 132
+
+=== Server Creation Debug - 2025-08-07 14:30:58 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6D88.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c826a90b_1754569858.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c826a90b_1754569858.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c826a90b_1754569858.jpeg
+Icon uploaded: /uploads/server-icons/68949c826a90b_1754569858.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6D89.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c826b209_1754569858.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c826b209_1754569858.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c826b209_1754569858.jpeg
+Banner uploaded: /uploads/server-banners/68949c826b209_1754569858.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1013, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1012
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1013, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1012
+=== Checking table: Channel ===
+Channel auto-increment: 135, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 134
+
+=== Server Creation Debug - 2025-08-07 14:30:58 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6E65.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c82a3c50_1754569858.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c82a3c50_1754569858.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c82a3c50_1754569858.jpeg
+Icon uploaded: /uploads/server-icons/68949c82a3c50_1754569858.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6E66.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c82a43ac_1754569858.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c82a43ac_1754569858.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c82a43ac_1754569858.jpeg
+Banner uploaded: /uploads/server-banners/68949c82a43ac_1754569858.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1014, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1013
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1014, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1013
+=== Checking table: Channel ===
+Channel auto-increment: 137, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 136
+
+=== Server Creation Debug - 2025-08-07 14:30:58 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6F52.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c82d5bf6_1754569858.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c82d5bf6_1754569858.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c82d5bf6_1754569858.jpeg
+Icon uploaded: /uploads/server-icons/68949c82d5bf6_1754569858.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php6F53.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c82d6d13_1754569858.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c82d6d13_1754569858.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c82d6d13_1754569858.jpeg
+Banner uploaded: /uploads/server-banners/68949c82d6d13_1754569858.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1015, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1014
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1015, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1014
+=== Checking table: Channel ===
+Channel auto-increment: 139, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 138
+
+=== Server Creation Debug - 2025-08-07 14:30:59 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"images (3).jpeg","full_path":"images (3).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php704E.tmp","error":0,"size":6310}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c831fb43_1754569859.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c831fb43_1754569859.jpeg
+SUCCESS: File uploaded to /uploads/server-icons/68949c831fb43_1754569859.jpeg
+Icon uploaded: /uploads/server-icons/68949c831fb43_1754569859.jpeg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"images (1).jpeg","full_path":"images (1).jpeg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php704F.tmp","error":0,"size":8628}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c8320b13_1754569859.jpeg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c8320b13_1754569859.jpeg
+SUCCESS: File uploaded to /uploads/server-banners/68949c8320b13_1754569859.jpeg
+Banner uploaded: /uploads/server-banners/68949c8320b13_1754569859.jpeg
+=== Checking table: Server ===
+Server auto-increment: 1016, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1015
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1016, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1015
+=== Checking table: Channel ===
+Channel auto-increment: 141, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 140
+
+=== Server Creation Debug - 2025-08-07 14:31:15 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB008.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c93733c6_1754569875.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c93733c6_1754569875.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c93733c6_1754569875.jpg
+Icon uploaded: /uploads/server-icons/68949c93733c6_1754569875.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB019.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c93740ee_1754569875.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c93740ee_1754569875.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c93740ee_1754569875.jpg
+Banner uploaded: /uploads/server-banners/68949c93740ee_1754569875.jpg
+=== Checking table: Server ===
+Server auto-increment: 1017, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1016
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1017, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1016
+=== Checking table: Channel ===
+Channel auto-increment: 143, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 142
+
+=== Server Creation Debug - 2025-08-07 14:31:15 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB20E.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c93ec374_1754569875.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c93ec374_1754569875.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c93ec374_1754569875.jpg
+Icon uploaded: /uploads/server-icons/68949c93ec374_1754569875.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB21E.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c93ec785_1754569875.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c93ec785_1754569875.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c93ec785_1754569875.jpg
+Banner uploaded: /uploads/server-banners/68949c93ec785_1754569875.jpg
+=== Checking table: Server ===
+Server auto-increment: 1018, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1017
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1018, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1017
+=== Checking table: Channel ===
+Channel auto-increment: 145, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 144
+
+=== Server Creation Debug - 2025-08-07 14:31:16 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB339.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c9440386_1754569876.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c9440386_1754569876.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c9440386_1754569876.jpg
+Icon uploaded: /uploads/server-icons/68949c9440386_1754569876.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB33A.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c9441604_1754569876.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c9441604_1754569876.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c9441604_1754569876.jpg
+Banner uploaded: /uploads/server-banners/68949c9441604_1754569876.jpg
+=== Checking table: Server ===
+Server auto-increment: 1019, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1018
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1019, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1018
+=== Checking table: Channel ===
+Channel auto-increment: 147, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 146
+
+=== Server Creation Debug - 2025-08-07 14:31:16 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB473.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c948d173_1754569876.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c948d173_1754569876.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c948d173_1754569876.jpg
+Icon uploaded: /uploads/server-icons/68949c948d173_1754569876.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB474.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c948dab4_1754569876.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c948dab4_1754569876.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c948dab4_1754569876.jpg
+Banner uploaded: /uploads/server-banners/68949c948dab4_1754569876.jpg
+=== Checking table: Server ===
+Server auto-increment: 1020, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1019
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1020, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1019
+=== Checking table: Channel ===
+Channel auto-increment: 149, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 148
+
+=== Server Creation Debug - 2025-08-07 14:31:16 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB5EC.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c94eae93_1754569876.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c94eae93_1754569876.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c94eae93_1754569876.jpg
+Icon uploaded: /uploads/server-icons/68949c94eae93_1754569876.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB5ED.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c94eba1b_1754569876.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c94eba1b_1754569876.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c94eba1b_1754569876.jpg
+Banner uploaded: /uploads/server-banners/68949c94eba1b_1754569876.jpg
+=== Checking table: Server ===
+Server auto-increment: 1021, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1020
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1021, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1020
+=== Checking table: Channel ===
+Channel auto-increment: 151, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 150
+
+=== Server Creation Debug - 2025-08-07 14:31:17 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB6E8.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c952f8b0_1754569877.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c952f8b0_1754569877.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c952f8b0_1754569877.jpg
+Icon uploaded: /uploads/server-icons/68949c952f8b0_1754569877.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB6E9.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c9530176_1754569877.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c9530176_1754569877.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c9530176_1754569877.jpg
+Banner uploaded: /uploads/server-banners/68949c9530176_1754569877.jpg
+=== Checking table: Server ===
+Server auto-increment: 1022, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1021
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1022, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1021
+=== Checking table: Channel ===
+Channel auto-increment: 153, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 152
+
+=== Server Creation Debug - 2025-08-07 14:31:17 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB7B5.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c95692a2_1754569877.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c95692a2_1754569877.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c95692a2_1754569877.jpg
+Icon uploaded: /uploads/server-icons/68949c95692a2_1754569877.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB7C6.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c9569a8d_1754569877.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c9569a8d_1754569877.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c9569a8d_1754569877.jpg
+Banner uploaded: /uploads/server-banners/68949c9569a8d_1754569877.jpg
+=== Checking table: Server ===
+Server auto-increment: 1023, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1022
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1023, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1022
+=== Checking table: Channel ===
+Channel auto-increment: 155, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 154
+
+=== Server Creation Debug - 2025-08-07 14:31:17 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB892.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c959b0a4_1754569877.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c959b0a4_1754569877.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c959b0a4_1754569877.jpg
+Icon uploaded: /uploads/server-icons/68949c959b0a4_1754569877.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB8A3.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c959d1e1_1754569877.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c959d1e1_1754569877.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c959d1e1_1754569877.jpg
+Banner uploaded: /uploads/server-banners/68949c959d1e1_1754569877.jpg
+=== Checking table: Server ===
+Server auto-increment: 1024, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1023
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1024, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1023
+=== Checking table: Channel ===
+Channel auto-increment: 157, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 156
+
+=== Server Creation Debug - 2025-08-07 14:31:17 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB96F.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949c95ca719_1754569877.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949c95ca719_1754569877.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949c95ca719_1754569877.jpg
+Icon uploaded: /uploads/server-icons/68949c95ca719_1754569877.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpB970.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949c95cb8fd_1754569877.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949c95cb8fd_1754569877.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949c95cb8fd_1754569877.jpg
+Banner uploaded: /uploads/server-banners/68949c95cb8fd_1754569877.jpg
+=== Checking table: Server ===
+Server auto-increment: 1025, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1024
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1025, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1024
+=== Checking table: Channel ===
+Channel auto-increment: 159, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 158
+
+=== Server Creation Debug - 2025-08-07 14:32:06 ===
+User ID: 275034588
+POST data: {"name":"tet23213","description":"2132","category":"Music","isPublic":"on","action":"createServer"}
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"img-5.jpg","full_path":"img-5.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php7956.tmp","error":0,"size":197221}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 68949cc6e95f9_1754569926.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/68949cc6e95f9_1754569926.jpg
+SUCCESS: File uploaded to /uploads/server-icons/68949cc6e95f9_1754569926.jpg
+Icon uploaded: /uploads/server-icons/68949cc6e95f9_1754569926.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","full_path":"budget-planning-saving-investment-and-control-concept-the-meeting-at-the-white-office-table-2CT491X.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\php7957.tmp","error":0,"size":117029}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 68949cc6e9dc4_1754569926.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/68949cc6e9dc4_1754569926.jpg
+SUCCESS: File uploaded to /uploads/server-banners/68949cc6e9dc4_1754569926.jpg
+Banner uploaded: /uploads/server-banners/68949cc6e9dc4_1754569926.jpg
+=== Checking table: Server ===
+Server auto-increment: 1026, engine: InnoDB
+Server ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Server current max ID: 1025
+=== Checking table: UserServerMemberships ===
+UserServerMemberships auto-increment: 1026, engine: InnoDB
+UserServerMemberships ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+UserServerMemberships ID column (UserID): {"Field":"UserID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+UserServerMemberships current max ID: 1025
+=== Checking table: Channel ===
+Channel auto-increment: 161, engine: InnoDB
+Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
+Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
+Channel current max ID: 160

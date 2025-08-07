@@ -108,7 +108,7 @@ $username = $_SESSION['username'] ?? 'User';
                             <button class="control-btn" id="deafenBtn" title="Deafen">
                                 <i class="fas fa-headphones"></i>
                             </button>
-                            <button class="control-btn" id="settingsBtn" title="User Settings">
+                            <button class="control-btn" id="settingsBtn" title="User Settings" onclick="alert('Please go to user-server page to change your account')">
                                 <i class="fas fa-cog"></i>
                             </button>
                         </div>
@@ -130,22 +130,22 @@ $username = $_SESSION['username'] ?? 'User';
                         </div>
                         <div class="channel-controls">
                             <button class="control-btn" id="startCallBtn" title="Start Call">
-                                <i class="fas fa-phone"></i>
+                                <!-- <i class="fas fa-phone"></i> -->
                             </button>
                             <button class="control-btn" id="startVideoBtn" title="Start Video Call">
-                                <i class="fas fa-video"></i>
+                                <!-- <i class="fas fa-video"></i> -->
                             </button>
                             <button class="control-btn" id="invitePeopleBtn" title="Invite People">
-                                <i class="fas fa-user-plus"></i>
+                                <!-- <i class="fas fa-user-plus"></i> -->
                             </button>
                             <button class="control-btn" id="channelSearchBtn" title="Search">
-                                <i class="fas fa-search"></i>
+                                <!-- <i class="fas fa-search"></i> -->
                             </button>
                             <button class="control-btn" id="notificationBtn" title="Notification Settings">
-                                <i class="fas fa-bell"></i>
+                                <!-- <i class="fas fa-bell"></i> -->
                             </button>
                             <button class="control-btn" id="helpBtn" title="Help">
-                                <i class="fas fa-question-circle"></i>
+                                <!-- <i class="fas fa-question-circle"></i> -->
                             </button>
                         </div>
                     </div>

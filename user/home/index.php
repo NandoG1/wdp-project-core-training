@@ -126,7 +126,7 @@ $username = $_SESSION['username'] ?? 'Guest';
                 <div class="user-controls">
                     <button class="control-btn" title="Mute"><i class="fas fa-microphone-slash"></i></button>
                     <button class="control-btn" title="Deafen"><i class="fas fa-headphones"></i></button>
-                    <button class="control-btn" title="Settings"><i class="fas fa-cog"></i></button>
+                    <button class="control-btn" title="Settings" onclick="alert('Please go to user-server page to change your account')"><i class="fas fa-cog"></i></button>
                 </div>
             </div>
         </div>

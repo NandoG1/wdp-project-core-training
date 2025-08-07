@@ -1859,6 +1859,22 @@ function navigateToExplore() {
     window.location.href = '/user/server/user-explore.php';
 }
 
+// Helper function for safe showToast calls
+function safeShowToast(message, type = 'info') {
+    if (window.serverApp && typeof window.serverApp.showToast === 'function') {
+        window.serverApp.showToast(message, type);
+    } else {
+        alert(message);
+    }
+}
+
+// Helper function for safe loadUserServers calls
+function safeLoadUserServers() {
+    if (window.serverApp && typeof window.serverApp.loadUserServers === 'function') {
+        window.serverApp.loadUserServers();
+    }
+}
+
 function openCreateServerModal() {
     // Safety check: ensure serverApp is initialized
     if (window.serverApp && typeof window.serverApp.openCreateServerModal === 'function') {
@@ -1889,17 +1905,17 @@ function createServer() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            serverApp.showToast('Server created successfully!', 'success');
+            safeShowToast('Server created successfully!', 'success');
             closeCreateServerModal();
-            serverApp.loadUserServers();
+            safeLoadUserServers();
             form.reset();
         } else {
-            serverApp.showToast(data.error || 'Failed to create server', 'error');
+            safeShowToast(data.error || 'Failed to create server', 'error');
         }
     })
     .catch(error => {
         console.error('Error creating server:', error);
-        serverApp.showToast('Failed to create server', 'error');
+        safeShowToast('Failed to create server', 'error');
     });
 }
 
@@ -2019,18 +2035,19 @@ function createChannel() {
     // Validate elements exist
     if (!channelNameInput) {
         console.error('Channel name input not found');
-        serverApp.showToast('Channel name input not found', 'error');
+        safeShowToast('Channel name input not found', 'error');
         return;
     }
     
     if (!channelTypeInput) {
         console.error('Channel type not selected');
-        serverApp.showToast('Please select a channel type', 'error');
+        safeShowToast('Please select a channel type', 'error');
         return;
     }
     
-    if (!serverApp.currentServer) {
-        serverApp.showToast('No server selected', 'error');
+    // Check if serverApp exists and has currentServer
+    if (!window.serverApp || !window.serverApp.currentServer) {
+        safeShowToast('No server selected', 'error');
         return;
     }
     
@@ -2039,7 +2056,7 @@ function createChannel() {
     const channelType = channelTypeInput.value;
     
     if (!channelName) {
-        serverApp.showToast('Channel name is required', 'error');
+        safeShowToast('Channel name is required', 'error');
         return;
     }
     
@@ -2048,7 +2065,7 @@ function createChannel() {
     formData.append('action', 'createChannel');
     formData.append('name', channelName);
     formData.append('type', channelType);
-    formData.append('serverId', serverApp.currentServer.ID);
+    formData.append('serverId', window.serverApp.currentServer.ID);
     
     fetch('api/channels.php', {
         method: 'POST',
@@ -2063,15 +2080,17 @@ function createChannel() {
     .then(data => {
         if (data.success) {
             closeCreateChannelModal();
-            serverApp.loadServerChannels();
-            serverApp.showToast('Channel created successfully!', 'success');
+            if (window.serverApp && typeof window.serverApp.loadServerChannels === 'function') {
+                window.serverApp.loadServerChannels();
+            }
+            safeShowToast('Channel created successfully!', 'success');
         } else {
-            serverApp.showToast(data.error || 'Failed to create channel', 'error');
+            safeShowToast(data.error || 'Failed to create channel', 'error');
         }
     })
     .catch(error => {
         console.error('Error creating channel:', error);
-        serverApp.showToast('Failed to create channel', 'error');
+        safeShowToast('Failed to create channel', 'error');
     });
 }
 
