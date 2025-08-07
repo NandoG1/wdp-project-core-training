@@ -1907,8 +1907,13 @@ function closeConfirmationModal() {
 }
 
 function executeConfirmationAction() {
-    // This function should be customized based on what action is being confirmed
-    // For now, just close the modal
+    // Execute the pending confirmation action if it exists
+    if (window.pendingConfirmationAction && typeof window.pendingConfirmationAction === 'function') {
+        window.pendingConfirmationAction();
+        window.pendingConfirmationAction = null; // Clear after execution
+    }
+    
+    // Close the modal
     closeConfirmationModal();
 }
 
@@ -2799,10 +2804,27 @@ class InviteSystem {
     }
 
     deleteInvite(inviteId) {
-        if (!confirm('Are you sure you want to delete this invite?')) {
-            return;
-        }
+        // Store invite ID for later use
+        this.pendingDeleteInviteId = inviteId;
+        
+        // Find the invite to show its code in the confirmation
+        const invite = this.currentServerInvites.find(inv => inv.ID == inviteId);
+        const inviteCode = invite ? invite.InviteLink : 'this invite';
+        
+        // Set up confirmation modal
+        document.getElementById('confirmationTitle').textContent = 'Delete Invite';
+        document.getElementById('confirmationIcon').innerHTML = '<i class="fas fa-trash-alt"></i>';
+        document.getElementById('confirmationMessage').textContent = `Are you sure you want to delete invite "${inviteCode}"?`;
+        document.getElementById('confirmationSubmessage').textContent = 'This action cannot be undone.';
+        
+        // Show modal
+        document.getElementById('confirmationModal').classList.remove('hidden');
+        
+        // Store the action for executeConfirmationAction
+        window.pendingConfirmationAction = () => this.performDeleteInvite(inviteId);
+    }
 
+    performDeleteInvite(inviteId) {
         const formData = new FormData();
         formData.append('action', 'deleteInvite');
         formData.append('inviteId', inviteId);
@@ -2817,13 +2839,14 @@ class InviteSystem {
                 // Remove from local array and update display
                 this.currentServerInvites = this.currentServerInvites.filter(inv => inv.ID != inviteId);
                 this.displayRecentInvites();
+                serverApp.showToast('Invite deleted successfully', 'success');
             } else {
-                alert(data.message || 'Failed to delete invite');
+                serverApp.showToast(data.message || 'Failed to delete invite', 'error');
             }
         })
         .catch(error => {
             console.error('Error deleting invite:', error);
-            alert('Failed to delete invite');
+            serverApp.showToast('Failed to delete invite', 'error');
         });
     }
 }

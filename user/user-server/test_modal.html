@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modal</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body { background: #2c2f33; color: white; padding: 20px; }
+        .test-btn { background: #7289da; color: white; border: none; padding: 10px 20px; margin: 10px; cursor: pointer; }
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; }
+        .modal.hidden { display: none; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); }
+        .modal-content { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #36393f; border-radius: 8px; padding: 20px; max-width: 400px; width: 90%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-close { background: none; border: none; color: #72767d; font-size: 18px; cursor: pointer; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-secondary { background: #4f545c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .btn-primary { background: #7289da; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .confirmation-content { display: flex; align-items: center; gap: 15px; }
+        .confirmation-icon { font-size: 24px; color: #f04747; }
+        .confirmation-submessage { color: #72767d; font-size: 14px; margin-top: 5px; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <h1>Test Delete Confirmation Modal</h1>
+    <button class="test-btn" onclick="testDeleteModal()">Test Delete Invite Modal</button>
+    
+    <!-- Confirmation Modal -->
+    <div class="modal hidden" id="confirmationModal">
+        <div class="modal-overlay" onclick="closeConfirmationModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmationTitle">Confirm Action</h3>
+                <button class="modal-close" onclick="closeConfirmationModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-content">
+                    <div class="confirmation-icon" id="confirmationIcon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="confirmation-message">
+                        <p id="confirmationMessage">Are you sure you want to proceed?</p>
+                        <p class="confirmation-submessage" id="confirmationSubmessage"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+                <button type="button" class="btn-primary" id="confirmationActionBtn" onclick="executeConfirmationAction()">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testDeleteModal() {
+            // Mock invite data
+            const inviteCode = "ABC123XY";
+            
+            // Set up confirmation modal
+            document.getElementById('confirmationTitle').textContent = 'Delete Invite';
+            document.getElementById('confirmationIcon').innerHTML = '<i class="fas fa-trash-alt"></i>';
+            document.getElementById('confirmationMessage').textContent = `Are you sure you want to delete invite "${inviteCode}"?`;
+            document.getElementById('confirmationSubmessage').textContent = 'This action cannot be undone.';
+            
+            // Show modal
+            document.getElementById('confirmationModal').classList.remove('hidden');
+            
+            // Store the action for executeConfirmationAction
+            window.pendingConfirmationAction = () => {
+                alert('Invite deleted successfully! (This is just a test)');
+            };
+        }
+
+        function closeConfirmationModal() {
+            document.getElementById('confirmationModal').classList.add('hidden');
+        }
+
+        function executeConfirmationAction() {
+            // Execute the pending confirmation action if it exists
+            if (window.pendingConfirmationAction && typeof window.pendingConfirmationAction === 'function') {
+                window.pendingConfirmationAction();
+                window.pendingConfirmationAction = null; // Clear after execution
+            }
+            
+            // Close the modal
+            closeConfirmationModal();
+        }
+    </script>
+</body>
+</html>

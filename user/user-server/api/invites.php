@@ -228,7 +228,7 @@ function inviteTitibot($user_id) {
     
     try {
         // Check if Titibot already exists in the system
-        $stmt = $mysqli->prepare("SELECT ID FROM Users WHERE Username = 'Titibot' AND Role = 'Bot'");
+        $stmt = $mysqli->prepare("SELECT ID FROM Users WHERE Username = 'Titibot'");
         $stmt->execute();
         $result = $stmt->get_result();
         
@@ -236,10 +236,10 @@ function inviteTitibot($user_id) {
         if ($bot = $result->fetch_assoc()) {
             $titibot_id = $bot['ID'];
         } else {
-            // Create Titibot user
+            // Create Titibot user (without Role column as it doesn't exist in Users table)
             $stmt = $mysqli->prepare("
-                INSERT INTO Users (Username, DisplayName, Email, Password, Role, ProfilePictureUrl, Bio) 
-                VALUES ('Titibot', 'Titibot', 'titibot@system.local', '', 'Bot', '/assets/images/titibot-avatar.png', 'I am Titibot, your friendly server assistant!')
+                INSERT INTO Users (Username, DisplayName, Email, Password, ProfilePictureUrl, Bio) 
+                VALUES ('Titibot', 'Titibot', 'titibot@system.local', '', '/assets/images/titibot-avatar.png', 'I am Titibot, your friendly server assistant!')
             ");
             $stmt->execute();
             $titibot_id = $mysqli->insert_id;
@@ -257,7 +257,7 @@ function inviteTitibot($user_id) {
             send_response(['error' => 'Titibot is already in this server'], 400);
         }
         
-        // Add Titibot to server
+        // Add Titibot to server (Role is in UserServerMemberships table)
         $stmt = $mysqli->prepare("
             INSERT INTO UserServerMemberships (UserID, ServerID, Role) 
             VALUES (?, ?, 'Bot')
