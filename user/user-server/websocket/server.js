@@ -317,17 +317,26 @@ io.on('connection', (socket) => {
             return;
         }
         
+        // Get existing participants before joining
+        const existingParticipants = await getVoiceChannelParticipants(channelId);
+        
         // Join voice room
         socket.join(`voice_${channelId}`);
         
-        // Notify other voice participants
+        // Add to voice channel participants
+        await addVoiceParticipant(channelId, userId);
+        
+        // Send existing participants to the new user
+        socket.emit('voice_channel_participants', {
+            channelId: channelId,
+            participants: existingParticipants
+        });
+        
+        // Notify other voice participants about new user
         socket.to(`voice_${channelId}`).emit('user_joined_voice', {
             userId: userId,
             channelId: channelId
         });
-        
-        // Add to voice channel participants
-        await addVoiceParticipant(channelId, userId);
         
         console.log(`User ${userId} joined voice channel ${channelId}`);
     });
@@ -351,27 +360,51 @@ io.on('connection', (socket) => {
     
     // Handle WebRTC signaling
     socket.on('webrtc_offer', (data) => {
-        socket.to(`voice_${data.channelId}`).emit('webrtc_offer', {
-            from: userId,
-            to: data.to,
-            offer: data.offer
-        });
+        const { channelId, to, offer } = data;
+        
+        // Send offer to specific user
+        const targetUser = Array.from(io.sockets.sockets.values())
+            .find(s => s.userId == to && s.rooms.has(`voice_${channelId}`));
+            
+        if (targetUser) {
+            targetUser.emit('webrtc_offer', {
+                from: userId,
+                channelId: channelId,
+                offer: offer
+            });
+        }
     });
     
     socket.on('webrtc_answer', (data) => {
-        socket.to(`voice_${data.channelId}`).emit('webrtc_answer', {
-            from: userId,
-            to: data.to,
-            answer: data.answer
-        });
+        const { channelId, to, answer } = data;
+        
+        // Send answer to specific user
+        const targetUser = Array.from(io.sockets.sockets.values())
+            .find(s => s.userId == to && s.rooms.has(`voice_${channelId}`));
+            
+        if (targetUser) {
+            targetUser.emit('webrtc_answer', {
+                from: userId,
+                channelId: channelId,
+                answer: answer
+            });
+        }
     });
     
     socket.on('webrtc_ice_candidate', (data) => {
-        socket.to(`voice_${data.channelId}`).emit('webrtc_ice_candidate', {
-            from: userId,
-            to: data.to,
-            candidate: data.candidate
-        });
+        const { channelId, to, candidate } = data;
+        
+        // Send ICE candidate to specific user
+        const targetUser = Array.from(io.sockets.sockets.values())
+            .find(s => s.userId == to && s.rooms.has(`voice_${channelId}`));
+            
+        if (targetUser) {
+            targetUser.emit('webrtc_ice_candidate', {
+                from: userId,
+                channelId: channelId,
+                candidate: candidate
+            });
+        }
     });
     
     // Handle server events
@@ -588,6 +621,19 @@ async function getUserServers(userId) {
         return rows.map(row => row.ServerID);
     } catch (error) {
         console.error('Error getting user servers:', error);
+        return [];
+    }
+}
+
+async function getVoiceChannelParticipants(channelId) {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT UserID FROM VoiceChannelParticipants WHERE ChannelID = ?',
+            [channelId]
+        );
+        return rows.map(row => row.UserID);
+    } catch (error) {
+        console.error('Error getting voice channel participants:', error);
         return [];
     }
 }

@@ -883,10 +883,10 @@ function getServerMembers($user_id) {
     
     try {
         $stmt = $mysqli->prepare("
-            SELECT usm.*, u.Username, u.Avatar, u.Status,
+            SELECT usm.*, u.Username, u.AvatarURL, u.Status,
                    usm.Role, usm.JoinedAt
             FROM UserServerMemberships usm
-            JOIN User u ON usm.UserID = u.ID
+            JOIN Users u ON usm.UserID = u.ID
             WHERE usm.ServerID = ?
             ORDER BY 
                 CASE usm.Role 
