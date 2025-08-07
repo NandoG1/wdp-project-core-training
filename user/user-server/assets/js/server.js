@@ -1140,6 +1140,11 @@ class ServerApp {
         $('#voiceInterface').removeClass('hidden');
         $('#messageInputContainer').addClass('hidden');
         $('#messagesList').addClass('hidden');
+        
+        // Automatically join the voice channel
+        if (window.voiceManager && this.currentChannel) {
+            window.voiceManager.joinVoiceChannel(this.currentChannel.ID);
+        }
     }
 
     async loadServerMembers() {

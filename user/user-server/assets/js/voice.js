@@ -28,27 +28,27 @@ class VoiceManager {
     }
 
     bindEventListeners() {
-        // Voice control buttons
-        const joinVoiceBtn = document.querySelector('.join-voice-btn');
-        const leaveVoiceBtn = document.querySelector('.leave-voice-btn');
-        const muteBtn = document.querySelector('.mute-btn');
-        const deafenBtn = document.querySelector('.deafen-btn');
-        const videoBtn = document.querySelector('.video-btn');
-        const screenShareBtn = document.querySelector('.screen-share-btn');
-        const activitiesBtn = document.querySelector('.activities-btn');
+        // Voice control buttons - using correct IDs from HTML
+        const leaveVoiceBtn = document.getElementById('leaveVoiceBtn');
+        const toggleMicBtn = document.getElementById('toggleMicBtn');
+        const toggleDeafenBtn = document.getElementById('toggleDeafenBtn');
+        const toggleVideoBtn = document.getElementById('toggleVideoBtn');
+        const toggleScreenShareBtn = document.getElementById('toggleScreenShareBtn');
+        const activitiesBtn = document.getElementById('activitiesBtn');
 
-        joinVoiceBtn?.addEventListener('click', () => this.joinVoiceChannel());
+        // Bind click events
         leaveVoiceBtn?.addEventListener('click', () => this.leaveVoiceChannel());
-        muteBtn?.addEventListener('click', () => this.toggleMute());
-        deafenBtn?.addEventListener('click', () => this.toggleDeafen());
-        videoBtn?.addEventListener('click', () => this.toggleVideo());
-        screenShareBtn?.addEventListener('click', () => this.toggleScreenShare());
+        toggleMicBtn?.addEventListener('click', () => this.toggleMute());
+        toggleDeafenBtn?.addEventListener('click', () => this.toggleDeafen());
+        toggleVideoBtn?.addEventListener('click', () => this.toggleVideo());
+        toggleScreenShareBtn?.addEventListener('click', () => this.toggleScreenShare());
         activitiesBtn?.addEventListener('click', () => this.showActivities());
 
         // Socket events for WebRTC signaling
         if (window.socket) {
             window.socket.on('user_joined_voice', (data) => this.onUserJoinedVoice(data));
             window.socket.on('user_left_voice', (data) => this.onUserLeftVoice(data));
+            window.socket.on('voice_channel_participants', (data) => this.onVoiceChannelParticipants(data));
             window.socket.on('webrtc_offer', (data) => this.onWebRTCOffer(data));
             window.socket.on('webrtc_answer', (data) => this.onWebRTCAnswer(data));
             window.socket.on('webrtc_ice_candidate', (data) => this.onWebRTCIceCandidate(data));
@@ -65,8 +65,12 @@ class VoiceManager {
     async joinVoiceChannel(channelId = null) {
         if (this.isInVoice) return;
 
-        const targetChannelId = channelId || channelManager.currentChannelId;
-        if (!targetChannelId) return;
+        // Get the target channel ID - use parameter or current channel
+        const targetChannelId = channelId || (window.serverApp?.currentChannel?.ID);
+        if (!targetChannelId) {
+            console.error('No channel ID provided for voice join');
+            return;
+        }
 
         try {
             // Get user media
@@ -79,17 +83,23 @@ class VoiceManager {
             this.isInVoice = true;
 
             // Join voice channel via socket
-            window.socket.emit('join_voice', { channelId: targetChannelId });
+            if (window.socket) {
+                window.socket.emit('join_voice', { channelId: targetChannelId });
+            }
 
             // Update UI
             this.updateVoiceUI();
             this.showVoiceControls();
             this.addLocalParticipant();
 
-            serverApp.showToast('Joined voice channel', 'success');
+            if (window.serverApp) {
+                window.serverApp.showToast('Joined voice channel', 'success');
+            }
         } catch (error) {
             console.error('Error joining voice channel:', error);
-            serverApp.showToast('Failed to access microphone', 'error');
+            if (window.serverApp) {
+                window.serverApp.showToast('Failed to access microphone', 'error');
+            }
         }
     }
 
@@ -110,7 +120,9 @@ class VoiceManager {
             this.peerConnections.clear();
 
             // Leave voice channel via socket
-            window.socket.emit('leave_voice', { channelId: this.currentChannelId });
+            if (window.socket) {
+                window.socket.emit('leave_voice', { channelId: this.currentChannelId });
+            }
 
             this.currentChannelId = null;
             this.isInVoice = false;
@@ -123,9 +135,38 @@ class VoiceManager {
             this.hideVoiceControls();
             this.clearParticipants();
 
-            serverApp.showToast('Left voice channel', 'info');
+            if (window.serverApp) {
+                window.serverApp.showToast('Left voice channel', 'info');
+            }
         } catch (error) {
             console.error('Error leaving voice channel:', error);
+        }
+    }
+
+    async onVoiceChannelParticipants(data) {
+        const { channelId, participants } = data;
+        
+        if (channelId !== this.currentChannelId) return;
+
+        // Add all existing participants
+        for (const userId of participants) {
+            if (userId !== window.currentUser?.id) {
+                this.participants.add(userId);
+                this.addParticipant(userId);
+                
+                // Create peer connection for existing user
+                await this.createPeerConnection(userId);
+                
+                // Create and send offer to existing participant
+                const offer = await this.peerConnections.get(userId).createOffer();
+                await this.peerConnections.get(userId).setLocalDescription(offer);
+                
+                window.socket.emit('webrtc_offer', {
+                    channelId: channelId,
+                    to: userId,
+                    offer: offer
+                });
+            }
         }
     }
 
@@ -299,7 +340,9 @@ class VoiceManager {
         this.updateMuteButton();
         
         const status = this.isMuted ? 'Muted' : 'Unmuted';
-        serverApp.showToast(status, 'info');
+        if (window.serverApp) {
+            window.serverApp.showToast(status, 'info');
+        }
     }
 
     toggleDeafen() {
@@ -318,7 +361,9 @@ class VoiceManager {
         this.updateDeafenButton();
         
         const status = this.isDeafened ? 'Deafened' : 'Undeafened';
-        serverApp.showToast(status, 'info');
+        if (window.serverApp) {
+            window.serverApp.showToast(status, 'info');
+        }
     }
 
     async toggleVideo() {
@@ -363,7 +408,9 @@ class VoiceManager {
             
         } catch (error) {
             console.error('Error toggling video:', error);
-            serverApp.showToast('Failed to access camera', 'error');
+            if (window.serverApp) {
+                window.serverApp.showToast('Failed to access camera', 'error');
+            }
         }
     }
 
@@ -406,7 +453,9 @@ class VoiceManager {
             
         } catch (error) {
             console.error('Error toggling screen share:', error);
-            serverApp.showToast('Failed to start screen sharing', 'error');
+            if (window.serverApp) {
+                window.serverApp.showToast('Failed to start screen sharing', 'error');
+            }
         }
     }
 
@@ -435,15 +484,15 @@ class VoiceManager {
 
     // UI Update Methods
     updateVoiceUI() {
-        const voiceInterface = document.querySelector('.voice-interface');
+        const voiceInterface = document.getElementById('voiceInterface');
         const chatInterface = document.querySelector('.chat-interface');
         
         if (this.isInVoice) {
-            voiceInterface.style.display = 'flex';
-            chatInterface.style.display = 'none';
+            voiceInterface?.classList.remove('hidden');
+            chatInterface?.classList.add('hidden');
         } else {
-            voiceInterface.style.display = 'none';
-            chatInterface.style.display = 'flex';
+            voiceInterface?.classList.add('hidden');
+            chatInterface?.classList.remove('hidden');
         }
     }
 
@@ -462,31 +511,43 @@ class VoiceManager {
     }
 
     updateMuteButton() {
-        const muteBtn = document.querySelector('.mute-btn');
+        const muteBtn = document.getElementById('toggleMicBtn');
         if (muteBtn) {
             muteBtn.classList.toggle('active', this.isMuted);
+            const icon = muteBtn.querySelector('i');
+            if (icon) {
+                icon.className = this.isMuted ? 'fas fa-microphone-slash' : 'fas fa-microphone';
+            }
             muteBtn.title = this.isMuted ? 'Unmute' : 'Mute';
         }
     }
 
     updateDeafenButton() {
-        const deafenBtn = document.querySelector('.deafen-btn');
+        const deafenBtn = document.getElementById('toggleDeafenBtn');
         if (deafenBtn) {
             deafenBtn.classList.toggle('active', this.isDeafened);
+            const icon = deafenBtn.querySelector('i');
+            if (icon) {
+                icon.className = this.isDeafened ? 'fas fa-headphones-slash' : 'fas fa-headphones';
+            }
             deafenBtn.title = this.isDeafened ? 'Undeafen' : 'Deafen';
         }
     }
 
     updateVideoButton() {
-        const videoBtn = document.querySelector('.video-btn');
+        const videoBtn = document.getElementById('toggleVideoBtn');
         if (videoBtn) {
             videoBtn.classList.toggle('active', this.isVideoEnabled);
+            const icon = videoBtn.querySelector('i');
+            if (icon) {
+                icon.className = this.isVideoEnabled ? 'fas fa-video' : 'fas fa-video-slash';
+            }
             videoBtn.title = this.isVideoEnabled ? 'Turn off camera' : 'Turn on camera';
         }
     }
 
     updateScreenShareButton() {
-        const screenShareBtn = document.querySelector('.screen-share-btn');
+        const screenShareBtn = document.getElementById('toggleScreenShareBtn');
         if (screenShareBtn) {
             screenShareBtn.classList.toggle('active', this.isScreenSharing);
             screenShareBtn.title = this.isScreenSharing ? 'Stop sharing' : 'Share screen';
@@ -494,7 +555,7 @@ class VoiceManager {
     }
 
     addLocalParticipant() {
-        const participantsContainer = document.querySelector('.voice-participants');
+        const participantsContainer = document.getElementById('voiceParticipants');
         if (!participantsContainer) return;
 
         const localParticipant = document.createElement('div');
@@ -519,7 +580,7 @@ class VoiceManager {
     }
 
     addParticipant(userId) {
-        const participantsContainer = document.querySelector('.voice-participants');
+        const participantsContainer = document.getElementById('voiceParticipants');
         if (!participantsContainer) return;
 
         // Get user info (you'd typically fetch this from your user data)
@@ -553,7 +614,7 @@ class VoiceManager {
     }
 
     clearParticipants() {
-        const participantsContainer = document.querySelector('.voice-participants');
+        const participantsContainer = document.getElementById('voiceParticipants');
         if (participantsContainer) {
             participantsContainer.innerHTML = '';
         }
@@ -640,7 +701,9 @@ class VoiceManager {
 
         } catch (error) {
             console.error('Error switching audio input:', error);
-            serverApp.showToast('Failed to switch microphone', 'error');
+            if (window.serverApp) {
+                window.serverApp.showToast('Failed to switch microphone', 'error');
+            }
         }
     }
 
@@ -676,7 +739,9 @@ class VoiceManager {
 
         } catch (error) {
             console.error('Error switching video input:', error);
-            serverApp.showToast('Failed to switch camera', 'error');
+            if (window.serverApp) {
+                window.serverApp.showToast('Failed to switch camera', 'error');
+            }
         }
     }
 }
