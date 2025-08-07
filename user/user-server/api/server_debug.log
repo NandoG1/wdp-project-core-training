@@ -256,3 +256,17 @@ Channel auto-increment: 107, engine: InnoDB
 Channel ID column (ID): {"Field":"ID","Type":"int(10)","Null":"NO","Key":"PRI","Default":null,"Extra":"auto_increment"}
 Channel ID column (ServerID): {"Field":"ServerID","Type":"int(10)","Null":"YES","Key":"MUL","Default":null,"Extra":""}
 Channel current max ID: 106
+=== Image Upload Debug ===
+Upload dir: server-icons
+File info: {"name":"Winners-Pagina-Interna-2024-Guardiola.jpg","full_path":"Winners-Pagina-Interna-2024-Guardiola.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpC517.tmp","error":0,"size":126114}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons
+Generated filename: 689456b5828f4_1754551989.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-icons/689456b5828f4_1754551989.jpg
+SUCCESS: File uploaded to /uploads/server-icons/689456b5828f4_1754551989.jpg
+=== Image Upload Debug ===
+Upload dir: server-banners
+File info: {"name":"best-school-team.jpg","full_path":"best-school-team.jpg","type":"image\/jpeg","tmp_name":"C:\\xampp\\tmp\\phpD813.tmp","error":0,"size":34025}
+Upload path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners
+Generated filename: 689456ba61b7e_1754551994.jpg
+Full path: C:\cpp\WDP\T078_WDPProject_Discord\user\user-server\api/../../../uploads/server-banners/689456ba61b7e_1754551994.jpg
+SUCCESS: File uploaded to /uploads/server-banners/689456ba61b7e_1754551994.jpg

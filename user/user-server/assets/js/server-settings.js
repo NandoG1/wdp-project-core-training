@@ -2,7 +2,7 @@
 class ServerSettingsManager {
     constructor() {
         this.currentServer = null;
-        this.apiBaseUrl = 'http://localhost/user/user-server/api';
+        this.apiBaseUrl = 'api'; // Use relative path instead of absolute URL
         this.init();
     }
 
@@ -411,6 +411,46 @@ class ServerSettingsManager {
         } catch (error) {
             console.error('Error updating server category:', error);
             this.showToast('Failed to update server category', 'error');
+        }
+    }
+
+    async deleteServer() {
+        if (!this.currentServer || !this.currentServer.ID) {
+            this.showToast('Error: No server selected. Please try opening the settings again.', 'error');
+            return;
+        }
+
+        const deleteInput = document.getElementById('deleteServerConfirmation');
+        if (!deleteInput || deleteInput.value.trim() !== this.currentServer.Name) {
+            this.showToast('Please type the exact server name to confirm deletion', 'error');
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('action', 'deleteServer');
+            formData.append('serverId', this.currentServer.ID);
+            formData.append('confirmation', deleteInput.value.trim());
+
+            const response = await fetch(this.apiUrl('servers.php'), {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.showToast('Server deleted successfully', 'success');
+                // Redirect to dashboard after successful deletion
+                setTimeout(() => {
+                    window.location.href = '../home/index.php';
+                }, 2000);
+            } else {
+                this.showToast(data.error || 'Failed to delete server', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting server:', error);
+            this.showToast('Failed to delete server', 'error');
         }
     }
 
