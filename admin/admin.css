@@ -15,8 +15,6 @@ body {
     display: flex;
     min-height: 100vh;
 }
-
-/* Sidebar Styles */
 .sidebar {
     width: 200px;
     background-color: #2d2d2d;
@@ -94,8 +92,6 @@ body {
     width: 16px;
     text-align: center;
 }
-
-/* Main Content */
 .main-content {
     margin-left: 200px;
     padding: 32px;
@@ -119,8 +115,6 @@ body {
     color: #888;
     font-size: 14px;
 }
-
-/* Statistics Grid */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -218,8 +212,6 @@ body {
 .today-value {
     color: #e67e22;
 }
-
-/* Activity Section */
 .activity-section {
     margin-top: 32px;
 }
@@ -258,8 +250,6 @@ body {
 .chart-container canvas {
     max-height: 300px;
 }
-
-/* Responsive Design */
 @media (max-width: 1024px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);

@@ -262,7 +262,7 @@ function generateNitroCode() {
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar -->
+
        <div class="sidebar">
             <div class="sidebar-header">
                 <h2>Admin Dashboard</h2>
@@ -292,15 +292,15 @@ function generateNitroCode() {
             </nav>
         </div>
 
-        <!-- Main Content -->
+
         <div class="main-content">
             <div class="content-header">
                 <p class="subtitle">Generate and manage nitro subscription codes</p>
             </div>
 
-            <!-- Top Section -->
+
             <div class="top-section">
-                <!-- Generate New Code -->
+
                 <div class="generate-section">
                     <h2>Generate New Code</h2>
                     
@@ -320,7 +320,7 @@ function generateNitroCode() {
                     <button class="generate-btn" id="generateBtn">Generate Code</button>
                 </div>
 
-                <!-- Nitro Statistics -->
+
                 <div class="stats-section">
                     <h2>Nitro Statistics</h2>
                     
@@ -341,7 +341,7 @@ function generateNitroCode() {
                 </div>
             </div>
 
-            <!-- Nitro Codes Section -->
+
             <div class="codes-section">
                 <div class="section-header">
                     <h2>Nitro Codes</h2>
@@ -352,7 +352,7 @@ function generateNitroCode() {
                 </div>
                 
                 <div class="table-container">
-                    <!-- Skeleton Table (shown by default) -->
+
                     <table class="skeleton-table">
                         <thead>
                             <tr>
@@ -383,7 +383,7 @@ function generateNitroCode() {
                         </tbody>
                     </table>
 
-                    <!-- Real Table (hidden by default) -->
+
                     <table class="codes-table">
                         <thead>
                             <tr>
@@ -428,7 +428,7 @@ function generateNitroCode() {
                 </div>
             </div>
 
-            <!-- Skeleton Pagination (shown by default) -->
+
             <div class="skeleton-pagination">
                 <div class="skeleton-pagination-info"></div>
                 <div class="skeleton-pagination-controls">
@@ -437,7 +437,7 @@ function generateNitroCode() {
                 </div>
             </div>
 
-            <!-- Real Pagination (hidden by default) -->
+
             <div class="pagination-container">
                 <div class="pagination-info">
                     Showing <?php echo min($limit, $totalCodes - $offset); ?> of <?php echo $totalCodes; ?> codes
@@ -459,7 +459,7 @@ function generateNitroCode() {
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+
     <div id="deleteModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -477,7 +477,7 @@ function generateNitroCode() {
         </div>
     </div>
 
-    <!-- Toast Container -->
+
     <div id="toastContainer" class="toast-container"></div>
 
     <script src="nitro.js"></script>

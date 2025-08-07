@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         hideSkeletonLoading();
         initializeEventListeners();
-    }, 2000); // 2 second loading simulation
+    }, 2000);
 });
 function showSkeletonLoading() {
     isLoading = true;

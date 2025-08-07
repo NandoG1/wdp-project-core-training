@@ -1,19 +1,14 @@
-/* Nitro Management Specific Styles */
 .content-header .subtitle {
     color: #95a5a6;
     font-size: 16px;
     margin-bottom: 30px;
 }
-
-/* Top Section */
 .top-section {
     display: grid;
     grid-template-columns: 1fr 300px;
     gap: 40px;
     margin-bottom: 40px;
 }
-
-/* Generate Section */
 .generate-section {
     background-color: #2c3e50;
     border-radius: 8px;
@@ -204,8 +199,6 @@
     background-color: #34495e;
     cursor: not-allowed;
 }
-
-/* Stats Section */
 .stats-section {
     background-color: #2c3e50;
     border-radius: 8px;
@@ -241,8 +234,6 @@
     font-size: 18px;
     font-weight: 600;
 }
-
-/* Codes Section */
 .codes-section {
     background-color: #2c3e50;
     border-radius: 8px;
@@ -402,8 +393,6 @@
     background-color: #e74c3c;
     color: #ffffff;
 }
-
-/* Pagination */
 .pagination-container {
     display: flex;
     justify-content: space-between;
@@ -437,8 +426,6 @@
 .pagination-btn:hover {
     background-color: #2980b9;
 }
-
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -563,8 +550,6 @@
 .btn-danger:hover {
     background-color: #c0392b;
 }
-
-/* Toast Styles */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -615,8 +600,6 @@
         transform: translateX(100%);
     }
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
     .top-section {
         grid-template-columns: 1fr;
@@ -671,8 +654,6 @@
         font-size: 12px;
     }
 }
-
-/* Skeleton Loading Styles */
 .skeleton-loading {
     position: relative;
     overflow: hidden;
@@ -704,8 +685,6 @@
         left: 100%;
     }
 }
-
-/* Skeleton table styles */
 .skeleton-table {
     width: 100%;
     border-collapse: collapse;
@@ -755,8 +734,6 @@
     );
     animation: shimmer 1.5s infinite;
 }
-
-/* Different widths for realistic appearance */
 .skeleton-cell.width-60 {
     width: 60px;
 }
@@ -788,8 +765,6 @@
 .skeleton-cell.width-200 {
     width: 200px;
 }
-
-/* Skeleton status badge */
 .skeleton-status {
     width: 60px;
     height: 20px;
@@ -814,8 +789,6 @@
     );
     animation: shimmer 1.5s infinite;
 }
-
-/* Skeleton action buttons */
 .skeleton-actions {
     display: flex;
     gap: 8px;
@@ -845,8 +818,6 @@
     );
     animation: shimmer 1.5s infinite;
 }
-
-/* Hide real table content during loading */
 .loading-state .codes-table {
     display: none;
 }
@@ -854,8 +825,6 @@
 .loading-state .skeleton-table {
     display: table;
 }
-
-/* Initial state - show skeleton by default */
 .skeleton-table {
     display: table;
 }
@@ -863,8 +832,6 @@
 .codes-table {
     display: none;
 }
-
-/* After loading - show real table */
 .loaded .skeleton-table {
     display: none;
 }
@@ -872,8 +839,6 @@
 .loaded .codes-table {
     display: table;
 }
-
-/* Skeleton pagination */
 .skeleton-pagination {
     display: flex;
     justify-content: space-between;
@@ -937,8 +902,6 @@
     );
     animation: shimmer 1.5s infinite;
 }
-
-/* Loading overlay for better UX */
 .loading-overlay {
     position: relative;
 }
@@ -960,8 +923,6 @@
 .loading-overlay.active::after {
     display: block;
 }
-
-/* Delay animation for different rows */
 .skeleton-row:nth-child(1) .skeleton-cell::before { animation-delay: 0s; }
 .skeleton-row:nth-child(2) .skeleton-cell::before { animation-delay: 0.1s; }
 .skeleton-row:nth-child(3) .skeleton-cell::before { animation-delay: 0.2s; }

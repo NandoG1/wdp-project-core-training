@@ -34,7 +34,6 @@ class ChartDataAPI {
             ];
         }
         
-        // Add categories count (servers)
         $serverQuery = "SELECT COUNT(*) as count FROM Server";
         $serverResult = $this->conn->query($serverQuery);
         $serverCount = $serverResult->fetch_assoc()['count'];
@@ -49,17 +48,14 @@ class ChartDataAPI {
     }
     
     public function getMessageStatistics() {
-        // Get total messages
         $totalQuery = "SELECT COUNT(*) as total FROM Message";
         $totalResult = $this->conn->query($totalQuery);
         $totalMessages = (int)$totalResult->fetch_assoc()['total'];
         
-        // Get today's messages
         $todayQuery = "SELECT COUNT(*) as today FROM Message WHERE DATE(SentAt) = CURDATE()";
         $todayResult = $this->conn->query($todayQuery);
         $todayMessages = (int)$todayResult->fetch_assoc()['today'];
         
-        // Calculate remaining (old messages)
         $remainingMessages = $totalMessages - $todayMessages;
         
         return [

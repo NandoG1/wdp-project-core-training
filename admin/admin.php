@@ -30,8 +30,7 @@ $serverStats = $stats->getServerStats();
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
+<div class="sidebar">
             <div class="sidebar-header">
                 <h2>Admin Dashboard</h2>
                 <div style="font-size: 12px; color: #888; margin-top: 4px;">Admin</div>
@@ -59,16 +58,12 @@ $serverStats = $stats->getServerStats();
                 </a>
             </nav>
         </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
+<div class="main-content">
             <div class="content-header">
                 <h1>System Overview</h1>
                 <p>System statistics and information</p>
             </div>
-
-            <!-- Statistics Cards -->
-            <div class="stats-grid">
+<div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon user-icon">👥</div>
                     <div class="stat-content">
@@ -123,9 +118,7 @@ $serverStats = $stats->getServerStats();
                     </div>
                 </div>
             </div>
-
-            <!-- Activity & Growth Section -->
-            <div class="activity-section">
+<div class="activity-section">
                 <h2>Activity & Growth</h2>
                 
                 <div class="charts-grid">

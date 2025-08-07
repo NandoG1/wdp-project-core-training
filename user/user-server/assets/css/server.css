@@ -1,9 +1,5 @@
-/* Discord-like Server Interface Styles */
-
-/* CSS Variables for consistent theming */
 :root {
-    /* Discord Color Palette */
-    --background-primary: #36393f;
+--background-primary: #36393f;
     --background-secondary: #2f3136;
     --background-secondary-alt: #292b2f;
     --background-tertiary: #202225;
@@ -21,9 +17,7 @@
     --scrollbar-auto-track: #2e3338;
     --scrollbar-auto-scrollbar-color-thumb: #202225;
     --scrollbar-auto-scrollbar-color-track: #2f3136;
-    
-    /* Text Colors */
-    --text-normal: #dcddde;
+--text-normal: #dcddde;
     --text-muted: #72767d;
     --text-faint: #484b51;
     --text-positive: #43b581;
@@ -35,40 +29,26 @@
     --interactive-hover: #dcddde;
     --interactive-active: #fff;
     --interactive-muted: #4f545c;
-    
-    /* Brand Colors */
-    --brand-experiment: #5865f2;
+--brand-experiment: #5865f2;
     --brand-experiment-hover: #4752c4;
     --brand-experiment-active: #3c45a5;
     --brand-experiment-560: #4752c4;
     --brand-experiment-600: #5865f2;
-    
-    /* Status Colors */
-    --status-positive: #43b581;
+--status-positive: #43b581;
     --status-warning: #faa61a;
     --status-danger: #ed4245;
     --status-danger-hover: #c9302c;
-    
-    /* Channel Colors */
-    --channel-text-area-placeholder: #72767d;
+--channel-text-area-placeholder: #72767d;
     --channeltextarea-background: #40444b;
-    
-    /* Voice Colors */
-    --voice-video-video-tile-blur-fallback: #292b2f;
-    
-    /* Dimensions */
-    --sidebar-width: 72px;
+--voice-video-video-tile-blur-fallback: #292b2f;
+--sidebar-width: 72px;
     --channels-width: 240px;
     --members-width: 240px;
     --header-height: 48px;
     --input-height: 44px;
-    
-    /* Animations */
-    --transition-duration: 0.15s;
+--transition-duration: 0.15s;
     --transition-timing: ease-out;
 }
-
-/* Global Styles */
 * {
     box-sizing: border-box;
 }
@@ -87,8 +67,6 @@ body {
 .hidden {
     display: none !important;
 }
-
-/* Scrollbar Styles */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -106,15 +84,11 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--background-accent);
 }
-
-/* Main App Container */
 .app-container {
     display: flex;
     height: 100vh;
     width: 100vw;
 }
-
-/* Server Sidebar */
 .server-sidebar {
     width: var(--sidebar-width);
     background-color: var(--background-tertiary);
@@ -205,8 +179,6 @@ body {
     border-radius: 1px;
     margin: 4px 0;
 }
-
-/* Tooltip */
 .server-item::before {
     content: attr(data-tooltip);
     position: absolute;
@@ -230,16 +202,12 @@ body {
     opacity: 1;
     visibility: visible;
 }
-
-/* Server Content */
 .server-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     background-color: var(--background-primary);
 }
-
-/* Server Header */
 .server-header {
     height: var(--header-height);
     background-color: var(--background-primary);
@@ -303,15 +271,11 @@ body {
     color: var(--text-muted);
     font-size: 16px;
 }
-
-/* Server Body */
 .server-body {
     flex: 1;
     display: flex;
     overflow: hidden;
 }
-
-/* Channels Sidebar */
 .channels-sidebar {
     width: var(--channels-width);
     background-color: var(--background-secondary);
@@ -421,8 +385,6 @@ body {
     border-radius: 12px;
     margin-left: 4px;
 }
-
-/* User Panel */
 .user-panel {
     height: 52px;
     background-color: var(--background-secondary-alt);
@@ -490,16 +452,12 @@ body {
     background-color: var(--background-modifier-hover);
     color: var(--interactive-hover);
 }
-
-/* Chat Area */
 .chat-area {
     flex: 1;
     display: flex;
     flex-direction: column;
     background-color: var(--background-primary);
 }
-
-/* Channel Header */
 .channel-header {
     height: var(--header-height);
     background-color: var(--background-primary);
@@ -552,8 +510,6 @@ body {
 .channel-controls .control-btn:hover {
     color: var(--interactive-hover);
 }
-
-/* Messages Container */
 .messages-container {
     flex: 1;
     display: flex;
@@ -566,8 +522,6 @@ body {
     overflow-y: auto;
     padding: 16px;
 }
-
-/* Message Groups */
 .message-group {
     margin-bottom: 20px;
 }
@@ -657,8 +611,6 @@ body {
     background-color: var(--background-modifier-hover);
     color: var(--interactive-hover);
 }
-
-/* Message Attachments */
 .message-attachment {
     margin: 8px 0;
     border-radius: 8px;
@@ -719,8 +671,6 @@ body {
     font-size: 12px;
     color: var(--text-muted);
 }
-
-/* Message Reactions */
 .message-reactions {
     display: flex;
     flex-wrap: wrap;
@@ -760,8 +710,6 @@ body {
     margin-left: 4px;
     font-style: italic;
 }
-
-/* No Messages State */
 .no-messages {
     display: flex;
     flex-direction: column;
@@ -777,8 +725,6 @@ body {
     margin-bottom: 16px;
     opacity: 0.5;
 }
-
-/* Reaction Picker */
 .reply-context {
     background-color: var(--background-secondary);
     border-left: 4px solid var(--brand);
@@ -930,8 +876,6 @@ body {
     font-weight: 500;
     min-width: 8px;
 }
-
-/* File Upload Styles */
 .file-upload-area {
     position: relative;
 }
@@ -1038,8 +982,6 @@ body {
     text-align: center;
     margin-top: 5px;
 }
-
-/* Message Attachment Styles */
 .message-attachment {
     margin: 8px 0;
     max-width: 400px;
@@ -1111,8 +1053,6 @@ body {
     color: #72767d;
     display: block;
 }
-
-/* Drag and Drop Overlay */
 .drag-drop-overlay {
     position: fixed;
     top: 0;
@@ -1285,8 +1225,6 @@ body {
 .reaction-option:hover {
     background-color: var(--background-modifier-hover);
 }
-
-/* Reply Context */
 .reply-context {
     background-color: var(--background-secondary);
     border-left: 4px solid var(--text-muted);
@@ -1335,8 +1273,6 @@ body {
     background-color: var(--background-modifier-hover);
     color: var(--text-normal);
 }
-
-/* Voice Interface */
 .voice-interface {
     background-color: var(--background-secondary);
     border-top: 1px solid var(--background-modifier-accent);
@@ -1448,16 +1384,12 @@ body {
 .voice-control-btn.danger:hover {
     background-color: var(--status-danger-hover);
 }
-
-/* Typing Indicator */
 .typing-indicator {
     padding: 8px 16px;
     color: var(--text-muted);
     font-size: 14px;
     font-style: italic;
 }
-
-/* Message Input */
 .message-input-container {
     padding: 0 16px 24px;
 }
@@ -1555,8 +1487,6 @@ body {
 .input-wrapper textarea::placeholder {
     color: var(--channel-text-area-placeholder);
 }
-
-/* Members Sidebar */
 .members-sidebar {
     width: var(--members-width);
     background-color: var(--background-secondary);
@@ -1699,8 +1629,6 @@ body {
     border-radius: 2px;
     margin-left: 4px;
 }
-
-/* Dropdown Menu */
 .dropdown-menu {
     position: fixed;
     background-color: var(--background-floating);
@@ -1748,8 +1676,6 @@ body {
     background-color: var(--background-modifier-accent);
     margin: 4px 6px;
 }
-
-/* Modal Styles */
 .modal {
     position: fixed;
     top: 0;
@@ -1838,8 +1764,6 @@ body {
     justify-content: flex-end;
     gap: 12px;
 }
-
-/* Settings Modal */
 .settings-modal {
     display: flex;
     height: 100%;
@@ -1938,8 +1862,6 @@ body {
 .settings-tab.active {
     display: block;
 }
-
-/* Form Styles */
 .form-section {
     margin-bottom: 40px;
 }
@@ -2015,8 +1937,6 @@ body {
 .required {
     color: var(--status-danger);
 }
-
-/* Button Styles */
 .btn-primary {
     background-color: var(--brand-experiment);
     color: white;
@@ -2111,8 +2031,6 @@ body {
     background-color: var(--background-modifier-hover);
     color: var(--interactive-hover);
 }
-
-/* Toggle Switch */
 .toggle-group {
     display: flex;
     align-items: center;
@@ -2162,8 +2080,6 @@ body {
 .toggle-switch input:checked + .toggle-label .toggle-slider {
     transform: translateX(20px);
 }
-
-/* Image Upload Components */
 .icon-upload,
 .banner-upload {
     display: flex;
@@ -2212,8 +2128,6 @@ body {
     font-size: 12px;
     margin-top: 4px;
 }
-
-/* Channel Type Options */
 .channel-type-options {
     display: flex;
     flex-direction: column;
@@ -2315,8 +2229,6 @@ body {
     background-color: white;
     border-radius: 50%;
 }
-
-/* Channel Name Input */
 .channel-name-input {
     display: flex;
     align-items: center;
@@ -2339,8 +2251,6 @@ body {
     padding: 10px 10px 10px 0;
     flex: 1;
 }
-
-/* Tables */
 .channels-table,
 .members-table {
     background-color: var(--background-secondary);
@@ -2449,8 +2359,6 @@ body {
     background-color: var(--status-danger);
     color: white;
 }
-
-/* Warning Boxes */
 .warning-section {
     margin-bottom: 20px;
 }
@@ -2492,8 +2400,6 @@ body {
     font-size: 14px;
     color: var(--text-muted);
 }
-
-/* Management Notes */
 .management-note {
     display: flex;
     align-items: center;
@@ -2505,8 +2411,6 @@ body {
     font-size: 14px;
     color: var(--text-muted);
 }
-
-/* Search and Filter Controls */
 .search-filter-controls {
     display: flex;
     gap: 12px;
@@ -2521,8 +2425,6 @@ body {
 .search-filter-controls select {
     width: 150px;
 }
-
-/* Account Preview */
 .account-preview,
 .server-preview {
     background-color: var(--background-secondary);
@@ -2618,8 +2520,6 @@ body {
 .icon-edit-btn:hover {
     background-color: rgba(0, 0, 0, 0.8);
 }
-
-/* Settings Tabs */
 .settings-tabs {
     display: flex;
     gap: 4px;
@@ -2655,8 +2555,6 @@ body {
 .settings-subtab.active {
     display: block;
 }
-
-/* Device and Volume Controls */
 .device-section {
     margin-bottom: 32px;
 }
@@ -2738,8 +2636,6 @@ body {
     width: 0%;
     transition: width 0.1s ease;
 }
-
-/* Microphone Test */
 .microphone-test {
     margin-bottom: 32px;
 }
@@ -2774,8 +2670,6 @@ body {
 .test-bar.active {
     background-color: var(--status-positive);
 }
-
-/* Camera Preview */
 .camera-preview-section {
     margin-bottom: 32px;
 }
@@ -2802,8 +2696,6 @@ body {
     left: 50%;
     transform: translateX(-50%);
 }
-
-/* Email Reveal */
 .email-reveal {
     display: flex;
     align-items: center;
@@ -2815,8 +2707,6 @@ body {
     font-size: 14px;
     color: var(--text-normal);
 }
-
-/* Input with Tag */
 .input-with-tag {
     display: flex;
     align-items: center;
@@ -2838,8 +2728,6 @@ body {
     font-size: 16px;
     border-left: 1px solid var(--background-tertiary);
 }
-
-/* Password Change Steps */
 .password-change-steps {
     min-height: 200px;
 }
@@ -2851,8 +2739,6 @@ body {
 .password-step.active {
     display: block;
 }
-
-/* Invite Components */
 .invite-section {
     margin-bottom: 32px;
 }
@@ -2916,8 +2802,6 @@ body {
 .setting-group select {
     width: 150px;
 }
-
-/* Titibot Invite */
 .titibot-invite {
     display: flex;
     align-items: center;
@@ -2980,8 +2864,6 @@ body {
     font-size: 14px;
     color: var(--text-muted);
 }
-
-/* Recent Invites */
 .recent-invites {
     background-color: var(--background-secondary);
     border-radius: 8px;
@@ -3031,8 +2913,6 @@ body {
     color: var(--text-muted);
     font-style: italic;
 }
-
-/* Confirmation Modal */
 .confirmation-content {
     display: flex;
     align-items: flex-start;
@@ -3055,8 +2935,6 @@ body {
     font-size: 14px;
     color: var(--text-muted);
 }
-
-/* Toast Notifications */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -3138,8 +3016,6 @@ body {
         opacity: 1;
     }
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
     .server-sidebar {
         width: 60px;

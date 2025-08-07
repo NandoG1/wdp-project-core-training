@@ -1,13 +1,8 @@
-/* Server Management Specific Styles - Using consistent admin color scheme */
-
-/* Main content area */
 .main-content {
     flex: 1;
     background: #1a1a1a;
     overflow-x: auto;
 }
-
-/* Header section */
 .content-header {
     display: flex;
     justify-content: space-between;
@@ -68,8 +63,6 @@
     color: #888;
     font-size: 14px;
 }
-
-/* Servers Section */
 .servers-section {
     padding: 0 40px 40px;
     margin-bottom: 0;
@@ -128,16 +121,12 @@
 .servers-table tr:last-child td {
     border-bottom: none;
 }
-
-/* Server ID column */
 .server-id {
     color: #888;
     font-family: monospace;
     font-weight: 500;
     font-size: 13px;
 }
-
-/* Server info column */
 .server-display {
     display: flex;
     align-items: center;
@@ -172,8 +161,6 @@
     font-size: 14px;
     color: white;
 }
-
-/* Different colors for server icons following the admin pattern */
 .servers-table tr:nth-child(1) .server-icon-placeholder { background: #4a9eff; }
 .servers-table tr:nth-child(2) .server-icon-placeholder { background: #27ae60; }
 .servers-table tr:nth-child(3) .server-icon-placeholder { background: #e74c3c; }
@@ -190,8 +177,6 @@
     color: #fff;
     font-size: 14px;
 }
-
-/* Owner info */
 .owner-info {
     color: #ccc;
     font-size: 14px;
@@ -201,22 +186,16 @@
     color: #e74c3c;
     font-style: italic;
 }
-
-/* Member count */
 .member-count {
     color: #888;
     font-weight: 500;
     text-align: center;
     font-size: 13px;
 }
-
-/* Created date */
 .created-date {
     color: #888;
     font-size: 13px;
 }
-
-/* Actions column */
 .actions {
     text-align: center;
 }
@@ -239,8 +218,6 @@
 .delete-btn:hover {
     opacity: 0.8;
 }
-
-/* Pagination */
 .pagination-container {
     display: flex;
     justify-content: space-between;
@@ -281,8 +258,6 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
-
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -409,8 +384,6 @@
 .btn-danger:hover {
     background: #c0392b;
 }
-
-/* Toast Styles */
 .toast-container {
     position: fixed;
     top: 20px;
@@ -459,8 +432,6 @@
         opacity: 0;
     }
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
     .content-header {
         flex-direction: column;
@@ -530,8 +501,6 @@
         font-size: 12px;
     }
 }
-
-/* Skeleton Loading Styles for Servers */
 .skeleton {
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
@@ -547,16 +516,12 @@
         background-position: -200% 0;
     }
 }
-
-/* Skeleton for dark theme */
 .skeleton-dark {
     background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
     background-size: 200% 100%;
     animation: skeleton-loading 1.5s infinite;
     border-radius: 4px;
 }
-
-/* Server table skeleton */
 .skeleton-servers-table {
     display: none;
 }
@@ -639,8 +604,6 @@
     background-size: 200% 100%;
     animation: skeleton-loading 1.5s infinite;
 }
-
-/* Loading overlay */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -675,8 +638,6 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-/* Content fade transition */
 .servers-container {
     transition: opacity 0.3s ease;
 }
@@ -684,8 +645,6 @@
 .servers-container.loading {
     opacity: 0.3;
 }
-
-/* Skeleton shimmer effect variants */
 @keyframes skeleton-pulse {
     0%, 100% {
         opacity: 1;
@@ -698,8 +657,6 @@
 .skeleton-pulse {
     animation: skeleton-pulse 2s ease-in-out infinite;
 }
-
-/* Modern skeleton server card style */
 .skeleton-server-card {
     background: #2c2c2c;
     border-radius: 12px;
@@ -729,8 +686,6 @@
     display: flex;
     gap: 8px;
 }
-
-/* Search skeleton */
 .skeleton-search {
     height: 40px;
     width: 300px;

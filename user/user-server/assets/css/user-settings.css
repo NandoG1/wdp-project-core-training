@@ -1,4 +1,3 @@
-/* User Settings Modal Styles */
 .settings-modal {
     display: flex;
     height: 600px;
@@ -97,8 +96,6 @@
 .settings-header.danger h3 {
     color: #ed4245;
 }
-
-/* Account Preview */
 .account-preview {
     margin-bottom: 30px;
     border-radius: 8px;
@@ -175,8 +172,6 @@
     color: #b9bbbe;
     font-size: 14px;
 }
-
-/* Form Styles */
 .form-section {
     margin-bottom: 30px;
 }
@@ -333,8 +328,6 @@
 .hidden {
     display: none !important;
 }
-
-/* Voice & Video Settings */
 .settings-tabs {
     display: flex;
     gap: 4px;
@@ -489,8 +482,6 @@
     width: 0%;
     border-radius: 3px;
 }
-
-/* Microphone Test */
 .microphone-test {
     background: #2f3136;
     padding: 20px;
@@ -564,8 +555,6 @@
 #micTestBtn i {
     font-size: 14px;
 }
-
-/* Camera Preview */
 .camera-preview-section {
     margin-bottom: 30px;
 }
@@ -653,8 +642,6 @@
 #stopCameraBtn {
     display: none;
 }
-
-/* Warning Sections */
 .warning-section {
     margin-bottom: 20px;
 }
@@ -709,8 +696,6 @@
     font-size: 14px;
     margin-bottom: 4px;
 }
-
-/* Password Change Modal */
 .password-change-steps {
     max-width: 400px;
 }
@@ -735,8 +720,6 @@
     font-size: 14px;
     margin-bottom: 20px;
 }
-
-/* Toast Notifications */
 .toast {
     position: fixed;
     top: 20px;
@@ -768,8 +751,6 @@
 .toast-info {
     border-left: 4px solid #5865f2;
 }
-
-/* Validation */
 .validation-message {
     color: #ed4245;
     font-size: 12px;
@@ -783,8 +764,6 @@
 .validation-message.success {
     color: #57f287;
 }
-
-/* Responsive */
 @media (max-width: 768px) {
     .settings-modal {
         flex-direction: column;

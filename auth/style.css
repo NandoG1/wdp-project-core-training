@@ -14,8 +14,6 @@ body {
     position: relative;
     overflow: hidden;
 }
-
-/* Animated background particles */
 body::before {
     content: '';
     position: absolute;
@@ -366,8 +364,6 @@ body::before {
     font-size: 14px;
     line-height: 1.5;
 }
-
-/* Page transitions */
 .page {
     display: none;
 }
@@ -381,8 +377,6 @@ body::before {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
-/* Responsive design */
 @media (max-width: 480px) {
     .auth-container {
         margin: 20px;
@@ -394,8 +388,6 @@ body::before {
         font-size: 20px;
     }
 }
-
-/* Loading state */
 .loading {
     position: relative;
     pointer-events: none;
@@ -419,8 +411,6 @@ body::before {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-/* Step indicator styles */
 .step.completed {
     background: #10b981;
     color: white;
@@ -430,8 +420,6 @@ body::before {
     background: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.5);
 }
-
-/* Security description */
 .security-description {
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
@@ -439,8 +427,6 @@ body::before {
     margin-bottom: 24px;
     line-height: 1.5;
 }
-
-/* Form actions for step 2 */
 .form-actions {
     display: flex;
     gap: 12px;
@@ -472,15 +458,11 @@ body::before {
     flex: 2;
     margin: 0;
 }
-
-/* Captcha section for step 2 */
 .captcha-section {
     margin-top: 24px;
     padding-top: 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-
-/* Select dropdown styling */
 select.form-input {
     background: rgba(55, 65, 81, 0.8);
     appearance: none;

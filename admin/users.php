@@ -117,7 +117,7 @@ $totalPages = ceil($totalUsers / $limit);
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar -->
+
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2>Admin Dashboard</h2>
@@ -147,7 +147,7 @@ $totalPages = ceil($totalUsers / $limit);
             </nav>
         </div>
 
-        <!-- Main Content -->
+
         <div class="main-content">
             <div class="content-header">
                 <div class="header-left">
@@ -166,7 +166,7 @@ $totalPages = ceil($totalUsers / $limit);
                 </div>
             </div>
 
-            <!-- Filters and Search -->
+
             <div class="controls-bar">
                 <div class="filter-section">
                     <select id="userFilter" class="filter-dropdown">
@@ -183,9 +183,9 @@ $totalPages = ceil($totalUsers / $limit);
                 </div>
             </div>
 
-            <!-- Users Content -->
+
             <div class="users-container" id="usersContainer">
-                <!-- Skeleton Loading for Table View -->
+
                 <div id="skeletonTableView" class="table-view skeleton-table">
                     <div class="table-container">
                         <table class="users-table">
@@ -201,7 +201,7 @@ $totalPages = ceil($totalUsers / $limit);
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Skeleton rows -->
+
                                 <?php for ($i = 0; $i < 8; $i++): ?>
                                 <tr>
                                     <td>
@@ -220,10 +220,10 @@ $totalPages = ceil($totalUsers / $limit);
                     </div>
                 </div>
 
-                <!-- Skeleton Loading for Grid View -->
+
                 <div id="skeletonGridView" class="grid-view skeleton-grid">
                     <div class="users-grid">
-                        <!-- Skeleton cards -->
+
                         <?php for ($i = 0; $i < 6; $i++): ?>
                         <div class="skeleton-card-modern">
                             <div class="skeleton-card-header">
@@ -255,7 +255,7 @@ $totalPages = ceil($totalUsers / $limit);
                     </div>
                 </div>
 
-                <!-- Table View -->
+
                 <div id="tableView" class="table-view active">
                     <div class="table-container">
                         <table class="users-table">
@@ -313,7 +313,7 @@ $totalPages = ceil($totalUsers / $limit);
                     </div>
                 </div>
 
-                <!-- Grid View -->
+
                 <div id="gridView" class="grid-view">
                     <div class="users-grid">
                         <div class="grid-header">
@@ -383,7 +383,7 @@ $totalPages = ceil($totalUsers / $limit);
                 </div>
             </div>
 
-            <!-- Pagination -->
+
             <div class="pagination-container">
                 <div class="pagination-info">
                     Showing <?php echo min($limit, $totalUsers - $offset); ?> of <?php echo $totalUsers; ?> users
@@ -405,7 +405,7 @@ $totalPages = ceil($totalUsers / $limit);
         </div>
     </div>
 
-    <!-- Ban Confirmation Modal -->
+
     <div id="banModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -423,7 +423,7 @@ $totalPages = ceil($totalUsers / $limit);
         </div>
     </div>
 
-    <!-- Unban Confirmation Modal -->
+
     <div id="unbanModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -441,7 +441,7 @@ $totalPages = ceil($totalUsers / $limit);
         </div>
     </div>
 
-    <!-- Toast Container -->
+
     <div id="toastContainer" class="toast-container"></div>
 
     <script>

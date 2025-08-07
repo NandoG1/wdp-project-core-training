@@ -130,7 +130,7 @@ $totalPages = ceil($totalServers / $limit);
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar -->
+
          <div class="sidebar">
             <div class="sidebar-header">
                 <h2>Admin Dashboard</h2>
@@ -160,7 +160,7 @@ $totalPages = ceil($totalServers / $limit);
             </nav>
         </div>
 
-        <!-- Main Content -->
+
         <div class="main-content">
             <div class="content-header">
                 <div class="header-left">
@@ -175,12 +175,12 @@ $totalPages = ceil($totalServers / $limit);
                 </div>
             </div>
 
-            <!-- Servers Section -->
+
             <div class="servers-section">
                 <h2>Servers</h2>
                 
                 <div class="servers-container" id="serversContainer">
-                    <!-- Skeleton Loading Table -->
+
                     <div class="skeleton-servers-table" id="skeletonServersTable">
                         <div class="table-container">
                             <table class="servers-table">
@@ -195,7 +195,7 @@ $totalPages = ceil($totalServers / $limit);
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Skeleton rows -->
+
                                     <?php for ($i = 0; $i < 8; $i++): ?>
                                     <tr>
                                         <td><div class="skeleton-id"></div></td>
@@ -216,7 +216,7 @@ $totalPages = ceil($totalServers / $limit);
                         </div>
                     </div>
 
-                    <!-- Real Servers Table -->
+
                     <div class="table-container" id="realServersTable">
                         <table class="servers-table">
                             <thead>
@@ -271,7 +271,7 @@ $totalPages = ceil($totalServers / $limit);
                 </div>
             </div>
 
-            <!-- Pagination -->
+
             <div class="pagination-container">
                 <div class="pagination-info">
                     Showing <?php echo min($limit, $totalServers - $offset); ?> of <?php echo $totalServers; ?> servers
@@ -293,7 +293,7 @@ $totalPages = ceil($totalServers / $limit);
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+
     <div id="deleteModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -311,7 +311,7 @@ $totalPages = ceil($totalServers / $limit);
         </div>
     </div>
 
-    <!-- Toast Container -->
+
     <div id="toastContainer" class="toast-container"></div>
 
     <script src="servers.js"></script>

@@ -1,4 +1,3 @@
-/* Discord-like Explore Servers Page */
 * {
   margin: 0;
   padding: 0;
@@ -16,8 +15,6 @@ body {
   display: flex;
   height: 100vh;
 }
-
-/* Left Sidebar (Server Icons) */
 .left-sidebar {
   width: 72px;
   background-color: #1e1f22;
@@ -144,8 +141,6 @@ body {
   margin-top: auto;
   padding-bottom: 8px;
 }
-
-/* User info section in left sidebar */
 .left-sidebar .user-info-section {
   display: flex;
   flex-direction: row;
@@ -189,8 +184,6 @@ body {
   background-color: #35373c;
   color: #dbdee1;
 }
-
-/* Categories Sidebar */
 .categories-sidebar {
   width: 240px;
   background-color: #2b2d31;
@@ -269,8 +262,6 @@ body {
   background-color: #ffffff;
   color: #404249;
 }
-
-/* Main Content */
 .main-content {
   flex: 1;
   background-color: #313338;
@@ -407,8 +398,6 @@ body {
   width: 20px;
   text-align: center;
 }
-
-/* Discover Section */
 .discover-section {
   max-width: 1200px;
   margin: 0 auto;
@@ -592,8 +581,6 @@ body {
 .join-btn.joined:hover {
   background-color: #1a8245;
 }
-
-/* Loading Indicator */
 .loading-indicator {
   display: flex;
   align-items: center;
@@ -627,8 +614,6 @@ body {
   color: #6d6f78;
   font-size: 14px;
 }
-
-/* Modals */
 .modal {
   display: none;
   position: fixed;
@@ -691,8 +676,6 @@ body {
   background-color: rgba(0, 0, 0, 0.6);
   color: #ffffff;
 }
-
-/* Server Detail Modal */
 .server-detail-modal {
   max-width: 600px;
 }
@@ -812,8 +795,6 @@ body {
 .joined-btn:hover {
   background-color: #23a559;
 }
-
-/* Join Server Modal */
 .join-server-modal {
   max-width: 440px;
   padding: 24px;
@@ -881,8 +862,6 @@ body {
   font-size: 14px;
   text-align: center;
 }
-
-/* Toast Styles */
 .toast-container {
   position: fixed;
   top: 20px;
@@ -922,8 +901,6 @@ body {
     transform: translateX(0);
   }
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
@@ -1006,8 +983,6 @@ body {
     width: calc(100% - 40px);
   }
 }
-
-/* Left Sidebar (Server Icons) */
 .left-sidebar {
   width: 72px;
   background-color: #1e1f22;
@@ -1123,8 +1098,6 @@ body {
   border-radius: 1px;
   margin: 4px 0;
 }
-
-/* User Info Section in Categories Sidebar */
 .categories-sidebar .user-info-section {
   width: 100%;
   background-color: #292b2f;
@@ -1217,8 +1190,6 @@ body {
 .control-btn.settings-btn:hover {
   background-color: #36393f;
 }
-
-/* Floating Add Server Button */
 .floating-add-btn {
   position: fixed !important;
   bottom: 30px !important;
