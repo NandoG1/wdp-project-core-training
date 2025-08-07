@@ -30,6 +30,44 @@ $username = $_SESSION['username'] ?? 'Guest';
         };
     </script>
     <div class="app-container">
+
+        <div class="server-sidebar">
+            <div class="server-nav">
+                <!-- Home Button -->
+                <div class="server-item home-server active" data-tooltip="Home">
+                    <div class="server-icon">
+                        <a href="../home/index.php">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="server-separator"></div>
+                
+                <!-- User Servers List -->
+                <div class="user-servers" id="userServersList">
+                    <div class="server-item" data-tooltip="My Server">
+                        <div class="server-icon">
+                            <a href="../user-server/index.php">
+                                <i class="fas fa-comments"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="server-separator"></div>
+                
+                <!-- Explore Button -->
+                <div class="server-item" data-tooltip="Explore Public Servers">
+                    <div class="server-icon">
+                        <a href="../server/user-explore.php">
+                            <i class="fas fa-compass"></i>
+                        </a>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
         <!-- Sidebar Navigation -->
         <div class="sidebar">
             <div class="sidebar-header" style="display: none;">

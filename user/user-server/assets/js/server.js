@@ -1860,7 +1860,14 @@ function navigateToExplore() {
 }
 
 function openCreateServerModal() {
-    serverApp.openCreateServerModal();
+    // Safety check: ensure serverApp is initialized
+    if (window.serverApp && typeof window.serverApp.openCreateServerModal === 'function') {
+        window.serverApp.openCreateServerModal();
+    } else {
+        // Fallback: directly open the modal
+        console.warn('serverApp not initialized, opening modal directly');
+        document.getElementById('createServerModal').classList.remove('hidden');
+    }
 }
 
 function closeCreateServerModal() {

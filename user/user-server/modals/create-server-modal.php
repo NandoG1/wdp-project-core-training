@@ -76,19 +76,7 @@
                                 <option value="Education">Education</option>
                                 <option value="Science & Tech">Science & Tech</option>
                                 <option value="Entertainment">Entertainment</option>
-                                <option value="Art">Art</option>
-                                <option value="Fashion & Beauty">Fashion & Beauty</option>
-                                <option value="Fitness & Health">Fitness & Health</option>
-                                <option value="Travel & Places">Travel & Places</option>
-                                <option value="Food & Cooking">Food & Cooking</option>
-                                <option value="Animals & Nature">Animals & Nature</option>
-                                <option value="Anime & Manga">Anime & Manga</option>
-                                <option value="Movies & TV">Movies & TV</option>
-                                <option value="Books & Literature">Books & Literature</option>
-                                <option value="Sports">Sports</option>
-                                <option value="Business">Business</option>
-                                <option value="Cryptocurrency">Cryptocurrency</option>
-                                <option value="Other">Other</option>
+                                <option value="Art">Community</option>
                             </select>
                         </div>
 

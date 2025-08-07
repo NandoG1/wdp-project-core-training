@@ -1746,3 +1746,217 @@ body {
         opacity: 0;
     }
 }
+
+/* Discord-like Server Sidebar */
+.server-sidebar {
+    width: 72px;
+    background-color: var(--bg-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    border-right: 1px solid #1e1f22;
+    box-shadow: 0 0 0 1px rgba(4, 4, 5, 0.15);
+    z-index: 100;
+}
+
+.server-nav {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.server-item {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.server-item:hover .server-icon {
+    border-radius: 16px;
+    background-color: var(--brand-primary);
+}
+
+.server-item.active .server-icon {
+    border-radius: 16px;
+    background-color: var(--brand-primary);
+}
+
+.server-item.home-server .server-icon {
+    background-color: var(--bg-secondary);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.server-item.home-server:hover .server-icon {
+    background-color: var(--brand-primary);
+    border-radius: 16px;
+}
+
+.server-item.add-server .server-icon {
+    background-color: var(--bg-secondary);
+    border: 2px dashed var(--interactive-muted);
+    color: var(--green-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.server-item.add-server:hover .server-icon {
+    background-color: var(--green-primary);
+    color: white;
+    border-color: var(--green-primary);
+}
+
+.server-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.server-icon a {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.server-icon i {
+    font-size: 18px;
+    margin-right: 4px;
+}
+
+.server-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.server-separator {
+    width: 32px;
+    height: 2px;
+    background-color: var(--interactive-muted);
+    border-radius: 1px;
+    margin: 8px 0;
+}
+
+/* Server Item Indicator */
+.server-item::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    background-color: var(--text-normal);
+    border-radius: 0 4px 4px 0;
+    transition: all 0.15s ease;
+}
+
+.server-item:hover::before {
+    width: 4px;
+    height: 20px;
+}
+
+.server-item.active::before {
+    width: 4px;
+    height: 40px;
+}
+
+/* Tooltip */
+.server-item[data-tooltip] {
+    position: relative;
+}
+
+.server-item[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--bg-floating);
+    color: var(--text-normal);
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
+    animation: fadeIn 0.1s ease;
+}
+
+.server-item[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    left: 52px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 8px 5px 0;
+    border-color: transparent var(--bg-floating) transparent transparent;
+    z-index: 1001;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+/* User Servers List */
+.user-servers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .server-sidebar {
+        width: 60px;
+        padding: 8px 0;
+    }
+    
+    .server-item,
+    .server-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .server-icon i {
+        font-size: 16px;
+    }
+    
+    .server-separator {
+        width: 24px;
+    }
+}
