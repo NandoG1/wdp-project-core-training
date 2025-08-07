@@ -9,45 +9,27 @@ $success = '';
 $current_step = 1;
 $show_step_2 = false;
 $registration_complete = false;
-
-// Check if we should show step 2 based on session data FIRST
 if (isset($_SESSION['register_data'])) {
     $show_step_2 = true;
     $current_step = 2;
 }
-
-// Password strength validation function - matches JavaScript calculation
 function validatePasswordStrength($password) {
     $score = 0;
-    
-    // Length: 4 points per character (max 40 points)
     $lengthScore = min(strlen($password) * 4, 40);
     $score += $lengthScore;
-    
-    // Uppercase Letter: +15 points (if at least one exists)
     if (preg_match('/[A-Z]/', $password)) {
         $score += 15;
     }
-    
-    // Lowercase Letter: +10 points (if at least one exists)
     if (preg_match('/[a-z]/', $password)) {
         $score += 10;
     }
-    
-    // Digit (0-9): +15 points (if at least one exists)
     if (preg_match('/[0-9]/', $password)) {
         $score += 15;
     }
-    
-    // Special Character (non-alphanumeric): +20 points (if at least one exists)
     if (preg_match('/[^a-zA-Z0-9]/', $password)) {
         $score += 20;
     }
-    
-    // Cap at 100%
     $score = min($score, 100);
-    
-    // Also return individual checks for display
     $checks = [
         'length' => strlen($password) >= 8,
         'lowercase' => preg_match('/[a-z]/', $password),
@@ -57,13 +39,9 @@ function validatePasswordStrength($password) {
     
     return ['score' => $score, 'checks' => $checks];
 }
-
-// Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $database = new Database();
     $db = $database->getConnection();
-    
-    // Registration Step 1 Handler
     if (isset($_POST['register_step1'])) {
         $username = trim($_POST['username']);
         $email = trim($_POST['email']);
@@ -77,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } elseif (strlen($password) < 8) {
             $error = 'Password must be at least 8 characters long.';
         } else {
-            // Validate password strength
             $passwordStrength = validatePasswordStrength($password);
             if ($passwordStrength['score'] < 100) {
                 $error = 'Password must meet all strength requirements (100% strength required).';
@@ -91,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if ($result->fetch_assoc()) {
                     $error = 'Username or email already exists.';
                 } else {
-                    // Store registration data in session for step 2
                     $_SESSION['register_data'] = [
                         'username' => $username,
                         'email' => $email,
@@ -104,8 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     }
-    
-    // Registration Step 2 Handler (Security Question)
     elseif (isset($_POST['register_step2'])) {
         $security_question = $_POST['security_question'];
         $security_answer = trim($_POST['security_answer']);
@@ -126,11 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $current_step = 1;
         } else {
             $register_data = $_SESSION['register_data'];
-            
-            // Generate a unique integer ID that fits within INTEGER(10) range
-            // INTEGER(10) can hold values up to 2,147,483,647
             do {
-                // Generate a random 9-digit number to ensure it fits in INTEGER(10)
                 $id = rand(100000000, 999999999);
                 $check_query = "SELECT ID FROM Users WHERE ID = ?";
                 $check_stmt = $db->prepare($check_query);
@@ -158,8 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     }
-    
-    // Clear registration data
     elseif (isset($_POST['clear_registration'])) {
         unset($_SESSION['register_data']);
         echo 'cleared';
@@ -169,8 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Hei";
     }
 }
-
-// Generate CAPTCHA
 function generateCaptcha() {
     $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     $captcha = '';
@@ -424,47 +390,29 @@ $captcha = generateCaptcha();
                 window.location.href = 'register.php';
             });
         }
-
-        // Enhanced password strength checker - matches auth.js calculation
         function checkPasswordStrength(password) {
             let score = 0;
-            
-            // Length: 4 points per character (max 40 points)
             const lengthScore = Math.min(password.length * 4, 40);
             score += lengthScore;
-            
-            // Uppercase Letter: +15 points (if at least one exists)
             if (/[A-Z]/.test(password)) {
                 score += 15;
             }
-            
-            // Lowercase Letter: +10 points (if at least one exists)
             if (/[a-z]/.test(password)) {
                 score += 10;
             }
-            
-            // Digit (0-9): +15 points (if at least one exists)
             if (/[0-9]/.test(password)) {
                 score += 15;
             }
-            
-            // Special Character (non-alphanumeric): +20 points (if at least one exists)
             if (/[^a-zA-Z0-9]/.test(password)) {
                 score += 20;
             }
-            
-            // Cap at 100%
             score = Math.min(score, 100);
-            
-            // Update individual requirement indicators
             const requirements = {
                 length: password.length >= 8,
                 lowercase: /[a-z]/.test(password),
                 uppercase: /[A-Z]/.test(password),
                 special: /[0-9]/.test(password) && /[^a-zA-Z0-9]/.test(password)
             };
-            
-            // Update requirement indicators
             Object.keys(requirements).forEach(req => {
                 const element = document.getElementById(`req-${req}`);
                 if (element) {
@@ -478,16 +426,12 @@ $captcha = generateCaptcha();
                     }
                 }
             });
-            
-            // Update strength bar and text
             const strengthBar = document.getElementById('strength-bar');
             const strengthText = document.getElementById('strength-text');
             const nextBtn = document.getElementById('next-step-btn');
             
             if (strengthBar) strengthBar.style.width = score + '%';
             if (strengthText) strengthText.textContent = score + '%';
-            
-            // Update colors based on score - matches auth.js colors
             if (score < 30) {
                 if (strengthBar) strengthBar.style.background = '#ef4444'; // Red
                 if (strengthText) {
@@ -534,8 +478,6 @@ $captcha = generateCaptcha();
             
             return score === 100;
         }
-
-        // Add event listener to password input
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('register-password');
             const confirmPasswordInput = document.getElementById('confirm-password');
@@ -545,8 +487,6 @@ $captcha = generateCaptcha();
                 passwordInput.addEventListener('input', function() {
                     checkPasswordStrength(this.value);
                 });
-                
-                // Check password match
                 function checkPasswordMatch() {
                     const nextBtn = document.getElementById('next-step-btn');
                     if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
@@ -556,7 +496,6 @@ $captcha = generateCaptcha();
                     } else {
                         confirmPasswordInput.setCustomValidity('');
                         confirmPasswordInput.style.borderColor = 'rgba(99, 102, 241, 0.4)';
-                        // Re-check if password strength is 100%
                         if (checkPasswordStrength(passwordInput.value)) {
                             if (nextBtn) nextBtn.disabled = false;
                         }
@@ -568,8 +507,6 @@ $captcha = generateCaptcha();
                     passwordInput.addEventListener('input', checkPasswordMatch);
                 }
             }
-            
-            // Form submission validation
             if (form) {
                 form.addEventListener('submit', function(e) {
                     const password = passwordInput.value;
@@ -589,15 +526,11 @@ $captcha = generateCaptcha();
                 });
             }
         });
-
-        // Existing toggle password function (assuming it exists in auth.js)
         function togglePassword(inputId) {
             const input = document.getElementById(inputId);
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
         }
-
-        // Existing refresh captcha function (assuming it exists)
         function refreshCaptcha() {
             fetch('register.php', {
                 method: 'POST',

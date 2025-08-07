@@ -6,8 +6,6 @@ require_once __DIR__ . '/google-config.php';
 
 $error = '';
 $success = '';
-
-// Handle URL parameters for messages
 if (isset($_GET['error'])) {
     switch ($_GET['error']) {
         case 'account_banned':
@@ -28,13 +26,9 @@ if (isset($_GET['message'])) {
             break;
     }
 }
-
-// Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $database = new Database();
     $db = $database->getConnection();
-    
-    // Login Handler
     if (isset($_POST['login'])) {
         $email = trim($_POST['email']);
         $password = $_POST['password'];
@@ -66,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $error = 'Invalid email or password.';
                 }
             } else {
-                // Check for admin credentials
                 if ($email === 'admin@admin.com' && $password === 'admin123') {
                     $_SESSION['user_id'] = 'admin';
                     $_SESSION['username'] = 'Admin';
@@ -81,8 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
-
-// Generate CAPTCHA
 function generateCaptcha() {
     $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     $captcha = '';

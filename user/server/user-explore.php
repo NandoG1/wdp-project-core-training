@@ -1,12 +1,8 @@
 <?php
 session_start();
 require_once 'database.php';
-
-// Get current user ID (assuming user is logged in)
 $currentUserId = $_SESSION['user_id'] ?? 1; // Default to user 1 for demo
 $username = $_SESSION['username'] ?? 'Guest';
-
-// Handle AJAX requests
 if (isset($_POST['action'])) {
     header('Content-Type: application/json');
     
@@ -20,13 +16,9 @@ if (isset($_POST['action'])) {
         $category = $_POST['category'] ?? 'all';
         $search = $_POST['search'] ?? '';
         $sort = $_POST['sort'] ?? 'a_to_z';
-        
-        // Build WHERE clause
         $whereClause = "WHERE s.IsPrivate = 0";
         $params = [$currentUserId];
         $types = "i";
-        
-        // Fix search functionality
         if (!empty($search)) {
             $whereClause .= " AND (s.Name LIKE ? OR s.Description LIKE ?)";
             $searchParam = "%$search%";
@@ -34,15 +26,11 @@ if (isset($_POST['action'])) {
             $params[] = $searchParam;
             $types .= "ss";
         }
-        
-        // Fix category filtering - now using actual Category column
         if ($category !== 'all' && !empty($category)) {
             $whereClause .= " AND s.Category = ?";
             $params[] = $category;
             $types .= "s";
         }
-        
-        // Build ORDER BY clause
         $orderClause = "";
         switch ($sort) {
             case 'newest':
@@ -66,8 +54,6 @@ if (isset($_POST['action'])) {
             default:
                 $orderClause = "ORDER BY s.Name ASC";
         }
-        
-        // Get servers with member count and category
         $query = "SELECT 
                     s.ID,
                     s.Name,
@@ -126,12 +112,9 @@ if (isset($_POST['action'])) {
     }
     
     if ($_POST['action'] === 'get_categories') {
-        // Get actual server count
         $query = "SELECT COUNT(*) as total_servers FROM Server WHERE IsPrivate = 0";
         $result = $conn->query($query);
         $totalServers = $result ? $result->fetch_assoc()['total_servers'] : 0;
-        
-        // Get actual categories from database with server counts
         $categoryQuery = "SELECT 
                             s.Category,
                             COUNT(*) as server_count
@@ -195,11 +178,7 @@ if (isset($_POST['action'])) {
     
     if ($_POST['action'] === 'join_server') {
         $serverId = (int)$_POST['server_id'];
-        
-        // Debug: Log the join attempt
         error_log("Join server attempt - UserID: $currentUserId, ServerID: $serverId");
-        
-        // Check if server exists and is not private
         $serverQuery = "SELECT ID, Name FROM Server WHERE ID = ? AND IsPrivate = 0";
         $serverStmt = $conn->prepare($serverQuery);
         $serverStmt->bind_param("i", $serverId);
@@ -212,8 +191,6 @@ if (isset($_POST['action'])) {
         }
         
         $server = $serverResult->fetch_assoc();
-        
-        // Check if already joined
         $checkQuery = "SELECT ID FROM UserServerMemberships WHERE UserID = ? AND ServerID = ?";
         $checkStmt = $conn->prepare($checkQuery);
         $checkStmt->bind_param("ii", $currentUserId, $serverId);
@@ -224,8 +201,6 @@ if (isset($_POST['action'])) {
             echo json_encode(['success' => false, 'message' => 'You are already a member of this server']);
             exit();
         }
-        
-        // Join server
         $joinQuery = "INSERT INTO UserServerMemberships (UserID, ServerID, Role) VALUES (?, ?, 'Member')";
         $joinStmt = $conn->prepare($joinQuery);
         $joinStmt->bind_param("ii", $currentUserId, $serverId);
@@ -246,8 +221,6 @@ if (isset($_POST['action'])) {
             echo json_encode(['success' => false, 'message' => 'Please enter an invite code']);
             exit();
         }
-        
-        // Find server by invite link using ServerInvite table
         $serverQuery = "SELECT si.ServerID, s.ID, s.Name, si.ExpiresAt 
                         FROM ServerInvite si 
                         INNER JOIN Server s ON si.ServerID = s.ID 
@@ -266,8 +239,6 @@ if (isset($_POST['action'])) {
         
         $server = $serverResult->fetch_assoc();
         $serverId = $server['ServerID']; // Use ServerID from the join query
-        
-        // Check if already joined
         $checkQuery = "SELECT ID FROM UserServerMemberships WHERE UserID = ? AND ServerID = ?";
         $checkStmt = $conn->prepare($checkQuery);
         $checkStmt->bind_param("ii", $currentUserId, $serverId);
@@ -277,8 +248,6 @@ if (isset($_POST['action'])) {
             echo json_encode(['success' => false, 'message' => 'You are already a member of this server']);
             exit();
         }
-        
-        // Join server
         $joinQuery = "INSERT INTO UserServerMemberships (UserID, ServerID, Role) VALUES (?, ?, 'Member')";
         $joinStmt = $conn->prepare($joinQuery);
         $joinStmt->bind_param("ii", $currentUserId, $serverId);

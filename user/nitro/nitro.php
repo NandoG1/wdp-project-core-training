@@ -1,16 +1,12 @@
 <?php
 session_start();
 require_once 'database.php';
-
-// Check if user is logged in (assuming you have user sessions)
 $userId = $_SESSION['user_id'] ?? null;
 $userHasNitro = false;
 
 if ($userId) {
     $database = new Database();
     $conn = $database->getConnection();
-    
-    // Check if user already has Nitro
     $query = "SELECT COUNT(*) as nitro_count FROM Nitro WHERE UserID = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $userId);
@@ -18,8 +14,6 @@ if ($userId) {
     $result = $stmt->get_result();
     $userHasNitro = $result->fetch_assoc()['nitro_count'] > 0;
 }
-
-// Handle AJAX requests
 if (isset($_POST['action'])) {
     header('Content-Type: application/json');
     
@@ -39,8 +33,6 @@ if (isset($_POST['action'])) {
         
         $database = new Database();
         $conn = $database->getConnection();
-        
-        // Check if user already has Nitro
         $checkQuery = "SELECT COUNT(*) as nitro_count FROM Nitro WHERE UserID = ?";
         $checkStmt = $conn->prepare($checkQuery);
         $checkStmt->bind_param("i", $userId);
@@ -51,8 +43,6 @@ if (isset($_POST['action'])) {
             echo json_encode(['success' => false, 'message' => 'You already have an active Nitro subscription']);
             exit();
         }
-        
-        // Check if code exists and is available
         $query = "SELECT ID FROM Nitro WHERE Code = ? AND UserID IS NULL";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("s", $code);
@@ -65,8 +55,6 @@ if (isset($_POST['action'])) {
         }
         
         $nitroId = $result->fetch_assoc()['ID'];
-        
-        // Assign code to user
         $updateQuery = "UPDATE Nitro SET UserID = ? WHERE ID = ?";
         $updateStmt = $conn->prepare($updateQuery);
         $updateStmt->bind_param("ii", $userId, $nitroId);

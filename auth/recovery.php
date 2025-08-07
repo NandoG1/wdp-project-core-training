@@ -6,20 +6,14 @@ require_once __DIR__ . '/database.php';
 $error = '';
 $success = '';
 $current_step = 1;
-
-// Determine current step
 if (isset($_SESSION['recovery_user_id']) && !isset($_SESSION['recovery_verified'])) {
     $current_step = 2;
 } elseif (isset($_SESSION['recovery_verified']) && $_SESSION['recovery_verified'] === true) {
     $current_step = 3;
 }
-
-// Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $database = new Database();
     $db = $database->getConnection();
-    
-    // Recovery Step 1 Handler
     if (isset($_POST['recovery_email'])) {
         $email = trim($_POST['email']);
         
@@ -44,8 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     }
-    
-    // Recovery Step 2 Handler
     elseif (isset($_POST['recovery_security'])) {
         $security_answer = trim($_POST['security_answer']);
         $user_id = $_SESSION['recovery_user_id'] ?? null;
@@ -69,8 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     }
-    
-    // Password Reset Handler
     elseif (isset($_POST['reset_password'])) {
         $new_password = $_POST['new_password'];
         $confirm_password = $_POST['confirm_password'];

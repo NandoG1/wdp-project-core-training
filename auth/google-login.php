@@ -1,7 +1,5 @@
 <?php
 require_once __DIR__ . '/google-config.php';
-
-// Build Google OAuth URL
 $params = array(
     'client_id' => GOOGLE_CLIENT_ID,
     'redirect_uri' => GOOGLE_REDIRECT_URI,

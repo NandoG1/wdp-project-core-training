@@ -51,8 +51,6 @@ function getChannels($user_id) {
     if (empty($server_id)) {
         send_response(['error' => 'Server ID is required'], 400);
     }
-    
-    // Check if user is member of server
     if (!is_server_member($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
@@ -99,7 +97,6 @@ function getChannel($user_id) {
         $result = $stmt->get_result();
         
         if ($channel = $result->fetch_assoc()) {
-            // Check if user is member of server
             if (!is_server_member($user_id, $channel['ServerID'])) {
                 send_response(['error' => 'Access denied'], 403);
             }
@@ -124,18 +121,12 @@ function createChannel($user_id) {
     if (empty($server_id) || empty($name)) {
         send_response(['error' => 'Server ID and channel name are required'], 400);
     }
-    
-    // Check if user is admin or owner
     if (!is_server_admin($user_id, $server_id)) {
         send_response(['error' => 'Access denied'], 403);
     }
-    
-    // Validate channel type
     if (!in_array($type, ['Text', 'Voice'])) {
         send_response(['error' => 'Invalid channel type'], 400);
     }
-    
-    // Clean channel name (replace spaces with hyphens, lowercase)
     $name = strtolower(str_replace(' ', '-', $name));
     $name = preg_replace('/[^a-z0-9\-_]/', '', $name);
     
@@ -144,7 +135,6 @@ function createChannel($user_id) {
     }
     
     try {
-        // Check if channel name already exists in server
         $stmt = $mysqli->prepare("
             SELECT ID FROM Channel 
             WHERE ServerID = ? AND Name = ?
@@ -155,8 +145,6 @@ function createChannel($user_id) {
         if ($stmt->get_result()->num_rows > 0) {
             send_response(['error' => 'Channel name already exists'], 400);
         }
-        
-        // Create channel
         $stmt = $mysqli->prepare("
             INSERT INTO Channel (ServerID, Name, Type) 
             VALUES (?, ?, ?)
@@ -188,7 +176,6 @@ function updateChannel($user_id) {
     }
     
     try {
-        // Get channel and server info
         $stmt = $mysqli->prepare("
             SELECT c.*, s.ID as ServerID 
             FROM Channel c 
@@ -202,21 +189,15 @@ function updateChannel($user_id) {
         if (!$channel = $result->fetch_assoc()) {
             send_response(['error' => 'Channel not found'], 404);
         }
-        
-        // Check if user is admin or owner
         if (!is_server_admin($user_id, $channel['ServerID'])) {
             send_response(['error' => 'Access denied'], 403);
         }
-        
-        // Clean channel name
         $name = strtolower(str_replace(' ', '-', $name));
         $name = preg_replace('/[^a-z0-9\-_]/', '', $name);
         
         if (empty($name)) {
             send_response(['error' => 'Invalid channel name'], 400);
         }
-        
-        // Check if new name already exists (excluding current channel)
         $stmt = $mysqli->prepare("
             SELECT ID FROM Channel 
             WHERE ServerID = ? AND Name = ? AND ID != ?
@@ -227,8 +208,6 @@ function updateChannel($user_id) {
         if ($stmt->get_result()->num_rows > 0) {
             send_response(['error' => 'Channel name already exists'], 400);
         }
-        
-        // Update channel
         $stmt = $mysqli->prepare("UPDATE Channel SET Name = ? WHERE ID = ?");
         $stmt->bind_param("si", $name, $channel_id);
         $stmt->execute();
@@ -250,7 +229,6 @@ function deleteChannel($user_id) {
     }
     
     try {
-        // Get channel and server info
         $stmt = $mysqli->prepare("
             SELECT c.*, s.ID as ServerID 
             FROM Channel c 
@@ -264,18 +242,12 @@ function deleteChannel($user_id) {
         if (!$channel = $result->fetch_assoc()) {
             send_response(['error' => 'Channel not found'], 404);
         }
-        
-        // Check if user is admin or owner
         if (!is_server_admin($user_id, $channel['ServerID'])) {
             send_response(['error' => 'Access denied'], 403);
         }
-        
-        // Prevent deletion of 'general' channel
         if (strtolower($channel['Name']) === 'general') {
             send_response(['error' => 'Cannot delete the general channel'], 400);
         }
-        
-        // Delete channel (cascading deletes will handle messages)
         $stmt = $mysqli->prepare("DELETE FROM Channel WHERE ID = ?");
         $stmt->bind_param("i", $channel_id);
         $stmt->execute();
@@ -299,7 +271,6 @@ function getMessages($user_id) {
     }
     
     try {
-        // Get channel and verify access
         $stmt = $mysqli->prepare("
             SELECT c.*, s.ID as ServerID 
             FROM Channel c 
@@ -317,8 +288,6 @@ function getMessages($user_id) {
         if (!is_server_member($user_id, $channel['ServerID'])) {
             send_response(['error' => 'Access denied'], 403);
         }
-        
-        // Build query conditions
         $where_condition = "cm.ChannelID = ?";
         $params = [$channel_id];
         $types = "i";
@@ -328,8 +297,6 @@ function getMessages($user_id) {
             $params[] = $before;
             $types .= "s";
         }
-        
-        // Get messages with user info
         $stmt = $mysqli->prepare("
             SELECT m.*, u.Username, u.DisplayName, u.ProfilePictureUrl, u.Discriminator,
                    rm.Content as ReplyContent, ru.Username as ReplyUsername
@@ -352,7 +319,6 @@ function getMessages($user_id) {
         
         $messages = [];
         while ($row = $result->fetch_assoc()) {
-            // Get reactions for this message
             $reactions_stmt = $mysqli->prepare("
                 SELECT mr.Emoji, COUNT(*) as count, 
                        GROUP_CONCAT(u.Username) as users
@@ -377,8 +343,6 @@ function getMessages($user_id) {
             $row['reactions'] = $reactions;
             $messages[] = $row;
         }
-        
-        // Reverse to get chronological order
         $messages = array_reverse($messages);
         
         send_response(['success' => true, 'messages' => $messages]);
@@ -408,7 +372,6 @@ function sendMessage($user_id) {
     }
 
     try {
-        // Get channel and verify access
         $stmt = $mysqli->prepare("
             SELECT c.*, s.ID as ServerID 
             FROM Channel c 
@@ -428,27 +391,19 @@ function sendMessage($user_id) {
             send_response(['error' => 'Access denied'], 403);
             return;
         }
-        
-        // Only allow text messages in text channels
         if ($channel['Type'] !== 'Text') {
             send_response(['error' => 'Cannot send messages in voice channels'], 400);
             return;
         }
         
         $mysqli->begin_transaction();
-        
-        // Parse attachment URLs if provided
         $attachment_url = null;
         if (!empty($attachment_urls)) {
             $urls = json_decode($attachment_urls, true);
             if (is_array($urls) && !empty($urls)) {
-                // For now, use the first attachment URL
-                // In the future, you might want to support multiple attachments
                 $attachment_url = $urls[0];
             }
         }
-        
-        // Create message
         $stmt = $mysqli->prepare("
             INSERT INTO Message (UserID, ReplyMessageID, Content, MessageType, AttachmentURL) 
             VALUES (?, ?, ?, ?, ?)
@@ -457,8 +412,6 @@ function sendMessage($user_id) {
         $stmt->execute();
         
         $message_id = $mysqli->insert_id;
-        
-        // Link message to channel
         $stmt = $mysqli->prepare("
             INSERT INTO ChannelMessage (ChannelID, MessageID) 
             VALUES (?, ?)
@@ -467,8 +420,6 @@ function sendMessage($user_id) {
         $stmt->execute();
         
         $mysqli->commit();
-        
-        // Get the complete message data to return
         $stmt = $mysqli->prepare("
             SELECT m.*, u.Username, u.DisplayName, u.ProfilePictureUrl, u.Discriminator
             FROM Message m
@@ -500,7 +451,6 @@ function sendMessage($user_id) {
     }
     
     try {
-        // Get message and verify ownership
         $stmt = $mysqli->prepare("SELECT * FROM Message WHERE ID = ? AND UserID = ?");
         $stmt->bind_param("ii", $message_id, $user_id);
         $stmt->execute();
@@ -509,8 +459,6 @@ function sendMessage($user_id) {
         if (!$message = $result->fetch_assoc()) {
             send_response(['error' => 'Message not found or access denied'], 404);
         }
-        
-        // Store old content for history
         $stmt = $mysqli->prepare("
             INSERT INTO ChangeMessage (ChannelID, MessageID, OldContent, NewContent) 
             SELECT cm.ChannelID, ?, ?, ?
@@ -519,8 +467,6 @@ function sendMessage($user_id) {
         ");
         $stmt->bind_param("issi", $message_id, $message['Content'], $content, $message_id);
         $stmt->execute();
-        
-        // Update message
         $stmt = $mysqli->prepare("
             UPDATE Message 
             SET Content = ?, EditedAt = CURRENT_TIMESTAMP 
@@ -547,7 +493,6 @@ function deleteMessage($user_id) {
     }
     
     try {
-        // Get message and channel info
         $stmt = $mysqli->prepare("
             SELECT m.*, cm.ChannelID, c.ServerID
             FROM Message m
@@ -563,35 +508,24 @@ function deleteMessage($user_id) {
             send_response(['error' => 'Message not found'], 404);
             return;
         }
-        
-        // Check if user can delete (owner of message or server admin)
         $can_delete = ($message['UserID'] == $user_id) || is_server_admin($user_id, $message['ServerID']);
         
         if (!$can_delete) {
             send_response(['error' => 'Access denied'], 403);
             return;
         }
-        
-        // Start transaction for safe deletion
         $mysqli->begin_transaction();
         
         try {
-            // Delete message reactions first
             $stmt = $mysqli->prepare("DELETE FROM MessageReaction WHERE MessageID = ?");
             $stmt->bind_param("i", $message_id);
             $stmt->execute();
-            
-            // Delete change history
             $stmt = $mysqli->prepare("DELETE FROM ChangeMessage WHERE MessageID = ?");
             $stmt->bind_param("i", $message_id);
             $stmt->execute();
-            
-            // Delete channel message relationship
             $stmt = $mysqli->prepare("DELETE FROM ChannelMessage WHERE MessageID = ?");
             $stmt->bind_param("i", $message_id);
             $stmt->execute();
-            
-            // Delete the message itself
             $stmt = $mysqli->prepare("DELETE FROM Message WHERE ID = ?");
             $stmt->bind_param("i", $message_id);
             $stmt->execute();
@@ -624,7 +558,6 @@ function addReaction($user_id) {
     }
     
     try {
-        // Check if reaction already exists
         $stmt = $mysqli->prepare("
             SELECT ID FROM MessageReaction 
             WHERE MessageID = ? AND UserID = ? AND Emoji = ?
@@ -635,8 +568,6 @@ function addReaction($user_id) {
         if ($stmt->get_result()->num_rows > 0) {
             send_response(['error' => 'Reaction already exists'], 400);
         }
-        
-        // Add reaction
         $stmt = $mysqli->prepare("
             INSERT INTO MessageReaction (MessageID, UserID, Emoji) 
             VALUES (?, ?, ?)
